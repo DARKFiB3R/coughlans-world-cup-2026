@@ -1,0 +1,32 @@
+name: Update Match Data
+
+on:
+  schedule:
+    # Every 15 minutes — adjust if you hit API rate limits (free tier: 10 req/min, ~100/day)
+    - cron: '*/15 * * * *'
+  workflow_dispatch:   # allows manual trigger from Actions tab
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit data.json back to the repo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch match data
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        run: python fetch_data.py
+
+      - name: Commit if data changed
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+          git add data.json
+          git diff --staged --quiet && echo "No changes." || (
+            git commit -m "chore: update match data $(date -u +'%H:%M UTC')"
+            git push
+          )
