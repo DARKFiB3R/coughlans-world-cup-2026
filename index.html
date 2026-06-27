@@ -718,9 +718,10 @@ function renderLeaderboard(st) {
     </div>`;
   };
 
+  const FORM_KEY = `<span style="font-size:.6rem;color:#4a6a80;margin-left:8px;font-weight:400">🟢Win 🟡Draw 🔴Loss</span>`;
   const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
   let html='';
-  if(active.length) html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people</div>`+active.map(makeRow).join('');
+  if(active.length) html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people ${FORM_KEY}</div>`+active.map(makeRow).join('');
   if(tbd.length)    html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbd.length} people</div>`+tbd.map(makeRow).join('');
   if(out.length)    html+=`<div class="sec-hdr">❌ Eliminated — ${out.length} people</div>`+out.map(makeRow).join('');
   if(!html) html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>`;
@@ -747,11 +748,14 @@ function renderTeamStats(st) {
         <span class="ex-score">${teamScore(m,e.team)}</span>
         <span class="ex-icon">${matchIcon(m,e.team)}</span>
       </div>`).join('');
+    // Group stage points from standings
+    const gr = st.groupRanks[e.team];
+    const grPts = gr ? `<span style="font-size:.68rem;color:#7a9ab0;margin-left:5px">${gr.pts}pts</span>` : '';
     return `
       <div class="team-row${isOut(e)?' eliminated':''}" onclick="toggleExpand('${tid}')">
         <div>${teamCrest(e.team)}</div>
         <div class="team-info"><div class="team-name">${e.team}</div><div class="team-people">${e.people.join(' · ')}</div></div>
-        <div class="badge ${e.status.badge}">${e.status.label}</div>
+        <div style="text-align:right"><div class="badge ${e.status.badge}">${e.status.label}</div>${grPts}</div>
         <div class="chev" id="chev_${tid}">›</div>
       </div>
       <div class="expand" id="${tid}">
