@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>⚽ Coughlans World Cup 2026</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,25 +20,29 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 .live-pill { display: inline-block; background: #c0392b; color: #fff; font-size: 0.58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.5px; margin-left: 4px; animation: blink 1s infinite; vertical-align: middle; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
+/* ── BANNERS ── */
+#inapp-banner { display: none; background: #1a2a3a; padding: 6px 14px; font-size: .72rem; color: #7a9ab0; border-bottom: 1px solid #1a3050; text-align: center; }
+#inapp-banner strong { color: #e8edf5; }
+#next-banner { display: none; background: #0d2035; border-bottom: 1px solid #1a3050; padding: 7px 14px; font-size: 0.75rem; color: #7a9ab0; }
+#next-banner strong { color: #e8edf5; }
+
 /* ── STATS BAR ── */
 .stats-bar { display: flex; background: #0d1f35; border-bottom: 1px solid #1a3050; }
 .stat { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 7px 4px; border-right: 1px solid #1a3050; transition: background .15s; }
 .stat:last-child { border-right: none; }
 .stat.clickable { cursor: pointer; }
-.stat.clickable:hover { background: rgba(255,255,255,.05); }
-.stat.filter-active { background: rgba(39,174,96,.08); border-bottom: 2px solid currentColor; }
+.stat.clickable:hover { background: rgba(255,255,255,.06); }
+.stat.filter-active { background: rgba(39,174,96,.1); border-top: 2px solid #27ae60; }
 .stat-num { font-size: 1.05rem; font-weight: 700; line-height: 1; }
 .stat-lbl { font-size: 0.58rem; color: #7a9ab0; margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
 .c-in{color:#27ae60} .c-tbd{color:#f39c12} .c-out{color:#e74c3c} .c-all{color:#7a9ab0}
 
-/* ── BANNER ── */
-#next-banner { display: none; background: #0d2035; border-bottom: 1px solid #1a3050; padding: 7px 14px; font-size: 0.75rem; color: #7a9ab0; }
-#next-banner strong { color: #e8edf5; }
-
 /* ── SEARCH ── */
-#search-bar { padding: 8px 14px; background: #0d1f35; border-bottom: 1px solid #1a3050; }
-#search-input { width: 100%; background: #081422; border: 1px solid #1a3050; border-radius: 8px; padding: 7px 12px; color: #e8edf5; font-size: 0.82rem; outline: none; }
+.search-wrap { position: relative; padding: 8px 14px; background: #0d1f35; border-bottom: 1px solid #1a3050; }
+#search-input { width: 100%; background: #081422; border: 1px solid #1a3050; border-radius: 8px; padding: 7px 34px 7px 12px; color: #e8edf5; font-size: 0.82rem; outline: none; }
 #search-input:focus { border-color: #27ae60; }
+#search-clear { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7a9ab0; font-size: 1rem; cursor: pointer; padding: 0 4px; display: none; line-height: 1; }
+#search-clear:hover { color: #e8edf5; }
 
 /* ── TABS ── */
 .tab-bar { display: flex; background: #0a1628; border-bottom: 2px solid #1a3050; position: sticky; top: 48px; z-index: 99; }
@@ -43,9 +50,11 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 .tab-btn.active { color: #27ae60; border-bottom-color: #27ae60; }
 .tab-btn:hover:not(.active) { color: #b0c4d8; }
 
-/* ── SECTION HEADER ── */
+/* ── SECTION HEADERS ── */
 .sec-hdr { padding: 6px 14px; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #7a9ab0; background: #0d1f35; border-bottom: 1px solid #1a3050; border-top: 1px solid #1a3050; margin-top: 6px; }
 .sec-hdr:first-child { margin-top: 0; }
+.allteams-hdr { padding: 10px 14px 6px; font-size: .8rem; color: #7a9ab0; border-bottom: 1px solid #1a3050; background: #0d1f35; }
+.allteams-hdr span { color: #27ae60; font-weight: 700; }
 
 /* ── LEADERBOARD ROW ── */
 .lb-row { display: grid; grid-template-columns: 28px 32px 1fr auto; gap: 8px; align-items: center; padding: 9px 14px; border-bottom: 1px solid #111e30; cursor: pointer; transition: background .15s; }
@@ -84,7 +93,18 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 .ex-vs { flex: 1; }
 .ex-score { font-weight: 700; min-width: 36px; text-align: right; }
 .ex-icon { min-width: 18px; text-align: right; }
-.ex-more { font-size: .7rem; color: #3b8fd4; cursor: pointer; margin-top: 6px; display: inline-block; }
+.ex-btn { display: block; margin-top: 10px; width: 100%; background: #0d2a1a; border: 1px solid #27ae60; color: #27ae60; padding: 8px 12px; border-radius: 8px; font-size: .8rem; font-weight: 700; cursor: pointer; font-family: inherit; text-align: center; transition: background .15s; }
+.ex-btn:hover { background: #1a4a2a; }
+
+/* ── ALL TEAMS VIEW ── */
+.at-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid #111e30; cursor: pointer; transition: background .15s; }
+.at-row:hover { background: rgba(255,255,255,.04); }
+.at-row.eliminated { opacity: .38; }
+.at-flag { font-size: 1.5rem; text-align: center; line-height: 1; }
+.at-info { min-width: 0; }
+.at-name { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.at-colleagues { font-size: .68rem; color: #7a9ab0; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.at-scorers { font-size: .68rem; color: #f39c12; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── CLASHES ── */
 .clash-card { margin: 10px 14px; border-radius: 10px; border: 1px solid #1a3050; overflow: hidden; }
@@ -104,25 +124,6 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 .clash-result { text-align: center; font-size: .7rem; margin-top: 6px; }
 .clash-result.won { color: #27ae60; font-weight: 700; }
 .clash-stage { font-size: .67rem; color: #4a6a80; text-align: center; margin-top: 4px; letter-spacing: .5px; text-transform: uppercase; }
-
-/* ── ALL TEAMS PANEL ── */
-.at-panel { display: none; position: fixed; inset: 0; background: #0a1628; z-index: 200; overflow-y: auto; flex-direction: column; }
-.at-panel.open { display: flex; }
-.at-header { background: linear-gradient(135deg,#0d2b1a,#0a1f30); padding: 12px 16px; border-bottom: 2px solid #27ae60; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
-.at-header h2 { font-size: 1rem; font-weight: 700; flex: 1; }
-.at-close { background: #1a3050; border: none; color: #7a9ab0; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-.at-close:hover { background: #2a4060; color: #e8edf5; }
-.at-search { padding: 8px 14px; background: #0d1f35; border-bottom: 1px solid #1a3050; position: sticky; top: 52px; z-index: 9; }
-.at-search input { width: 100%; background: #081422; border: 1px solid #1a3050; border-radius: 8px; padding: 7px 12px; color: #e8edf5; font-size: 0.82rem; outline: none; }
-.at-search input:focus { border-color: #27ae60; }
-.at-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid #111e30; cursor: pointer; transition: background .15s; }
-.at-row:hover { background: rgba(255,255,255,.04); }
-.at-row.eliminated { opacity: .38; }
-.at-flag { font-size: 1.5rem; text-align: center; line-height: 1; }
-.at-info { min-width: 0; }
-.at-name { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.at-colleagues { font-size: .68rem; color: #7a9ab0; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.at-scorers { font-size: .68rem; color: #f39c12; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── BADGES ── */
 .badge { font-size: .65rem; font-weight: 700; padding: 3px 7px; border-radius: 10px; white-space: nowrap; min-width: 72px; text-align: center; letter-spacing: .2px; }
@@ -168,13 +169,13 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 .stat-box-lbl { font-size: .6rem; color: #7a9ab0; margin-top: 2px; }
 .pos-num{color:#27ae60} .neg-num{color:#e74c3c}
 
-/* Scorers table */
+/* Scorers */
 .scorers-table { width: 100%; border-collapse: collapse; font-size: .75rem; }
 .scorers-table th { text-align: left; color: #4a6a80; font-weight: 600; padding: 3px 4px; border-bottom: 1px solid #1a3050; }
-.scorers-table td { padding: 4px 4px; border-bottom: 1px solid #0d1a28; }
+.scorers-table td { padding: 4px; border-bottom: 1px solid #0d1a28; }
 .scorers-table tr:last-child td { border-bottom: none; }
-.sc-goals { font-weight: 700; color: #f39c12; text-align: right; min-width: 28px; }
-.sc-assists { color: #7a9ab0; text-align: right; min-width: 28px; }
+.sc-goals { font-weight: 700; color: #f39c12; text-align: right; }
+.sc-assists { color: #7a9ab0; text-align: right; }
 
 /* Modal matches */
 .modal-match { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid #0d1a28; font-size: .75rem; align-items: center; }
@@ -210,7 +211,10 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
   </div>
 </header>
 
-<div class="stats-bar" id="stats-bar">
+<div id="inapp-banner">Tap <strong>⋮ → Open in browser</strong> for best experience &amp; to bookmark</div>
+<div id="next-banner"></div>
+
+<div class="stats-bar">
   <div class="stat clickable" id="stat-all" onclick="showAllTeams()">
     <span class="stat-num c-all" id="sn-all">—</span><span class="stat-lbl">Teams</span>
   </div>
@@ -225,10 +229,10 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
   </div>
 </div>
 
-<div id="next-banner"></div>
-
-<div id="search-bar">
-  <input id="search-input" type="search" placeholder="🔍 Search names or teams…" oninput="filterRows(this.value)">
+<div class="search-wrap">
+  <input id="search-input" type="search" placeholder="🔍 Search names or teams…"
+    oninput="onSearch(this.value)" onsearch="onSearch(this.value)">
+  <button id="search-clear" onclick="clearSearch()" title="Clear">✕</button>
 </div>
 
 <nav class="tab-bar">
@@ -239,18 +243,6 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 
 <div id="error-msg"></div>
 <div id="content"><div id="loading"><span class="spinner">⚽</span>Fetching match data…</div></div>
-
-<!-- ALL TEAMS PANEL -->
-<div class="at-panel" id="at-panel">
-  <div class="at-header">
-    <h2>🌍 All 48 Teams</h2>
-    <button class="at-close" onclick="closeAllTeams()">✕</button>
-  </div>
-  <div class="at-search">
-    <input type="search" placeholder="🔍 Search teams or players…" oninput="filterAllTeams(this.value)" id="at-search-input">
-  </div>
-  <div id="at-content"></div>
-</div>
 
 <!-- TEAM MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
@@ -270,7 +262,7 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
     </div>
     <div class="divider"></div>
     <div class="modal-sec">
-      <div class="modal-sec-title">Stats</div>
+      <div class="modal-sec-title">Match Stats</div>
       <div class="stats-row" id="m-stats"></div>
     </div>
     <div class="divider"></div>
@@ -278,14 +270,14 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
       <div class="modal-sec-title">Tournament Scorers</div>
       <table class="scorers-table" id="m-scorers-table"></table>
     </div>
-    <div class="divider" id="m-scorers-divider" style="display:none"></div>
+    <div class="divider" id="m-scorers-div" style="display:none"></div>
     <div class="modal-sec" id="m-next-sec" style="display:none">
       <div class="modal-sec-title">Next Fixture</div>
       <div class="next-fixture" id="m-next"></div>
     </div>
-    <div class="divider" id="m-next-divider" style="display:none"></div>
+    <div class="divider" id="m-next-div" style="display:none"></div>
     <div class="modal-sec">
-      <div class="modal-sec-title">Results</div>
+      <div class="modal-sec-title">All Fixtures &amp; Results</div>
       <div id="m-matches"></div>
     </div>
     <div class="divider"></div>
@@ -297,13 +289,18 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 </div>
 
 <script>
-// ── DATA SOURCE ────────────────────────────────────────────────────────────────
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 const USE_JSON   = true;
 const DATA_URL   = 'data.json';
 const HA_URL     = window.location.origin;
 const HA_TOKEN   = 'YOUR_LONG_LIVED_TOKEN_HERE';
 const HA_SENSOR  = 'sensor.fixtures';
 const REFRESH_MS = USE_JSON ? 5 * 60 * 1000 : 60 * 1000;
+
+// ── IN-APP BROWSER DETECTION ──────────────────────────────────────────────────
+if (/FBAN|FBAV|Instagram|WhatsApp|Telegram|Line/i.test(navigator.userAgent)) {
+  document.getElementById('inapp-banner').style.display = 'block';
+}
 
 // ── SYNDICATE ─────────────────────────────────────────────────────────────────
 const SYNDICATE = [
@@ -380,22 +377,15 @@ const POINTS = {
 };
 const KO_LONG  = {LAST_32:"Round of 32",LAST_16:"Round of 16",QUARTER_FINALS:"Quarter-Final",SEMI_FINALS:"Semi-Final",THIRD_PLACE:"3rd Place",FINAL:"Final"};
 const KO_SHORT = {LAST_32:"Rd 1",LAST_16:"Rd 2",QUARTER_FINALS:"Rd 3",SEMI_FINALS:"Rd 4",FINAL:"Final"};
-
-// Progress strip stages — labels go up logically
 const STAGE_LIST = [
-  {label:'Group', koCodes:['GROUP_STAGE']},
-  {label:'Rd 1',  koCodes:['LAST_32']},
-  {label:'Rd 2',  koCodes:['LAST_16']},
-  {label:'Rd 3',  koCodes:['QUARTER_FINALS']},
-  {label:'Rd 4',  koCodes:['SEMI_FINALS']},
-  {label:'🏆',    koCodes:['FINAL']},
+  {label:'Group'},{label:'Rd 1'},{label:'Rd 2'},{label:'Rd 3'},{label:'Rd 4'},{label:'🏆'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let lastState   = null;
-let lastScorers = {}; // normTeam → [{player,goals,assists,penalties}]
-let activeFilter = null; // 'in' | 'tbd' | 'out' | null
-let activeTab   = 'leaderboard';
+let lastState    = null;
+let lastScorers  = {};
+let activeFilter = null;
+let activeTab    = 'leaderboard';
 
 // ── PROCESS MATCHES ───────────────────────────────────────────────────────────
 function processMatches(matches) {
@@ -419,10 +409,8 @@ function processMatches(matches) {
       else{groupStats[h].pts+=1;groupStats[a].pts+=1;}
     } else {
       const winner=m.winner==='HOME_TEAM'?h:a, loser=m.winner==='HOME_TEAM'?a:h;
-      if(!koRecord[winner]) koRecord[winner]={};
-      koRecord[winner].stage=m.stage; koRecord[winner].won=true;
-      if(!koRecord[loser]) koRecord[loser]={};
-      koRecord[loser].stage=m.stage; koRecord[loser].eliminated=true;
+      if(!koRecord[winner]) koRecord[winner]={}; koRecord[winner].stage=m.stage; koRecord[winner].won=true;
+      if(!koRecord[loser])  koRecord[loser]={};  koRecord[loser].stage=m.stage;  koRecord[loser].eliminated=true;
     }
   }
 
@@ -456,12 +444,12 @@ function resolveStatus(team,st) {
   if (ko) {
     const s=ko.stage;
     if(s==='FINAL'){
-      if(ko.won)        return {code:'CHAMPION', label:'🏆 Champion',    badge:'b-champion'};
-      if(ko.eliminated) return {code:'OUT_FINAL',label:'🥈 Runner-Up',   badge:'b-out'};
+      if(ko.won)        return {code:'CHAMPION', label:'🏆 Champion',  badge:'b-champion'};
+      if(ko.eliminated) return {code:'OUT_FINAL',label:'🥈 Runner-Up', badge:'b-out'};
     }
     if(s==='THIRD_PLACE'){
-      if(ko.won)        return {code:'OUT_SEMI', label:'🥉 3rd Place',   badge:'b-in'};
-      if(ko.eliminated) return {code:'OUT_3RD',  label:'4th Place',      badge:'b-out'};
+      if(ko.won)        return {code:'OUT_SEMI',label:'🥉 3rd Place',  badge:'b-in'};
+      if(ko.eliminated) return {code:'OUT_3RD', label:'4th Place',     badge:'b-out'};
     }
     const inM ={LAST_32:'IN_R32',LAST_16:'IN_R16',QUARTER_FINALS:'IN_QUARTER',SEMI_FINALS:'IN_SEMI'};
     const outM={LAST_32:'OUT_R32',LAST_16:'OUT_R16',QUARTER_FINALS:'OUT_QUARTER',SEMI_FINALS:'OUT_SEMI'};
@@ -473,7 +461,7 @@ function resolveStatus(team,st) {
       if(gr.rank<=2) return {code:'QUALIFIED',label:'✅ Qualified',    badge:'b-in'};
       if(gr.rank===3){
         if(allGroupsDone){
-          if(bestThird.has(team)) return {code:'QUALIFIED',label:'✅ Best 3rd', badge:'b-in'};
+          if(bestThird.has(team)) return {code:'QUALIFIED',label:'✅ Best 3rd',   badge:'b-in'};
           else                    return {code:'OUT_GROUP', label:'❌ Out – Group',badge:'b-out'};
         }
         return {code:'TBD',label:'⏳ Best 3rd?',badge:'b-tbd'};
@@ -490,6 +478,7 @@ function resolveStatus(team,st) {
 const fmtDate = u => new Date(u).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 const fmtTime = u => new Date(u).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 const fmtDT   = u => `${fmtDate(u)}, ${fmtTime(u)} UTC`;
+const escQ    = s => s.replace(/'/g,"\\'");
 
 function matchIcon(m,team) {
   if(m.status!=='FINISHED') return m.status==='IN_PLAY'||m.status==='PAUSED'?'🔴':'📅';
@@ -501,55 +490,75 @@ function teamScore(m,team) {
   if(m.status!=='FINISHED') return '';
   return m._h===team?`${m.homeScore}–${m.awayScore}`:`${m.awayScore}–${m.homeScore}`;
 }
-function escQ(s) { return s.replace(/'/g,"\\'"); }
 
-// ── FILTER ────────────────────────────────────────────────────────────────────
-function toggleFilter(filter) {
-  activeFilter = activeFilter===filter ? null : filter;
-  ['in','tbd','out'].forEach(f => {
-    document.getElementById('stat-'+f)?.classList.toggle('filter-active', activeFilter===f);
-  });
-  if (!lastState) return;
-  if      (activeTab==='leaderboard') renderLeaderboard(lastState);
-  else if (activeTab==='teamstats')   renderTeamStats(lastState);
-}
-
-function filterRows(q) {
-  q = q.toLowerCase().trim();
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function onSearch(val) {
+  document.getElementById('search-clear').style.display = val ? 'block' : 'none';
+  const q = val.toLowerCase().trim();
   document.querySelectorAll('.lb-row,.team-row,.at-row').forEach(r => {
     r.style.display = !q || r.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
-  document.querySelectorAll('.sec-hdr').forEach(h => h.style.display = '');
+}
+
+function clearSearch() {
+  const inp = document.getElementById('search-input');
+  inp.value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  onSearch('');
+  inp.focus();
+}
+
+// ── FILTER ────────────────────────────────────────────────────────────────────
+function toggleFilter(f) {
+  // Cancel all-teams view if active
+  if (activeTab === 'allteams') switchTab('leaderboard');
+  activeFilter = activeFilter === f ? null : f;
+  ['in','tbd','out'].forEach(x => document.getElementById('stat-'+x)?.classList.toggle('filter-active', activeFilter===x));
+  clearSearch();
+  if (!lastState) return;
+  renderCurrentTab();
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  // Clear Teams stat highlight
+  document.getElementById('stat-all').classList.remove('filter-active');
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>
+    b.classList.toggle('active',['leaderboard','teamstats','clashes'][i]===tab));
+  clearSearch();
+  if (!lastState) return;
+  renderCurrentTab();
+}
+
+function renderCurrentTab() {
+  if      (activeTab==='leaderboard') renderLeaderboard(lastState);
+  else if (activeTab==='teamstats')   renderTeamStats(lastState);
+  else if (activeTab==='clashes')     renderClashes(lastState);
+  else if (activeTab==='allteams')    renderAllTeams(lastState);
 }
 
 // ── RENDER: LEADERBOARD ───────────────────────────────────────────────────────
 function renderLeaderboard(st) {
-  const isOut = p=>p.status.code.startsWith('OUT_');
-  const isTBD = p=>p.status.code==='TBD';
+  const isOut=p=>p.status.code.startsWith('OUT_'), isTBD=p=>p.status.code==='TBD';
 
-  let people = SYNDICATE.flatMap(s => {
+  let people=SYNDICATE.flatMap(s=>{
     const status=resolveStatus(s.team,st), pts=POINTS[status.code]||0;
     return s.people.map(name=>({name,team:s.team,flag:s.flag,status,pts}));
   });
   people.sort((a,b)=>b.pts!==a.pts?b.pts-a.pts:(SORT_ORDER[a.status.code]??99)-(SORT_ORDER[b.status.code]??99));
-
-  // Assign ranks
   let rank=1;
   people.forEach((p,i)=>{ if(i>0&&p.pts<people[i-1].pts) rank=i+1; p.rank=rank; });
 
-  // Apply filter
   if      (activeFilter==='in')  people=people.filter(p=>!isOut(p)&&!isTBD(p));
   else if (activeFilter==='tbd') people=people.filter(isTBD);
   else if (activeFilter==='out') people=people.filter(isOut);
 
-  const rankCls = r=>r===1?'gold':r===2?'silver':r===3?'bronze':'';
-  const rankLbl = r=>r===1?'🥇':r===2?'🥈':r===3?'🥉':`#${r}`;
+  const rankCls=r=>r===1?'gold':r===2?'silver':r===3?'bronze':'';
+  const rankLbl=r=>r===1?'🥇':r===2?'🥈':r===3?'🥉':`#${r}`;
 
-  const active=people.filter(p=>!isOut(p)&&!isTBD(p));
-  const tbd   =people.filter(isTBD);
-  const out   =people.filter(isOut);
-
-  const makeRow = p => `
+  const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
+  const makeRow=p=>`
     <div class="lb-row${isOut(p)?' eliminated':''}" onclick="showModal('${escQ(p.team)}')">
       <div class="lb-rank ${rankCls(p.rank)}">${rankLbl(p.rank)}</div>
       <div class="lb-flag">${p.flag}</div>
@@ -558,26 +567,24 @@ function renderLeaderboard(st) {
     </div>`;
 
   let html='';
-  if(active.length) { html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people</div>`; html+=active.map(makeRow).join(''); }
-  if(tbd.length)    { html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbd.length} people</div>`; html+=tbd.map(makeRow).join(''); }
-  if(out.length)    { html+=`<div class="sec-hdr">❌ Eliminated — ${out.length} people</div>`; html+=out.map(makeRow).join(''); }
-  if(!html)         html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>`;
+  if(active.length) { html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people</div>`+active.map(makeRow).join(''); }
+  if(tbd.length)    { html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbd.length} people</div>`+tbd.map(makeRow).join(''); }
+  if(out.length)    { html+=`<div class="sec-hdr">❌ Eliminated — ${out.length} people</div>`+out.map(makeRow).join(''); }
+  if(!html) html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>`;
   document.getElementById('content').innerHTML=html;
 }
 
 // ── RENDER: TEAM STATS ────────────────────────────────────────────────────────
 function renderTeamStats(st) {
+  const isOut=e=>e.status.code.startsWith('OUT_'), isTBD=e=>e.status.code==='TBD';
   let entries=SYNDICATE.map(s=>({...s,status:resolveStatus(s.team,st)}));
   entries.sort((a,b)=>(SORT_ORDER[a.status.code]??99)-(SORT_ORDER[b.status.code]??99));
-
-  const isOut=e=>e.status.code.startsWith('OUT_');
-  const isTBD=e=>e.status.code==='TBD';
 
   if      (activeFilter==='in')  entries=entries.filter(e=>!isOut(e)&&!isTBD(e));
   else if (activeFilter==='tbd') entries=entries.filter(isTBD);
   else if (activeFilter==='out') entries=entries.filter(isOut);
 
-  const makeRow = e => {
+  const makeRow=e=>{
     const tid='ex_'+e.team.replace(/[^a-z0-9]/gi,'_');
     const ms=(st.matchesByTeam[e.team]||[]).filter(m=>m.status==='FINISHED');
     const recent=ms.slice(-2).map(m=>`
@@ -588,7 +595,7 @@ function renderTeamStats(st) {
         <span class="ex-icon">${matchIcon(m,e.team)}</span>
       </div>`).join('');
     return `
-      <div class="team-row${isOut(e)?' eliminated':''}" onclick="toggleExpand('${tid}','${escQ(e.team)}')">
+      <div class="team-row${isOut(e)?' eliminated':''}" onclick="toggleExpand('${tid}')">
         <div class="team-flag">${e.flag}</div>
         <div class="team-info"><div class="team-name">${e.team}</div><div class="team-people">${e.people.join(' · ')}</div></div>
         <div class="badge ${e.status.badge}">${e.status.label}</div>
@@ -596,16 +603,16 @@ function renderTeamStats(st) {
       </div>
       <div class="expand" id="${tid}">
         ${recent||'<div class="ex-match" style="color:#4a6a80">No results yet</div>'}
-        <span class="ex-more" onclick="event.stopPropagation();showModal('${escQ(e.team)}')">Full stats & fixtures →</span>
+        <button class="ex-btn" onclick="event.stopPropagation();showModal('${escQ(e.team)}')">📊 Full Stats, Scorers &amp; All Fixtures</button>
       </div>`;
   };
 
   const inL=entries.filter(e=>!isOut(e)&&!isTBD(e)), tbdL=entries.filter(isTBD), outL=entries.filter(isOut);
   let html='';
-  if(inL.length)  { html+=`<div class="sec-hdr">🟢 Still In — ${inL.length}</div>`; html+=inL.map(makeRow).join(''); }
-  if(tbdL.length) { html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbdL.length}</div>`; html+=tbdL.map(makeRow).join(''); }
-  if(outL.length) { html+=`<div class="sec-hdr">❌ Eliminated — ${outL.length}</div>`; html+=outL.map(makeRow).join(''); }
-  if(!html)       html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>`;
+  if(inL.length)  html+=`<div class="sec-hdr">🟢 Still In — ${inL.length}</div>`+inL.map(makeRow).join('');
+  if(tbdL.length) html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbdL.length}</div>`+tbdL.map(makeRow).join('');
+  if(outL.length) html+=`<div class="sec-hdr">❌ Eliminated — ${outL.length}</div>`+outL.map(makeRow).join('');
+  if(!html) html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>`;
   document.getElementById('content').innerHTML=html;
 }
 
@@ -616,7 +623,7 @@ function toggleExpand(tid) {
 
 // ── RENDER: CLASHES ───────────────────────────────────────────────────────────
 function renderClashes(st) {
-  const clashes=[]; const seen=new Set();
+  const clashes=[], seen=new Set();
   for (const m of st.allMatches) {
     if(m.stage==='GROUP_STAGE') continue;
     const h=norm(m.home),a=norm(m.away);
@@ -627,29 +634,29 @@ function renderClashes(st) {
   }
   clashes.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
 
-  if (!clashes.length) {
+  if(!clashes.length){
     const alive=SYNDICATE.filter(s=>!resolveStatus(s.team,st).code.startsWith('OUT_')).length;
     document.getElementById('content').innerHTML=`
       <div class="empty-state">
         <div class="empty-icon">⚔️</div>
         <div class="empty-title">No syndicate clashes yet</div>
-        <div class="empty-sub">When two syndicate teams face each other in the knockout rounds, the drama appears here.</div>
-        <div class="empty-sub" style="margin-top:12px;color:#3b8fd4">${alive} of ${SYNDICATE.length} syndicate teams still in the competition.</div>
+        <div class="empty-sub">When two syndicate teams face each other in the knockout rounds, it'll appear here.</div>
+        <div class="empty-sub" style="margin-top:12px;color:#3b8fd4">${alive} syndicate teams still in the competition.</div>
       </div>`; return;
   }
 
-  const makeClash = m => {
+  const makeClash=m=>{
     const hs=TEAM_MAP[m._h],as=TEAM_MAP[m._a];
     const live=m.status==='IN_PLAY'||m.status==='PAUSED', done=m.status==='FINISHED';
     const scoreHtml=done
       ?`<div class="clash-score">${m.homeScore}–${m.awayScore}</div><div class="clash-date">${fmtDate(m.utcDate)}</div>`
       :live?`<div class="clash-score live">${m.homeScore}–${m.awayScore}</div><div class="clash-date">🔴 LIVE</div>`
       :`<div class="clash-score" style="font-size:.9rem;color:#7a9ab0">vs</div><div class="clash-date">${fmtDT(m.utcDate)}</div>`;
-    let resultHtml='';
+    let result='';
     if(done){
-      const winner=m.winner==='HOME_TEAM'?m._h:m.winner==='AWAY_TEAM'?m._a:null;
-      if(winner){const we=TEAM_MAP[winner]; resultHtml=`<div class="clash-result won">${we.flag} ${winner} advance — ${we.people.join(', ')}!</div>`;}
-      else resultHtml=`<div class="clash-result">Draw — extra time/penalties</div>`;
+      const w=m.winner==='HOME_TEAM'?m._h:m.winner==='AWAY_TEAM'?m._a:null;
+      if(w){const we=TEAM_MAP[w]; result=`<div class="clash-result won">${we.flag} ${w} advance — ${we.people.join(', ')}!</div>`;}
+      else result=`<div class="clash-result">Draw — went to extra time</div>`;
     }
     return `<div class="clash-card">
       <div class="clash-header">
@@ -662,7 +669,7 @@ function renderClashes(st) {
           <div class="clash-col">${hs.people.map(p=>`• ${p}`).join('<br>')}</div>
           <div class="clash-col right">${as.people.map(p=>`${p} •`).join('<br>')}</div>
         </div>
-        ${resultHtml}
+        ${result}
         <div class="clash-stage">${KO_LONG[m.stage]||m.stage}</div>
       </div></div>`;
   };
@@ -671,37 +678,28 @@ function renderClashes(st) {
     `<div class="sec-hdr">⚔️ Syndicate Clashes — ${clashes.length}</div>`+clashes.map(makeClash).join('');
 }
 
-// ── ALL TEAMS PANEL ───────────────────────────────────────────────────────────
+// ── RENDER: ALL TEAMS (in content area) ───────────────────────────────────────
 function showAllTeams() {
   if (!lastState) return;
-  renderAllTeams('');
-  document.getElementById('at-panel').classList.add('open');
-  document.getElementById('at-search-input').value='';
-  document.getElementById('at-search-input').focus();
+  activeTab = 'allteams';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('stat-all').classList.add('filter-active');
+  activeFilter = null;
+  ['in','tbd','out'].forEach(x=>document.getElementById('stat-'+x)?.classList.remove('filter-active'));
+  clearSearch();
+  renderAllTeams(lastState);
 }
 
-function closeAllTeams() {
-  document.getElementById('at-panel').classList.remove('open');
-}
-
-function filterAllTeams(q) { renderAllTeams(q); }
-
-function renderAllTeams(query) {
-  const q=(query||'').toLowerCase().trim();
-  const entries=SYNDICATE.map(s=>({...s,status:resolveStatus(s.team,lastState)}));
+function renderAllTeams(st) {
+  const isOut=e=>e.status.code.startsWith('OUT_');
+  const entries=SYNDICATE.map(s=>({...s,status:resolveStatus(s.team,st)}));
   entries.sort((a,b)=>(SORT_ORDER[a.status.code]??99)-(SORT_ORDER[b.status.code]??99));
 
-  const isOut=e=>e.status.code.startsWith('OUT_');
-
-  const makeRow = e => {
+  const makeRow=e=>{
     const scorers=(lastScorers[e.team]||[]).slice(0,4);
-    const scorerStr=scorers.length
-      ? '🎯 '+scorers.map(s=>`${s.player} ${s.goals}⚽${s.assists>0?' '+s.assists+'🅰️':''}`).join(' · ')
-      : '';
-    const text=(e.team+' '+e.people.join(' ')+' '+scorerStr).toLowerCase();
-    if(q && !text.includes(q)) return '';
+    const scorerStr=scorers.length?'🎯 '+scorers.map(s=>`${s.player} ${s.goals}⚽${s.assists>0?' '+s.assists+'🅰️':''}`).join(' · '):'';
     return `
-      <div class="at-row${isOut(e)?' eliminated':''}" onclick="closeAllTeams();setTimeout(()=>showModal('${escQ(e.team)}'),50)">
+      <div class="at-row${isOut(e)?' eliminated':''}" onclick="showModal('${escQ(e.team)}')">
         <div class="at-flag">${e.flag}</div>
         <div class="at-info">
           <div class="at-name">${e.team}</div>
@@ -713,20 +711,20 @@ function renderAllTeams(query) {
   };
 
   const inL=entries.filter(e=>!isOut(e)), outL=entries.filter(isOut);
-  let html='';
-  const inRows=inL.map(makeRow).join(''), outRows=outL.map(makeRow).join('');
-  if(inRows.replace(/\s/g,''))  { html+=`<div class="sec-hdr">🟢 Still In</div>`+inRows; }
-  if(outRows.replace(/\s/g,'')) { html+=`<div class="sec-hdr">❌ Eliminated</div>`+outRows; }
-  if(!html) html=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results for "${query}"</div></div>`;
-  document.getElementById('at-content').innerHTML=html;
+  let html=`<div class="allteams-hdr">Tap any team for full stats &amp; scorers. <span>Tap a tab above to go back.</span></div>`;
+  if(inL.length)  html+=`<div class="sec-hdr">🟢 Still In — ${inL.length}</div>`+inL.map(makeRow).join('');
+  if(outL.length) html+=`<div class="sec-hdr">❌ Eliminated — ${outL.length}</div>`+outL.map(makeRow).join('');
+  document.getElementById('content').innerHTML=html;
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
 function showModal(team) {
-  if(!lastState) return;
+  if (!lastState) return;
   const s=TEAM_MAP[team]; if(!s) return;
-  const status=resolveStatus(team,lastState), pts=POINTS[status.code]||0;
+  // Clear search when opening modal from search results
+  clearSearch();
 
+  const status=resolveStatus(team,lastState), pts=POINTS[status.code]||0;
   document.getElementById('m-flag').textContent=s.flag;
   document.getElementById('m-name').textContent=team;
   document.getElementById('m-status-badge').innerHTML=
@@ -734,15 +732,15 @@ function showModal(team) {
 
   // Progress strip
   const code=status.code;
-  const stageReached={CHAMPION:5,OUT_FINAL:5,IN_SEMI:5,OUT_SEMI:4,OUT_3RD:4,IN_QUARTER:4,OUT_QUARTER:3,IN_R16:3,OUT_R16:2,IN_R32:2,OUT_R32:1,QUALIFIED:1,GROUP:0,TBD:0,OUT_GROUP:-1,UNKNOWN:-1}[code]??0;
+  const sr={CHAMPION:5,OUT_FINAL:5,IN_SEMI:5,OUT_SEMI:4,OUT_3RD:4,IN_QUARTER:4,OUT_QUARTER:3,IN_R16:3,OUT_R16:2,IN_R32:2,OUT_R32:1,QUALIFIED:1,GROUP:0,TBD:0,OUT_GROUP:-1,UNKNOWN:-1}[code]??0;
   const isElim=code.startsWith('OUT_');
   const items=[];
   STAGE_LIST.forEach((stage,i)=>{
-    const reached=i<=stageReached, current=i===stageReached&&!isElim, elimHere=isElim&&i===stageReached;
-    const stepCls=elimHere?'eliminated':reached&&!current?'done':current?'current':'future';
-    const lineCls=i<stageReached?'done':'future';
-    if(i>0) items.push(`<div class="ps-line ${lineCls}"></div>`);
-    items.push(`<div class="ps-step ${stepCls}"><div class="ps-circle">${elimHere?'✕':reached?'✓':i+1}</div><div class="ps-label">${stage.label}</div></div>`);
+    const reached=i<=sr, current=i===sr&&!isElim, elimHere=isElim&&i===sr;
+    const sc=elimHere?'eliminated':reached&&!current?'done':current?'current':'future';
+    const lc=i<sr?'done':'future';
+    if(i>0) items.push(`<div class="ps-line ${lc}"></div>`);
+    items.push(`<div class="ps-step ${sc}"><div class="ps-circle">${elimHere?'✕':reached?'✓':i+1}</div><div class="ps-label">${stage.label}</div></div>`);
   });
   document.getElementById('m-progress').innerHTML=items.join('');
 
@@ -763,33 +761,33 @@ function showModal(team) {
     <div class="stat-box"><div class="stat-box-num ${gd>=0?'pos-num':'neg-num'}">${gd>=0?'+':''}${gd}</div><div class="stat-box-lbl">GD</div></div>`;
 
   // Scorers
-  const teamScorers=(lastScorers[team]||[]);
-  const scoresSec=document.getElementById('m-scorers-sec'), scoresDiv=document.getElementById('m-scorers-divider');
-  if(teamScorers.length){
+  const sc=(lastScorers[team]||[]);
+  const scsec=document.getElementById('m-scorers-sec'), scdiv=document.getElementById('m-scorers-div');
+  if(sc.length){
     document.getElementById('m-scorers-table').innerHTML=
-      `<tr><th>Player</th><th style="text-align:right">⚽</th><th style="text-align:right">🅰️</th></tr>`+
-      teamScorers.map(s=>`<tr><td>${s.player}</td><td class="sc-goals">${s.goals}</td><td class="sc-assists">${s.assists||0}</td></tr>`).join('');
-    scoresSec.style.display=''; scoresDiv.style.display='';
-  } else { scoresSec.style.display='none'; scoresDiv.style.display='none'; }
+      `<tr><th>Player</th><th style="text-align:right">⚽ Goals</th><th style="text-align:right">🅰️ Assists</th></tr>`+
+      sc.map(x=>`<tr><td>${x.player}</td><td class="sc-goals">${x.goals}</td><td class="sc-assists">${x.assists||0}</td></tr>`).join('');
+    scsec.style.display=''; scdiv.style.display='';
+  } else { scsec.style.display='none'; scdiv.style.display='none'; }
 
   // Next fixture
   const upcoming=(lastState.matchesByTeam[team]||[]).find(m=>m.status==='SCHEDULED'||m.status==='TIMED');
-  const nextSec=document.getElementById('m-next-sec'), nextDiv=document.getElementById('m-next-divider');
+  const nsec=document.getElementById('m-next-sec'), ndiv=document.getElementById('m-next-div');
   if(upcoming){
     const opp=upcoming._h===team?upcoming._a:upcoming._h, oe=TEAM_MAP[opp];
     document.getElementById('m-next').innerHTML=`<div class="nf-label">${KO_LONG[upcoming.stage]||'Group Stage'}</div>${oe?.flag||''} <strong>vs ${opp}</strong> — ${fmtDT(upcoming.utcDate)}`;
-    nextSec.style.display=''; nextDiv.style.display='';
-  } else { nextSec.style.display='none'; nextDiv.style.display='none'; }
+    nsec.style.display=''; ndiv.style.display='';
+  } else { nsec.style.display='none'; ndiv.style.display='none'; }
 
   // All matches
   const allMs=(lastState.matchesByTeam[team]||[]);
   document.getElementById('m-matches').innerHTML=allMs.length
     ?allMs.map(m=>{
         const opp=m._h===team?m._a:m._h;
-        const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
+        const sl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
         return `<div class="modal-match">
           <span class="mm-date">${fmtDate(m.utcDate)}</span>
-          <div class="mm-vs"><div>vs ${opp}</div><div class="mm-stage">${stageLbl}</div></div>
+          <div class="mm-vs"><div>vs ${opp}</div><div class="mm-stage">${sl}</div></div>
           <span class="mm-score">${teamScore(m,team)}</span>
           <span class="mm-icon">${matchIcon(m,team)}</span>
         </div>`;
@@ -803,7 +801,7 @@ function showModal(team) {
 function closeModal(e){if(e.target===document.getElementById('overlay'))closeModalForce();}
 function closeModalForce(){document.getElementById('overlay').classList.remove('open');}
 
-// ── BANNER ────────────────────────────────────────────────────────────────────
+// ── BANNER & STATS ────────────────────────────────────────────────────────────
 function renderBanner(st) {
   const b=document.getElementById('next-banner');
   const live=st.allMatches.filter(m=>(m.status==='IN_PLAY'||m.status==='PAUSED')&&(SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))));
@@ -821,7 +819,6 @@ function renderBanner(st) {
   } else { b.style.display='none'; }
 }
 
-// ── STATS BAR ─────────────────────────────────────────────────────────────────
 function renderStats(st) {
   const codes=SYNDICATE.map(s=>resolveStatus(s.team,st).code);
   document.getElementById('sn-all').textContent=SYNDICATE.length;
@@ -829,16 +826,6 @@ function renderStats(st) {
   document.getElementById('sn-tbd').textContent=codes.filter(c=>c==='TBD').length;
   document.getElementById('sn-out').textContent=codes.filter(c=>c.startsWith('OUT_')).length;
   document.getElementById('live-label').innerHTML=st.liveCount>0?`Auto-updating <span class="live-pill">LIVE</span>`:'Auto-updating';
-}
-
-// ── TABS ──────────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  activeTab=tab;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['leaderboard','teamstats','clashes'][i]===tab));
-  if(!lastState) return;
-  if     (tab==='leaderboard') renderLeaderboard(lastState);
-  else if(tab==='teamstats')   renderTeamStats(lastState);
-  else                         renderClashes(lastState);
 }
 
 // ── FETCH & UPDATE ────────────────────────────────────────────────────────────
@@ -858,20 +845,13 @@ async function update() {
     }
     if(!Array.isArray(matches)) throw new Error('Match data is missing or invalid.');
 
-    // Build scorersByTeam
     lastScorers={};
-    for(const s of rawScorers){
-      const t=norm(s.team);
-      if(!lastScorers[t]) lastScorers[t]=[];
-      lastScorers[t].push(s);
-    }
+    for(const s of rawScorers){ const t=norm(s.team); if(!lastScorers[t]) lastScorers[t]=[]; lastScorers[t].push(s); }
 
     lastState=processMatches(matches);
     renderStats(lastState);
     renderBanner(lastState);
-    if     (activeTab==='leaderboard') renderLeaderboard(lastState);
-    else if(activeTab==='teamstats')   renderTeamStats(lastState);
-    else                               renderClashes(lastState);
+    renderCurrentTab();
 
     document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('error-msg').style.display='none';
