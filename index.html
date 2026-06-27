@@ -259,6 +259,11 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 </div>
 
 <div id="next-banner"></div>
+  <div id="search-bar" style="padding:8px 14px;background:#0d1f35;border-bottom:1px solid #1a3050">
+  <input id="search-input" type="search" placeholder="🔍 Search names or teams…"
+    style="width:100%;background:#081422;border:1px solid #1a3050;border-radius:8px;padding:7px 12px;color:#e8edf5;font-size:0.82rem;outline:none"
+    oninput="filterRows(this.value)">
+</div>
 
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
@@ -863,6 +868,13 @@ async function update() {
   }
 }
 
+  function filterRows(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.lb-row, .team-row').forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = !q || text.includes(q) ? '' : 'none';
+  });
+}
 update();
 setInterval(update,REFRESH_MS);
 </script>
