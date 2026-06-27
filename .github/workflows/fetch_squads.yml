@@ -1,0 +1,23 @@
+name: Fetch Squads (run once)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  squads:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch squad data
+        run: python fetch_squads.py
+      - name: Commit squads.json
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add squads.json
+          git diff --staged --quiet && echo "No changes." || (
+            git commit -m "chore: add squad data"
+            git push
+          )
