@@ -401,7 +401,14 @@ const SQUADS_URL   = 'squads.json';
 const HA_URL       = window.location.origin;
 const HA_TOKEN     = 'YOUR_LONG_LIVED_TOKEN_HERE';
 const HA_SENSOR    = 'sensor.fixtures';
-const REFRESH_MS   = USE_JSON ? 5 * 60 * 1000 : 60 * 1000;
+
+// ESPN public scoreboard — fetched directly from browser, no key, real-time
+const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?limit=200&dates=20260611-20260719';
+const SLUG_TO_STAGE = {
+  'group-stage':'GROUP_STAGE','round-of-32':'LAST_32','round-of-16':'LAST_16',
+  'quarterfinals':'QUARTER_FINALS','semifinals':'SEMI_FINALS',
+  '3rd-place':'THIRD_PLACE','third-place':'THIRD_PLACE','final':'FINAL',
+};
 
 // ── IN-APP BROWSER ────────────────────────────────────────────────────────────
 if (/FBAN|FBAV|Instagram|WhatsApp|Telegram|TelegramBot|Line|Twitter|tgWebApp/i.test(navigator.userAgent) || window.TelegramWebviewProxy || navigator.userAgent.indexOf('wv') > -1) {
@@ -486,7 +493,7 @@ const POINTS = {
   TBD:0,GROUP:0,OUT_GROUP:0,UNKNOWN:0,
 };
 const KO_LONG  = {LAST_32:"Round of 32",LAST_16:"Round of 16",QUARTER_FINALS:"Quarter-Final",SEMI_FINALS:"Semi-Final",THIRD_PLACE:"3rd Place",FINAL:"Final"};
-const KO_SHORT = {LAST_32:"Rd 1",LAST_16:"Rd 2",QUARTER_FINALS:"Rd 3",SEMI_FINALS:"Rd 4",FINAL:"Final"};
+const KO_SHORT = {LAST_32:"R1",LAST_16:"R2",QUARTER_FINALS:"Quarter",SEMI_FINALS:"Semi",FINAL:"Final"};
 const STAGE_LIST = [{label:'Group'},{label:'R1'},{label:'R2'},{label:'Quarter'},{label:'Semi'},{label:'🏆'}];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -1150,68 +1157,193 @@ function renderStats(st) {
   }
 }
 
-// ── FETCH & UPDATE ────────────────────────────────────────────────────────────
-async function update() {
-  try {
-    let matches, rawScorers=[], rawTeams={};
-    if (USE_JSON) {
-      const res=await fetch(`${DATA_URL}?_=${Date.now()}`);
-      if (!res.ok) throw new Error(`Could not load ${DATA_URL} (${res.status})`);
-      const data=await res.json();
-      matches=data.matches; rawScorers=data.scorers||[]; rawTeams=data.teams||{};
-    } else {
-      const res=await fetch(`${HA_URL}/api/states/${HA_SENSOR}`,{headers:{'Authorization':`Bearer ${HA_TOKEN}`}});
-      if (!res.ok) throw new Error(`HA API returned ${res.status}.`);
-      const data=await res.json();
-      matches=data.attributes?.matches;
-    }
-    if (!Array.isArray(matches)) throw new Error('Match data is missing or invalid.');
+// ── ESPN DIRECT PARSER ────────────────────────────────────────────────────────
+// Converts raw ESPN scoreboard JSON → our matches array format.
+// Same logic as fetch_data.py but in the browser — no server delay.
+function parseESPN(data) {
+  const matches=[], newTeams={};
+  for (const ev of data.events||[]) {
+    const comp=ev.competitions?.[0]; if(!comp) continue;
+    const comps=comp.competitors||[]; if(comps.length<2) continue;
+    const homeC=comps.find(c=>c.homeAway==='home')||comps[0];
+    const awayC=comps.find(c=>c.homeAway==='away')||comps[1];
+    const home=norm(homeC.team?.displayName||'');
+    const away=norm(awayC.team?.displayName||'');
 
-    // Build scorersByTeam
+    // Team metadata — crests, colours, form
+    for (const [c,t] of [[homeC,home],[awayC,away]]) {
+      if (t && !newTeams[t]) {
+        const td=c.team||{};
+        newTeams[t]={
+          id:td.id, abbr:(td.abbreviation||'').toLowerCase(),
+          color:'#'+(td.color||'1a3050'), altColor:'#'+(td.alternateColor||'e8edf5'),
+          logo:td.logo||'', form:c.form||'',
+        };
+      } else if (t && newTeams[t] && c.form) {
+        newTeams[t].form=c.form; // keep most recent form
+      }
+    }
+
+    const st=comp.status?.type||{};
+    const state=st.state||'pre';
+    const status=state==='post'?'FINISHED':state==='in'?'IN_PLAY':'SCHEDULED';
+    let homeScore=null,awayScore=null;
+    if (state!=='pre'){homeScore=parseInt(homeC.score||0);awayScore=parseInt(awayC.score||0);}
+    let winner=null;
+    if (state==='post'){
+      if(homeC.winner) winner='HOME_TEAM';
+      else if(awayC.winner) winner='AWAY_TEAM';
+      else if(homeScore===awayScore) winner='DRAW';
+    }
+
+    const slug=ev.season?.slug||'group-stage';
+    const stage=SLUG_TO_STAGE[slug]||'GROUP_STAGE';
+    let group=null;
+    const alt=comp.altGameNote||'';
+    if(alt.includes('Group')&&stage==='GROUP_STAGE'){
+      const l=alt.split('Group ').pop().trim();
+      if(l.length===1) group='GROUP_'+l;
+    }
+
+    const idToName={};
+    for(const c of comps) idToName[c.team?.id]=norm(c.team?.displayName||'');
+
+    const events=[];
+    for(const d of comp.details||[]){
+      const isGoal=d.scoringPlay,isRed=d.redCard,isYellow=d.yellowCard;
+      if(!isGoal&&!isRed&&!isYellow) continue;
+      const aths=d.athletesInvolved||[];
+      events.push({
+        type:isGoal?'goal':isRed?'redcard':'yellowcard',
+        team:idToName[d.team?.id]||'',
+        player:aths[0]?.displayName||'',
+        minute:d.clock?.displayValue||'',
+        header:(d.type?.text||'').includes('Header'),
+        penalty:d.penaltyKick||false,
+        ownGoal:d.ownGoal||false,
+      });
+    }
+
+    const stats={};
+    for(const [c,t] of [[homeC,home],[awayC,away]]){
+      const raw={};
+      for(const s of c.statistics||[]) raw[s.abbreviation]=s.displayValue||'0';
+      if(Object.keys(raw).length) stats[t]={
+        possession:parseFloat(raw.PP||0),shots:parseInt(raw.SHOT||0),
+        shotsOnTarget:parseInt(raw.SOG||0),corners:parseInt(raw.CW||0),
+      };
+    }
+
+    let headline='';
+    for(const hl of comp.headlines||[])
+      if(hl.type==='Recap'||hl.type==='GameSummary'){headline=hl.shortLinkText||hl.description||'';break;}
+
+    matches.push({
+      utcDate:ev.date,status,stage,group,home,away,homeScore,awayScore,winner,
+      venue:comp.venue?.fullName||'',attendance:comp.attendance,
+      events,stats,headline,espnId:ev.id||'',
+    });
+  }
+  return {matches,teams:newTeams};
+}
+
+// ── FETCH & UPDATE ────────────────────────────────────────────────────────────
+let refreshTimer    = null;
+let metaFetchedAt   = 0;
+const META_TTL      = 15 * 60 * 1000;  // refresh scorers/metadata every 15 min
+const LIVE_POLL     = 30 * 1000;       // 30s when a match is live
+const IDLE_POLL     = 5  * 60 * 1000; // 5 min when nothing is live
+let espnDirect      = true;            // start optimistic; flip to false if CORS blocked
+
+async function fetchMetadata() {
+  try {
+    const res=await fetch(`${DATA_URL}?_=${Date.now()}`);
+    if(!res.ok) return;
+    const data=await res.json();
+    // Scorers
     lastScorers={};
-    for (const s of rawScorers) {
+    for(const s of data.scorers||[]){
       const t=norm(s.team);
-      if (!lastScorers[t]) lastScorers[t]=[];
+      if(!lastScorers[t]) lastScorers[t]=[];
       lastScorers[t].push(s);
     }
-    // Build teamsMeta by normName
-    lastTeams={};
-    for (const [rawName,meta] of Object.entries(rawTeams)) {
-      lastTeams[norm(rawName)] = meta;
+    // Teams — seed if ESPN hasn't populated yet
+    for(const [raw,meta] of Object.entries(data.teams||{})){
+      const t=norm(raw);
+      if(!lastTeams[t]) lastTeams[t]=meta;
     }
+    metaFetchedAt=Date.now();
+  } catch(e){ console.warn('[wc2026] metadata fetch failed:',e.message); }
+}
+
+async function fetchMatches() {
+  // ── Try ESPN directly first ────────────────────────────────────────────────
+  if(espnDirect){
+    try{
+      const res=await fetch(`${ESPN_URL}`);
+      if(!res.ok) throw new Error('ESPN '+res.status);
+      const data=await res.json();
+      const {matches,teams}=parseESPN(data);
+      // Merge fresher team data (crests, form, colours)
+      for(const [t,meta] of Object.entries(teams)) lastTeams[t]={...lastTeams[t],...meta};
+      return matches;
+    } catch(e){
+      console.warn('[wc2026] ESPN direct blocked, falling back to data.json:',e.message);
+      espnDirect=false; // stop trying ESPN, use data.json from now on
+    }
+  }
+  // ── Fallback: data.json (updated by GitHub Action) ─────────────────────────
+  const res=await fetch(`${DATA_URL}?_=${Date.now()}`);
+  if(!res.ok) throw new Error(`data.json unavailable (${res.status})`);
+  const data=await res.json();
+  return data.matches||[];
+}
+
+async function update() {
+  clearTimeout(refreshTimer);
+  try{
+    // Refresh scorers/metadata from data.json periodically
+    if(Date.now()-metaFetchedAt>META_TTL) await fetchMetadata();
+
+    const matches=await fetchMatches();
+    if(!Array.isArray(matches)) throw new Error('No match data received.');
 
     lastState=processMatches(matches);
     renderStats(lastState);
     renderBanner(lastState);
     renderCurrentTab();
 
-    document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const src=espnDirect?'ESPN ⚡':'data.json';
+    document.getElementById('last-updated').textContent=
+      'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' ('+src+')';
     document.getElementById('error-msg').style.display='none';
-  } catch(err) {
+  } catch(err){
     const el=document.getElementById('error-msg');
     el.style.display='block'; el.textContent='⚠️ '+err.message;
     document.getElementById('last-updated').textContent='Update failed';
     console.error('[wc2026]',err);
   }
+  // Adaptive: faster when live
+  const next=lastState?.liveCount>0 ? LIVE_POLL : IDLE_POLL;
+  refreshTimer=setTimeout(update,next);
 }
 
 // Load squads (non-blocking, optional)
 async function loadSquads() {
-  try {
+  try{
     const res=await fetch(`${SQUADS_URL}?_=${Date.now()}`);
-    if (!res.ok) return;
+    if(!res.ok) return;
     const data=await res.json();
     lastSquads={};
-    for (const [rawName,squad] of Object.entries(data.squads||{})) {
-      lastSquads[norm(rawName)]=squad;
-    }
+    for(const [raw,squad] of Object.entries(data.squads||{})) lastSquads[norm(raw)]=squad;
     console.log(`[wc2026] Loaded squads for ${Object.keys(lastSquads).length} teams`);
-  } catch(e) { /* squads.json not yet available — that's fine */ }
+  } catch(e){ /* squads.json not available yet */ }
 }
 
-update();
+// Boot
+fetchMetadata().then(update);
 loadSquads();
-setInterval(update, REFRESH_MS);
+
 </script>
 </body>
 </html>
