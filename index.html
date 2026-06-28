@@ -1006,7 +1006,7 @@ function renderGroups(st) {
       return `<div class="group-team-row ${cls}" onclick="showModal('${escQ(t.team)}')">
         <span class="gtr-pos">${t.rank}</span>
         <span>${teamCrest(t.team,'crest-sm')}</span>
-        <span class="gtr-name" style="${hasSyndicate?'color:#e8edf5;font-weight:700':'color:rgba(255,255,255,.6)'}">${t.team}</span>
+        <span class="gtr-name" style="${hasSyndicate?'color:#e8edf5;font-weight:700':'color:rgba(255,255,255,.6)'}">${starTeam(t.team)}${t.team}</span>
         <span class="gtr-num">${t.gp}</span>
         <span class="gtr-num">${t.w}</span>
         <span class="gtr-num">${t.d}</span>
@@ -1055,12 +1055,12 @@ function renderBracket(st) {
     const statusBadge = live ? `<span class="live-badge-big">🔴 LIVE</span>` : done ? `<span class="finished-badge">FT</span>` : '';
     return `<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05)">
       <div onclick="showModal('${escQ(m._h)}')" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;cursor:pointer">
-        <div style="display:flex;align-items:center;gap:6px">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hSynd?700:400};color:${hSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${m._h}</span></div>
+        <div style="display:flex;align-items:center;gap:6px">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hSynd?700:400};color:${hSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${starTeam(m._h)}${m._h}</span></div>
         ${hS?`<span style="font-size:.62rem;color:rgba(255,255,255,0.63)">${hS.people.join(', ')}</span>`:''}
       </div>
       <div style="text-align:center">${scoreOrVs}${statusBadge?`<br>${statusBadge}`:''}</div>
       <div onclick="showModal('${escQ(m._a)}')" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;cursor:pointer">
-        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.82rem;font-weight:${aSynd?700:400};color:${aSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.82rem;font-weight:${aSynd?700:400};color:${aSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${starTeam(m._a)}${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
         ${aS?`<span style="font-size:.62rem;color:rgba(255,255,255,0.63)">${aS.people.join(', ')}</span>`:''}
       </div>
     </div>`;
@@ -1110,7 +1110,7 @@ function renderGoldenBoot(st) {
       ${teamCrest(s.team,'crest-sm')}
       <div style="flex:1;min-width:0">
         <div style="font-size:.88rem;font-weight:${synd?700:500}">${s.player}${clickable?` <span style="font-size:.65rem;color:rgba(255,255,255,0.56)">› squad</span>`:''}</div>
-        <div style="font-size:.7rem;color:rgba(255,255,255,0.73)">${s.team}${synd?` · <span style="color:#2ecc71">${synd.people.join(', ')}</span>`:''}</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,0.73)">${starTeam(s.team)}${s.team}${synd?` · <span style="color:#2ecc71">${synd.people.join(', ')}</span>`:''}</div>
       </div>
       <div style="text-align:right">
         <span style="font-size:1.2rem;font-weight:800;color:#f39c12">${s.goals}</span>
@@ -1151,12 +1151,12 @@ function renderResults(st) {
       const goals=(m.events||[]).filter(e=>e.type==='goal');
       const goalStr=goals.length?goals.map(e=>`${e.player}${e.penalty?' (pen)':e.ownGoal?' (og)':''} ${e.minute}`).join(' · '):'';
       html+=`<div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.05)">
-        <div onclick="showModal('${escQ(m._h)}')" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;justify-content:flex-end;cursor:pointer">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hS?700:500};color:${hS?'#e8edf5':'rgba(255,255,255,.55)'}">${m._h}</span></div>
+        <div onclick="showModal('${escQ(m._h)}')" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;justify-content:flex-end;cursor:pointer">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hS?700:500};color:${hS?'#e8edf5':'rgba(255,255,255,.55)'}">${starTeam(m._h)}${m._h}</span></div>
         <div style="text-align:center;min-width:52px">
           <div style="font-size:1rem;font-weight:800">${m.homeScore}–${m.awayScore}</div>
           <div style="font-size:.6rem;color:rgba(255,255,255,0.63)">${stageLbl}</div>
         </div>
-        <div onclick="showModal('${escQ(m._a)}')" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;cursor:pointer"><span style="font-size:.82rem;font-weight:${aS?700:500};color:${aS?'#e8edf5':'rgba(255,255,255,.55)'}">${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
+        <div onclick="showModal('${escQ(m._a)}')" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;cursor:pointer"><span style="font-size:.82rem;font-weight:${aS?700:500};color:${aS?'#e8edf5':'rgba(255,255,255,.55)'}">${starTeam(m._a)}${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
       </div>
       ${goalStr?`<div style="padding:3px 14px 8px;font-size:.68rem;color:rgba(255,255,255,0.66);border-bottom:1px solid rgba(255,255,255,.05)">⚽ ${goalStr}</div>`:''}`;
     }
@@ -1226,9 +1226,9 @@ function renderClashes(st) {
     return `<div class="clash-card">
       <div class="clash-hype ${hype.cls}">${hype.text}</div>
       <div class="clash-header">
-        <div class="clash-team" onclick="showModal('${escQ(m._h)}')" style="cursor:pointer">${teamCrest(m._h,'crest')}<div class="clash-name">${m._h}</div></div>
+        <div class="clash-team" onclick="showModal('${escQ(m._h)}')" style="cursor:pointer">${teamCrest(m._h,'crest')}<div class="clash-name">${starTeam(m._h)}${m._h}</div></div>
         <div class="clash-score-box">${scoreHtml}</div>
-        <div class="clash-team right" onclick="showModal('${escQ(m._a)}')" style="cursor:pointer">${teamCrest(m._a,'crest')}<div class="clash-name">${m._a}</div></div>
+        <div class="clash-team right" onclick="showModal('${escQ(m._a)}')" style="cursor:pointer">${teamCrest(m._a,'crest')}<div class="clash-name">${starTeam(m._a)}${m._a}</div></div>
       </div>
       <div class="clash-body">
         <div class="clash-people">
@@ -1268,7 +1268,7 @@ function renderAllTeams(st) {
       <div class="at-row${isOut(e)?' eliminated':''}" onclick="showModal('${escQ(e.team)}')">
         <div>${teamCrest(e.team)}</div>
         <div class="at-info">
-          <div class="at-name">${e.team}</div>
+          <div class="at-name">${starTeam(e.team)}${e.team}</div>
           <div class="at-colleagues">${e.people.join(' · ')}</div>
           ${scStr?`<div class="at-scorers">⚽ ${scStr}</div>`:''}
         </div>
@@ -1547,12 +1547,12 @@ function renderMatchCentre(st) {
       <div class="live-card-hdr"><span>${stageLbl}${m.venue?' · '+m.venue:''}</span>${badge}</div>
       <div class="live-score-row">
         <div class="live-team" onclick="showModal('${escQ(h)}')">
-          ${teamCrest(h,'crest')}<div class="live-team-name">${h}</div>
+          ${teamCrest(h,'crest')}<div class="live-team-name">${starTeam(h)}${h}</div>
           ${hE?`<div class="live-colleagues">${hE.people.join(', ')}</div>`:''}
         </div>
         <div class="live-score-box">${scoreHtml}${isDone&&m.headline?`<div style="font-size:.58rem;color:rgba(255,255,255,0.53);margin-top:6px;text-align:center;max-width:110px;line-height:1.3">${m.headline}</div>`:''}</div>
         <div class="live-team" onclick="showModal('${escQ(a)}')">
-          ${teamCrest(a,'crest')}<div class="live-team-name">${a}</div>
+          ${teamCrest(a,'crest')}<div class="live-team-name">${starTeam(a)}${a}</div>
           ${aE?`<div class="live-colleagues">${aE.people.join(', ')}</div>`:''}
         </div>
       </div>
@@ -1809,6 +1809,9 @@ async function loadSquads() {
   } catch(e){ /* squads.json not available yet */ }
 }
 
+function starPerson(name) { return isFollowingPerson(name) ? '⭐ ' : ''; }
+function starTeam(name)   { return isFollowingTeam(name)   ? '⭐ ' : ''; }
+
 // ── FOLLOW SYSTEM ─────────────────────────────────────────────────────────────
 function getFollows() {
   try { return JSON.parse(localStorage.getItem('wc2026_follows')||'{"people":[],"teams":[]}'); }
@@ -1943,7 +1946,7 @@ function showPersonModal(person, team) {
   if(rivals.length){
     rivalsHtml=`<div class="pm-section"><div class="pm-sec-title">⚔️ Rivals Ahead</div>`;
     for(const r of rivals){
-      rivalsHtml+=`<div class="pm-rival">${teamCrest(r.team,'crest-sm')}<div style="flex:1"><div style="font-size:.82rem;font-weight:600">${r.name}</div><div style="font-size:.7rem;color:rgba(255,255,255,.55)">${r.team}</div></div><div style="font-weight:700;color:#f39c12">${r.pts} pts</div></div>`;
+      rivalsHtml+=`<div class="pm-rival">${teamCrest(r.team,'crest-sm')}<div style="flex:1"><div style="font-size:.82rem;font-weight:600">${starPerson(r.name)}${r.name}</div><div style="font-size:.7rem;color:rgba(255,255,255,.55)">${r.team}</div></div><div style="font-weight:700;color:#f39c12">${r.pts} pts</div></div>`;
     }
     rivalsHtml+='</div>';
   }
