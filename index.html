@@ -596,7 +596,7 @@ let modalTab     = 'overview';
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 const fmtDate = u => new Date(u).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 const fmtTime = u => new Date(u).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-const fmtDT   = u => `${fmtDate(u)}, ${fmtTime(u)} UTC`;
+const fmtDT   = u => `${fmtDate(u)}, ${fmtTime(u)} BST`;
 const escQ    = s => (s||'').replace(/'/g,"\\'");
 
 function teamColor(team) {
@@ -825,7 +825,7 @@ function renderLeaderboard(st) {
         <div class="lb-name">${p.name}</div>
         <div class="lb-team">${p.team} ${p.flag} ${formDots(form(p.team))}</div>
       </div>
-      <div class="pts-badge pts-${p.pts}">Syn pts: ${p.pts}</div>
+      <div class="pts-badge pts-${p.pts}">Syndicate pts: ${p.pts}</div>
     </div>`;
   };
 
@@ -1152,7 +1152,7 @@ function showModal(team) {
   document.getElementById('m-name').textContent = team;
   document.getElementById('m-sub').innerHTML =
     `<span class="badge ${status.badge}">${status.label}</span>` +
-    `<span style="font-size:.7rem;color:rgba(255,255,255,.55)">Syn pts: ${pts}</span>` +
+    `<span style="font-size:.7rem;color:rgba(255,255,255,.55)">Syndicate pts: ${pts}</span>` +
     (grPts!=='—'?`<span style="font-size:.7rem;color:rgba(255,255,255,.45)">· WC pts: ${grPts}</span>`:'') +
     (td.form ? formDots(td.form) : '');
 
@@ -1357,7 +1357,7 @@ function renderMatchCentre(st) {
     const isLive=m.status==='IN_PLAY'||m.status==='PAUSED';
     const isDone=m.status==='FINISHED';
     const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
-    const badge=isLive?`<span class="live-badge-big">🔴 LIVE</span>`:isDone?`<span class="finished-badge">FT</span>`:`<span class="upcoming-badge">${fmtTime(m.utcDate)} UTC</span>`;
+    const badge=isLive?`<span class="live-badge-big">🔴 LIVE</span>`:isDone?`<span class="finished-badge">FT</span>`:`<span class="upcoming-badge">${fmtTime(m.utcDate)} BST</span>`;
     const scoreHtml=!isDone&&!isLive
       ?`<div style="font-size:.9rem;color:rgba(255,255,255,.22);font-weight:600">vs</div>`
       :`<div class="live-score${isLive?' is-live':''}">${m.homeScore}<span class="live-score-sep"> – </span>${m.awayScore}</div>`;
