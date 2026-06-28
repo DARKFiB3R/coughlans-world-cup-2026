@@ -383,7 +383,7 @@ header {
 <div id="inapp-banner" style="cursor:pointer">👆 Tap here to open in your browser for best experience</div>
 <div id="next-banner" onclick="showMatchCentre()" style="cursor:pointer"></div>
 <div id="progress-bar-wrap" style="display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);padding:5px 14px 6px;position:relative;z-index:1">
-  <div style="display:flex;justify-content:space-between;font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:3px">
+  <div style="display:flex;justify-content:space-between;font-size:.62rem;color:rgba(255,255,255,.55);margin-bottom:3px">
     <span id="pb-label">Tournament progress</span>
     <span id="pb-pct"></span>
   </div>
@@ -596,7 +596,7 @@ let modalTab     = 'overview';
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 const fmtDate = u => new Date(u).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 const fmtTime = u => new Date(u).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-const fmtDT   = u => `${fmtDate(u)}, ${fmtTime(u)} BST`;
+const fmtDT   = u => `${fmtDate(u)}, ${fmtTime(u)}`;
 const escQ    = s => (s||'').replace(/'/g,"\\'");
 
 function teamColor(team) {
@@ -1357,7 +1357,7 @@ function renderMatchCentre(st) {
     const isLive=m.status==='IN_PLAY'||m.status==='PAUSED';
     const isDone=m.status==='FINISHED';
     const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
-    const badge=isLive?`<span class="live-badge-big">🔴 LIVE</span>`:isDone?`<span class="finished-badge">FT</span>`:`<span class="upcoming-badge">${fmtTime(m.utcDate)} BST</span>`;
+    const badge=isLive?`<span class="live-badge-big">🔴 LIVE</span>`:isDone?`<span class="finished-badge">FT</span>`:`<span class="upcoming-badge">${fmtTime(m.utcDate)}</span>`;
     const scoreHtml=!isDone&&!isLive
       ?`<div style="font-size:.9rem;color:rgba(255,255,255,.22);font-weight:600">vs</div>`
       :`<div class="live-score${isLive?' is-live':''}">${m.homeScore}<span class="live-score-sep"> – </span>${m.awayScore}</div>`;
@@ -1421,7 +1421,7 @@ function renderBanner(st) {
     .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
   if(next){
     const h=TEAM_MAP[norm(next.home)],a=TEAM_MAP[norm(next.away)];
-    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)} · tap for schedule`;
+    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)} &nbsp;›&nbsp; Tap for schedule`;
     b.style.display='block';
   } else { b.style.display='none'; }
 }
