@@ -760,11 +760,11 @@ function clearSearch() {
 
 // ── FILTER ────────────────────────────────────────────────────────────────────
 function toggleFilter(f) {
-  // If on a tab that doesn't support filtering, switch to leaderboard first
-  if (activeTab==='groups'||activeTab==='clashes'||activeTab==='matchcentre'||activeTab==='allteams') {
-    activeTab='leaderboard';
+  // Filters always show Teams view since the numbers refer to teams
+  if (activeTab!=='teamstats') {
+    activeTab='teamstats';
     document.querySelectorAll('.tab-btn').forEach((b,i) =>
-      b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]==='leaderboard'));
+      b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]==='teamstats'));
   }
   activeFilter = activeFilter===f ? null : f;
   ['in','tbd','out'].forEach(x =>
