@@ -1049,8 +1049,7 @@ function showAllTeams() {
   if (!lastState) return;
   activeTab = 'allteams';
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('stat-all').classList.add('filter-active');
-  activeFilter=null; ['in','tbd','out'].forEach(x=>document.getElementById('stat-'+x)?.classList.remove('filter-active'));
+  activeFilter=null;
   clearSearch();
   renderAllTeams(lastState);
 }
@@ -1303,7 +1302,6 @@ function showMatchCentre() {
   if (!lastState) return;
   activeTab = 'matchcentre';
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('stat-all').classList.remove('filter-active');
   clearSearch();
   renderMatchCentre(lastState);
 }
