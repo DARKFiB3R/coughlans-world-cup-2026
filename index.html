@@ -93,8 +93,9 @@ header {
 #search-clear:hover { color: #e8edf5; }
 
 /* ── TABS ── */
-.tab-bar { display: flex; background: rgba(0,0,0,.55); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); position: sticky; top: 46px; z-index: 99; }
-.tab-btn { flex: 1; background: none; border: none; cursor: pointer; padding: 10px 4px; font-size: .76rem; color: rgba(255,255,255,.55); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
+.tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.55); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); position: sticky; top: 46px; z-index: 99; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: rgba(255,255,255,.55); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
 .tab-btn.active { color: #2ecc71; border-bottom-color: #2ecc71; }
 .tab-btn:hover:not(.active) { color: rgba(255,255,255,.8); }
 
@@ -411,6 +412,9 @@ header {
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
   <button class="tab-btn"        onclick="switchTab('groups')">📋 Groups</button>
   <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
+  <button class="tab-btn"        onclick="switchTab('bracket')">🗂 Bracket</button>
+  <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
+  <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
 </nav>
 
 <div id="error-msg"></div>
@@ -767,13 +771,13 @@ function toggleFilter(f) {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
+const ALL_TABS = ['leaderboard','teamstats','groups','clashes','bracket','boot','results'];
+
 function switchTab(tab) {
   activeTab = tab;
-  if (tab==='groups'||tab==='clashes'||tab==='matchcentre'||tab==='allteams') {
-    activeFilter = null;
-  }
+  if (!['leaderboard','teamstats'].includes(tab)) activeFilter = null;
   document.querySelectorAll('.tab-btn').forEach((b,i) =>
-    b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]===tab));
+    b.classList.toggle('active', ALL_TABS[i]===tab));
   clearSearch();
   if (lastState) renderCurrentTab();
 }
@@ -783,6 +787,9 @@ function renderCurrentTab() {
   else if (activeTab==='teamstats')    renderTeamStats(lastState);
   else if (activeTab==='groups')       renderGroups(lastState);
   else if (activeTab==='clashes')      renderClashes(lastState);
+  else if (activeTab==='bracket')      renderBracket(lastState);
+  else if (activeTab==='boot')         renderGoldenBoot(lastState);
+  else if (activeTab==='results')      renderResults(lastState);
   else if (activeTab==='allteams')     renderAllTeams(lastState);
   else if (activeTab==='matchcentre')  renderMatchCentre(lastState);
 }
@@ -962,6 +969,138 @@ function renderGroups(st) {
   const grid=`<div class="groups-grid">${sortedGroups.map(makeGroupCard).join('')}</div>`;
   const key=`<div class="sec-hdr">📋 All Groups · 🟢 Qualified · 🟡 Best-third pending · Syndicate teams in <strong style="color:#fff">bold</strong></div>`;
   document.getElementById('content').innerHTML=key+grid;
+}
+
+// ── RENDER: BRACKET ───────────────────────────────────────────────────────────
+function renderBracket(st) {
+  const stages = ['LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS','THIRD_PLACE','FINAL'];
+  const stageMatches = {};
+  for (const m of st.allMatches) {
+    if (m.stage === 'GROUP_STAGE') continue;
+    if (!stageMatches[m.stage]) stageMatches[m.stage] = [];
+    stageMatches[m.stage].push({...m, _h:norm(m.home), _a:norm(m.away)});
+  }
+
+  if (!Object.keys(stageMatches).length) {
+    document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">🗂</div><div class="empty-title">Bracket not yet set</div><div class="empty-sub">Knockout fixtures will appear here once the group stage is complete.</div></div>`;
+    return;
+  }
+
+  const makeMatchCard = m => {
+    const hS=TEAM_MAP[m._h], aS=TEAM_MAP[m._a];
+    const done=m.status==='FINISHED', live=m.status==='IN_PLAY'||m.status==='PAUSED';
+    const hSynd = !!hS, aSynd = !!aS;
+    const scoreOrVs = done||live
+      ? `<span style="font-size:1.1rem;font-weight:800">${m.homeScore}–${m.awayScore}</span>`
+      : `<span style="color:rgba(255,255,255,.3);font-size:.85rem">${fmtDate(m.utcDate)}<br><span style="font-size:.75rem">${fmtTime(m.utcDate)}</span></span>`;
+    const statusBadge = live ? `<span class="live-badge-big">🔴 LIVE</span>` : done ? `<span class="finished-badge">FT</span>` : '';
+    return `<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer" onclick="showModal('${escQ(m._h)}')">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px">
+        <div style="display:flex;align-items:center;gap:6px">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hSynd?700:400};color:${hSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${m._h}</span></div>
+        ${hS?`<span style="font-size:.62rem;color:rgba(255,255,255,.35)">${hS.people.join(', ')}</span>`:''}
+      </div>
+      <div style="text-align:center">${scoreOrVs}${statusBadge?`<br>${statusBadge}`:''}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px" onclick="event.stopPropagation();showModal('${escQ(m._a)}')">
+        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:.82rem;font-weight:${aSynd?700:400};color:${aSynd?'#e8edf5':'rgba(255,255,255,.55)'}">${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
+        ${aS?`<span style="font-size:.62rem;color:rgba(255,255,255,.35)">${aS.people.join(', ')}</span>`:''}
+      </div>
+    </div>`;
+  };
+
+  let html='';
+  for (const stage of stages) {
+    const matches = stageMatches[stage];
+    if (!matches) continue;
+    matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+    html += `<div class="sec-hdr">${KO_LONG[stage]||stage} — ${matches.length} match${matches.length!==1?'es':''}</div>`;
+    html += `<div style="background:rgba(0,0,0,.2)">` + matches.map(makeMatchCard).join('') + `</div>`;
+  }
+  document.getElementById('content').innerHTML = html;
+}
+
+// ── RENDER: GOLDEN BOOT ───────────────────────────────────────────────────────
+function renderGoldenBoot(st) {
+  // Compute from ESPN event data
+  const scorerMap = {};
+  for (const m of st.allMatches.filter(m=>m.status==='FINISHED')) {
+    for (const e of m.events||[]) {
+      if (e.type==='goal' && !e.ownGoal && e.player) {
+        const key = e.player + '|' + e.team;
+        if (!scorerMap[key]) scorerMap[key]={player:e.player, team:norm(e.team), goals:0, pens:0};
+        scorerMap[key].goals++;
+        if (e.penalty) scorerMap[key].pens++;
+      }
+    }
+  }
+  const scorers = Object.values(scorerMap).sort((a,b)=>b.goals-a.goals||a.player.localeCompare(b.player));
+
+  if (!scorers.length) {
+    document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">👟</div><div class="empty-title">No goals yet</div></div>`;
+    return;
+  }
+
+  let rank=1, html=`<div class="sec-hdr">👟 Golden Boot Race — ${scorers.length} scorers</div>`;
+  scorers.forEach((s,i)=>{
+    if(i>0&&s.goals<scorers[i-1].goals) rank=i+1;
+    const synd = TEAM_MAP[s.team];
+    const penNote = s.pens ? `<span style="font-size:.65rem;color:rgba(255,255,255,.35)">(${s.pens} pen)</span>` : '';
+    html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05)">
+      <span style="min-width:24px;text-align:center;font-size:.85rem;font-weight:700;color:${rank<=3?'#f1c40f':'rgba(255,255,255,.35)'}">${rank<=3?['🥇','🥈','🥉'][rank-1]:'#'+rank}</span>
+      ${teamCrest(s.team,'crest-sm')}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.88rem;font-weight:${synd?700:500}">${s.player}</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.45)">${s.team}${synd?` · <span style="color:#2ecc71">${synd.people.join(', ')}</span>`:''}</div>
+      </div>
+      <div style="text-align:right">
+        <span style="font-size:1.2rem;font-weight:800;color:#f39c12">${s.goals}</span>
+        <span style="font-size:.65rem;color:rgba(255,255,255,.35);margin-left:3px">goal${s.goals!==1?'s':''}</span>
+        ${penNote}
+      </div>
+    </div>`;
+  });
+  document.getElementById('content').innerHTML=html;
+}
+
+// ── RENDER: RESULTS ───────────────────────────────────────────────────────────
+function renderResults(st) {
+  const finished = st.allMatches
+    .filter(m=>m.status==='FINISHED')
+    .map(m=>({...m,_h:norm(m.home),_a:norm(m.away)}))
+    .sort((a,b)=>new Date(b.utcDate)-new Date(a.utcDate));
+
+  if (!finished.length) {
+    document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No results yet</div></div>`;
+    return;
+  }
+
+  // Group by date
+  const byDate={};
+  for (const m of finished) {
+    const d = fmtDate(m.utcDate);
+    if (!byDate[d]) byDate[d]=[];
+    byDate[d].push(m);
+  }
+
+  let html='';
+  for (const [date, matches] of Object.entries(byDate)) {
+    html+=`<div class="sec-hdr">${date}</div>`;
+    for (const m of matches) {
+      const hS=TEAM_MAP[m._h], aS=TEAM_MAP[m._a];
+      const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
+      const goals=(m.events||[]).filter(e=>e.type==='goal');
+      const goalStr=goals.length?goals.map(e=>`${e.player}${e.penalty?' (pen)':e.ownGoal?' (og)':''} ${e.minute}`).join(' · '):'';
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.05)">
+        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;justify-content:flex-end">${teamCrest(m._h,'crest-sm')}<span style="font-size:.82rem;font-weight:${hS?700:500};color:${hS?'#e8edf5':'rgba(255,255,255,.55)'}">${m._h}</span></div>
+        <div style="text-align:center;min-width:52px">
+          <div style="font-size:1rem;font-weight:800">${m.homeScore}–${m.awayScore}</div>
+          <div style="font-size:.6rem;color:rgba(255,255,255,.35)">${stageLbl}</div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px"><span style="font-size:.82rem;font-weight:${aS?700:500};color:${aS?'#e8edf5':'rgba(255,255,255,.55)'}">${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
+      </div>
+      ${goalStr?`<div style="padding:3px 14px 8px;font-size:.68rem;color:rgba(255,255,255,.38);border-bottom:1px solid rgba(255,255,255,.05)">⚽ ${goalStr}</div>`:''}`;
+    }
+  }
+  document.getElementById('content').innerHTML=html;
 }
 
 // ── RENDER: CLASHES ───────────────────────────────────────────────────────────
