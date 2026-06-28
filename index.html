@@ -1107,7 +1107,8 @@ function renderResults(st) {
         </div>
         <div onclick="showModal('${escQ(m._a)}')" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;cursor:pointer"><span style="font-size:.82rem;font-weight:${aS?700:500};color:${aS?'#e8edf5':'rgba(255,255,255,.55)'}">${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
       </div>
-      ${goalStr?`<div style="padding:3px 14px 8px;font-size:.68rem;color:rgba(255,255,255,0.66);border-bottom:1px solid rgba(255,255,255,.05)">⚽ ${goalStr}</div>`:'`}`;    }
+      ${goalStr?`<div style="padding:3px 14px 8px;font-size:.68rem;color:rgba(255,255,255,0.66);border-bottom:1px solid rgba(255,255,255,.05)">⚽ ${goalStr}</div>`:''}`;
+    }
   }
   document.getElementById('content').innerHTML=html;
 }
