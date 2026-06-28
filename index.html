@@ -371,11 +371,7 @@ header {
   <div class="header-title" onclick="switchTab('leaderboard')">
     <div class="header-title-top">Coughlans</div>
     <div class="header-title-bottom">World Cup 2026</div>
-    <div class="header-sub">Jun 11 – Jul 19 · 48 teams · 120 colleagues</div>
-  </div>
-  <div class="header-right">
-    <div id="live-label">Auto-updating</div>
-    <div id="last-updated">Loading…</div>
+    <div class="header-sub">Jun 11 – Jul 19 · 48 teams · 120 colleagues · <span id="live-label">updating</span> · <span id="last-updated">loading…</span></div>
   </div>
 </header>
 
@@ -1602,9 +1598,8 @@ async function update() {
     renderBanner(lastState);
     renderCurrentTab();
 
-    const src=espnDirect?'ESPN ⚡':'data.json';
-    document.getElementById('last-updated').textContent=
-      'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' ('+src+')';
+    document.getElementById('last-updated').textContent =
+      'updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('error-msg').style.display='none';
   } catch(err){
     const el=document.getElementById('error-msg');
