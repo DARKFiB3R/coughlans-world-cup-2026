@@ -73,7 +73,7 @@ header {
 
 /* ── STATS STRIP ── */
 .stats-strip-wrap { position: relative; z-index: 1; }
-.stats-strip-wrap::after { content: '›'; position: absolute; right: 0; top: 0; bottom: 0; width: 52px; background: linear-gradient(to right, transparent, rgba(0,0,0,.85)); display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: rgba(255,255,255,.7); font-size: 1.3rem; pointer-events: none; }
+.stats-strip-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, rgba(0,0,0,.9)); pointer-events: none; z-index: 2; }
 .stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); }
 .stats-strip::-webkit-scrollbar { display: none; }
 .ss-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 9px 18px; border-right: 1px solid rgba(255,255,255,.07); }
@@ -82,7 +82,6 @@ header {
 .ss-lbl { font-size: .58rem; color: rgba(255,255,255,.45); margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
 .ss-gold{color:#f39c12} .ss-blue{color:#3b8fd4} .ss-orange{color:#e67e22}
 .ss-yellow{color:#f1c40f} .ss-red{color:#e74c3c} .ss-green{color:#2ecc71}
-
 
 /* ── SEARCH ── */
 .search-wrap { position: relative; padding: 8px 14px; background: rgba(0,0,0,.35); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.07); }
@@ -93,6 +92,8 @@ header {
 #search-clear:hover { color: #e8edf5; }
 
 /* ── TABS ── */
+.tab-bar-wrap { position: relative; }
+.tab-bar-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, rgba(0,0,0,.85)); pointer-events: none; z-index: 100; }
 .tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.55); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); position: sticky; top: 46px; z-index: 99; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: rgba(255,255,255,.55); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
@@ -407,6 +408,7 @@ header {
   <button id="search-clear" onclick="clearSearch()">✕</button>
 </div>
 
+<div class="tab-bar-wrap">
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
@@ -416,6 +418,7 @@ header {
   <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
   <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
 </nav>
+</div>
 
 <div id="error-msg"></div>
 <div id="content"><div id="loading"><span class="spinner">⚽</span>Fetching match data…</div></div>
