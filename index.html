@@ -1012,7 +1012,7 @@ function renderClashes(st) {
     const hs=TEAM_MAP[m._h], as=TEAM_MAP[m._a];
     const live=m.status==='IN_PLAY'||m.status==='PAUSED', done=m.status==='FINISHED';
     const hype = clashFavourite(m, m._h, m._a);
-    const stageLabel = CLASH_HYPE_STAGES[m.stage] || m.stage;
+    const stageLabel = KO_LONG[m.stage] || m.stage;
 
     const scoreHtml = done
       ?`<div class="clash-score">${m.homeScore}–${m.awayScore}</div><div class="clash-date">${fmtDate(m.utcDate)}</div>`
