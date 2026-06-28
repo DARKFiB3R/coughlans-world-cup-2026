@@ -1421,7 +1421,7 @@ function renderBanner(st) {
     .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
   if(next){
     const h=TEAM_MAP[norm(next.home)],a=TEAM_MAP[norm(next.away)];
-    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)} &nbsp;›&nbsp; Tap for schedule`;
+    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)}<br><span style="font-size:.8rem;letter-spacing:.5px">&#x27A4; Tap for schedule</span>`;
     b.style.display='block';
   } else { b.style.display='none'; }
 }
