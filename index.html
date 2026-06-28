@@ -164,7 +164,7 @@ header {
 
 /* ── CLASHES ── */
 .clash-card { margin: 10px 14px; border-radius: 10px; border: 1px solid #1a3050; overflow: hidden; }
-.clash-hype { padding: 8px 14px; font-size: .8rem; font-weight: 600; text-align: center; border-bottom: 1px solid rgba(255,255,255,.08); letter-spacing: .3px; }
+.clash-hype { padding: 8px 14px; font-size: .85rem; font-weight: 600; text-align: center; border-bottom: 1px solid rgba(255,255,255,.08); letter-spacing: .3px; }
 .clash-hype.live { background: rgba(192,57,43,.2); color: #ff6b6b; animation: blink 1.5s infinite; }
 .clash-hype.upcoming { background: rgba(39,174,96,.08); color: #5dde8a; }
 .clash-hype.done-win { background: rgba(0,0,0,.2); color: #e8edf5; }
@@ -760,7 +760,12 @@ function clearSearch() {
 
 // ── FILTER ────────────────────────────────────────────────────────────────────
 function toggleFilter(f) {
-  if (activeTab==='allteams') switchTab('leaderboard');
+  // If on a tab that doesn't support filtering, switch to leaderboard first
+  if (activeTab==='groups'||activeTab==='clashes'||activeTab==='matchcentre'||activeTab==='allteams') {
+    activeTab='leaderboard';
+    document.querySelectorAll('.tab-btn').forEach((b,i) =>
+      b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]==='leaderboard'));
+  }
   activeFilter = activeFilter===f ? null : f;
   ['in','tbd','out'].forEach(x =>
     document.getElementById('stat-'+x)?.classList.toggle('filter-active', activeFilter===x));
@@ -771,6 +776,11 @@ function toggleFilter(f) {
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   activeTab = tab;
+  // Clear filter when switching to tabs that don't support it
+  if (tab==='groups'||tab==='clashes'||tab==='matchcentre'||tab==='allteams') {
+    activeFilter = null;
+    ['in','tbd','out'].forEach(x => document.getElementById('stat-'+x)?.classList.remove('filter-active'));
+  }
   document.getElementById('stat-all').classList.remove('filter-active');
   document.querySelectorAll('.tab-btn').forEach((b,i) =>
     b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]===tab));
@@ -978,11 +988,15 @@ function clashFavourite(m, hName, aName) {
 
   const hPts = lastState.groupRanks[hName]?.pts ?? 0;
   const aPts = lastState.groupRanks[aName]?.pts ?? 0;
-  if (hPts === aPts) return { cls:'upcoming', text:`⭐ Match Favourite: Even — both on ${hPts} WC pts` };
-  const fav = hPts > aPts ? hName : aName;
+  if (hPts === aPts) return { cls:'upcoming', text:`Match Favourite: Even — both on ${hPts} WC pts` };
+
+  const homeFav = hPts > aPts;
+  const fav = homeFav ? hName : aName;
   const favPts = Math.max(hPts, aPts);
   const undPts = Math.min(hPts, aPts);
-  return { cls:'upcoming', text:`⭐ Match Favourite: ➤ ${fav} (${favPts} pts vs ${undPts})` };
+  const arrow = homeFav ? `&#x27A4; Match Favourite: ${fav} (${favPts} pts vs ${undPts})` 
+                        : `Match Favourite: ${fav} (${favPts} pts vs ${undPts}) &#x27A4;`;
+  return { cls:'upcoming', text: arrow };
 }
 
 function renderClashes(st) {
