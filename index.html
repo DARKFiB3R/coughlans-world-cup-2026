@@ -751,12 +751,11 @@ function onSearch(val) {
     r.style.display = !q || r.textContent.toLowerCase().includes(q) ? '' : 'none';
   });
 }
-function clearSearch(refocus=true) {
+function clearSearch() {
   const inp = document.getElementById('search-input');
   inp.value = '';
   document.getElementById('search-clear').style.display = 'none';
   onSearch('');
-  if (refocus) inp.focus();
 }
 
 // ── FILTER ────────────────────────────────────────────────────────────────────
@@ -1337,7 +1336,7 @@ function showMatchCentre() {
   activeTab = 'matchcentre';
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('stat-all').classList.remove('filter-active');
-  clearSearch(false);
+  clearSearch();
   renderMatchCentre(lastState);
 }
 
