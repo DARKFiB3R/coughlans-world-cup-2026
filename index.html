@@ -73,7 +73,7 @@ header {
 
 /* ── STATS STRIP ── */
 .stats-strip-wrap { position: relative; z-index: 1; }
-.stats-strip-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, rgba(0,0,0,.9)); pointer-events: none; z-index: 2; }
+.stats-strip-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, rgba(0,0,0,.92)); pointer-events: none; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: rgba(255,255,255,.7); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); }
 .stats-strip::-webkit-scrollbar { display: none; }
 .ss-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 9px 18px; border-right: 1px solid rgba(255,255,255,.07); }
@@ -93,7 +93,7 @@ header {
 
 /* ── TABS ── */
 .tab-bar-wrap { position: relative; }
-.tab-bar-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, rgba(0,0,0,.85)); pointer-events: none; z-index: 100; }
+.tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, rgba(0,0,0,.92)); pointer-events: none; z-index: 100; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: rgba(255,255,255,.7); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.55); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); position: sticky; top: 46px; z-index: 99; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: rgba(255,255,255,.55); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
@@ -362,6 +362,7 @@ header {
 .empty-title { font-size: .95rem; font-weight: 700; margin-bottom: 8px; }
 .empty-sub { font-size: .78rem; color: #7a9ab0; line-height: 1.5; }
 
+@keyframes scrollpulse { 0%,100%{opacity:.4;transform:translateX(0)} 50%{opacity:1;transform:translateX(-3px)} }
 #loading { text-align: center; padding: 48px 20px; color: #7a9ab0; font-size: .9rem; }
 .spinner { font-size: 2rem; display: block; margin-bottom: 12px; animation: spin 1.5s linear infinite; }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
