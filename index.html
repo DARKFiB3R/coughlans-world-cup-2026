@@ -785,7 +785,7 @@ function renderLeaderboard(st) {
   else if (activeFilter==='tbd') people=people.filter(isTBD);
   else if (activeFilter==='out') people=people.filter(isOut);
 
-  const maxPts = active.length ? Math.max(...people.map(p=>p.pts)) : 0;
+  const maxPts = people.length ? Math.max(...people.map(p=>p.pts), 0) : 0;
   const rankCls=r=>r===1?'gold':r===2?'silver':r===3?'bronze':'';
   // Only show medals when there's real differentiation (someone has > 1pt)
   const rankLbl=r=>{
