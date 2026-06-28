@@ -1369,9 +1369,9 @@ function showModal(team) {
     const possHtml = (m.status==='FINISHED'&&tst?.possession) ? `
       <div class="poss-bar-wrap">
         <div class="poss-label">
-          <span style="color:${teamColor_}">${tst.possession}%</span>
+          <span style="color:rgba(255,255,255,.85)">${tst.possession}%</span>
           <span style="color:#7a9ab0;font-size:.65rem">possession</span>
-          <span style="color:${oppColor}">${ost?.possession||0}%</span>
+          <span style="color:rgba(255,255,255,.85)">${ost?.possession||0}%</span>
         </div>
         <div class="poss-bar">
           <div class="poss-bar-fill" style="width:${tst.possession}%;background:${teamColor_}"></div>
@@ -1479,7 +1479,7 @@ function renderMatchCentre(st) {
     }).join('')}</div>`:'';
     const mst=m.stats||{},hst=mst[h],ast=mst[a];
     const statsHtml=(isDone||isLive)&&hst?`<div class="live-stats">
-      <div class="live-poss-lbl"><span style="color:${hC}">${hst.possession}%</span><span>Possession</span><span style="color:${aC}">${ast?.possession||0}%</span></div>
+      <div class="live-poss-lbl"><span style="color:rgba(255,255,255,.85)">${hst.possession}%</span><span>Possession</span><span style="color:rgba(255,255,255,.85)">${ast?.possession||0}%</span></div>
       <div class="live-poss-bar"><div class="live-poss-fill" style="width:${hst.possession}%;background:${hC}"></div></div>
       <div class="live-stat-r"><span class="lsv">${hst.shots}</span><span class="lsl">Shots</span><span class="lsv r">${ast?.shots||0}</span></div>
       <div class="live-stat-r"><span class="lsv">${hst.shotsOnTarget}</span><span class="lsl">On Target</span><span class="lsv r">${ast?.shotsOnTarget||0}</span></div>
