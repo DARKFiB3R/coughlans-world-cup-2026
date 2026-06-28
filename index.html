@@ -7,7 +7,9 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>⚽ Coughlans World Cup 2026</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Karma:wght@600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚽%3C/text%3E%3C/svg%3E">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -42,18 +44,21 @@ body::after {
 /* ── HEADER ── */
 header {
   background: linear-gradient(135deg, rgba(10,40,20,.98) 0%, rgba(5,10,28,.98) 100%);
-  padding: 13px 16px 11px;
+  padding: 10px 16px;
   border-bottom: 1px solid rgba(39,174,96,.4);
   box-shadow: 0 4px 40px rgba(0,0,0,.4), 0 0 80px rgba(39,174,96,.05);
   backdrop-filter: blur(12px);
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
   position: sticky; top: 0; z-index: 100;
 }
-header h1 { font-size: 1.15rem; font-weight: 900; letter-spacing: -.4px; cursor: pointer; line-height: 1.1; }
-.header-sub { font-size: .62rem; color: rgba(255,255,255,.38); margin-top: 2px; letter-spacing: .2px; }
-.header-right { text-align: right; }
-#live-label { font-size: .68rem; color: rgba(255,255,255,.5); }
-#last-updated { font-size: .62rem; color: rgba(255,255,255,.3); margin-top: 2px; }
+.header-logo { width: 52px; height: 52px; object-fit: contain; flex-shrink: 0; }
+.header-title { flex: 1; cursor: pointer; }
+.header-title-top { font-size: 1.5rem; font-weight: 700; font-family: 'Karma', serif; color: #F7DB8D; line-height: 1; letter-spacing: 1px; display: inline-block; transform: scaleX(1.15); transform-origin: left; }
+.header-title-bottom { font-size: 1.05rem; font-weight: 700; font-family: 'Karma', serif; color: #F7DB8D; line-height: 1.2; letter-spacing: 1px; display: inline-block; transform: scaleX(1.15); transform-origin: left; }
+.header-sub { font-size: .58rem; color: rgba(255,255,255,.38); margin-top: 3px; letter-spacing: .2px; }
+.header-right { text-align: right; flex-shrink: 0; }
+#live-label { font-size: .63rem; color: rgba(255,255,255,.5); display: block; }
+#last-updated { font-size: .57rem; color: rgba(255,255,255,.28); margin-top: 2px; display: block; }
 .live-pill { display: inline-block; background: #c0392b; color: #fff; font-size: .58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .5px; margin-left: 4px; animation: blink 1s infinite; vertical-align: middle; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
@@ -358,8 +363,10 @@ header h1 { font-size: 1.15rem; font-weight: 900; letter-spacing: -.4px; cursor:
 <body>
 
 <header>
-  <div>
-    <h1 onclick="switchTab('leaderboard')">⚽ Coughlans World Cup 2026</h1>
+  <img class="header-logo" src="logos/wc2026-logo.png" alt="FIFA World Cup 2026">
+  <div class="header-title" onclick="switchTab('leaderboard')">
+    <div class="header-title-top">Coughlans</div>
+    <div class="header-title-bottom">World Cup 2026</div>
     <div class="header-sub">Jun 11 – Jul 19 · 48 teams · 120 colleagues</div>
   </div>
   <div class="header-right">
