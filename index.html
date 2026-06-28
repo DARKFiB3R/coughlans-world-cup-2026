@@ -258,7 +258,7 @@ header {
 .overlay.open { display: flex; }
 .modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.modal-handle { width: 36px; height: 4px; background: rgba(255,255,255,.2); border-radius: 2px; margin: 10px auto 0; }
+.modal-handle { width: 48px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; margin: 12px auto 4px; cursor: grab; touch-action: none; }
 
 /* Modal team header band */
 .modal-team-band { padding: 12px 16px 10px; display: flex; align-items: center; gap: 14px; }
@@ -1754,18 +1754,19 @@ async function loadSquads() {
 fetchMetadata().then(update);
 loadSquads();
 
-// Swipe down to close modal
+// Swipe down to close modal - only triggered from the handle
 (function() {
-  const modal = document.getElementById('modal');
+  const handle  = document.querySelector('.modal-handle');
+  const modal   = document.getElementById('modal');
   const overlay = document.getElementById('overlay');
   let startY=0, lastY=0, dragging=false;
 
-  modal.addEventListener('touchstart', e=>{
+  handle.addEventListener('touchstart', e=>{
     startY = lastY = e.touches[0].clientY;
     dragging = true;
   }, {passive:true});
 
-  modal.addEventListener('touchmove', e=>{
+  window.addEventListener('touchmove', e=>{
     if (!dragging) return;
     lastY = e.touches[0].clientY;
     const dy = Math.max(0, lastY - startY);
@@ -1773,11 +1774,11 @@ loadSquads();
     overlay.style.background = `rgba(0,0,0,${Math.max(0, 0.7 - dy/400)})`;
   }, {passive:true});
 
-  modal.addEventListener('touchend', ()=>{
+  window.addEventListener('touchend', ()=>{
     if (!dragging) return;
     dragging = false;
     const dy = lastY - startY;
-    if (dy > 120) {
+    if (dy > 100) {
       modal.style.transition = 'transform .25s ease';
       modal.style.transform = `translateY(100%)`;
       overlay.style.transition = 'opacity .25s ease';
@@ -1793,7 +1794,6 @@ loadSquads();
       overlay.style.background = '';
       setTimeout(()=>{ modal.style.transition=''; }, 200);
     }
-    lastY = 0;
   });
 })();
 
