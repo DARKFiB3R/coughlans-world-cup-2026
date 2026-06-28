@@ -579,7 +579,7 @@ const POINTS = {
   OUT_QUARTER:3,IN_R16:3,OUT_R16:2,IN_R32:2,OUT_R32:1,QUALIFIED:1,
   TBD:0,GROUP:0,OUT_GROUP:0,UNKNOWN:0,
 };
-const KO_LONG  = {LAST_32:"Round of 32",LAST_16:"Round of 16",QUARTER_FINALS:"Quarter-Final",SEMI_FINALS:"Semi-Final",THIRD_PLACE:"3rd Place",FINAL:"Final"};
+const KO_LONG  = {LAST_32:"R1",LAST_16:"R2",QUARTER_FINALS:"Quarter",SEMI_FINALS:"Semi",THIRD_PLACE:"3rd Place",FINAL:"🏆 Final"};
 const KO_SHORT = {LAST_32:"R1",LAST_16:"R2",QUARTER_FINALS:"Quarter",SEMI_FINALS:"Semi",FINAL:"Final"};
 const STAGE_LIST = [{label:'Group'},{label:'R1'},{label:'R2'},{label:'Quarter'},{label:'Semi'},{label:'🏆'}];
 
@@ -994,8 +994,8 @@ const CLASH_HYPE_UPCOMING = [
   (h,a,s) => `🔔 ${s} — ding ding. Let's go.`,
 ];
 const CLASH_HYPE_STAGES = {
-  LAST_32: 'Round of 32', LAST_16: 'Round of 16',
-  QUARTER_FINALS: 'Quarter-Final', SEMI_FINALS: 'Semi-Final',
+  LAST_32: 'R1', LAST_16: 'R2',
+  QUARTER_FINALS: 'Quarter', SEMI_FINALS: 'Semi',
   THIRD_PLACE: '3rd Place', FINAL: 'THE FINAL',
 };
 
@@ -1138,6 +1138,7 @@ function showModal(team) {
   const pts    = POINTS[status.code]||0;
   const td     = lastTeams[team] || {};
   const color  = td.color || '#1a3050';
+  const grPts  = lastState.groupRanks[team]?.pts ?? '—';
 
   // Band styling
   const band = document.getElementById('m-band');
@@ -1185,7 +1186,6 @@ function showModal(team) {
     const ic=matchIcon(m,team); if(ic==='✅')w++;else if(ic==='❌')l++;else d++;
   }
   const gd=gf-ga;
-  const grPts = lastState.groupRanks[team]?.pts ?? '—';
   document.getElementById('m-stats').innerHTML=`
     <div class="stat-box"><div class="stat-box-num">${ms.length}</div><div class="stat-box-lbl">Played</div></div>
     <div class="stat-box"><div class="stat-box-num">${w}</div><div class="stat-box-lbl">Won</div></div>
