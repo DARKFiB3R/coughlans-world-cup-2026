@@ -1047,16 +1047,18 @@ function renderGoldenBoot(st) {
     return;
   }
 
-  let rank=1, html=`<div class="sec-hdr">👟 Golden Boot Race — ${scorers.length} scorers</div>`;
+  let rank=1, html=`<div class="sec-hdr">👟 Golden Boot Race — tap a player to see their squad</div>`;
   scorers.forEach((s,i)=>{
     if(i>0&&s.goals<scorers[i-1].goals) rank=i+1;
     const synd = TEAM_MAP[s.team];
     const penNote = s.pens ? `<span style="font-size:.65rem;color:rgba(255,255,255,0.63)">(${s.pens} pen)</span>` : '';
-    html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05)">
+    const clickable = SYND_TEAMS.has(s.team);
+    const onclick = clickable ? `onclick="showModal('${escQ(s.team)}');setTimeout(()=>switchModalTab('squad'),80)"` : '';
+    html+=`<div ${onclick} style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);${clickable?'cursor:pointer;':''}">
       <span style="min-width:24px;text-align:center;font-size:.85rem;font-weight:700;color:${rank<=3?'#f1c40f':'rgba(255,255,255,.35)'}">${rank<=3?['🥇','🥈','🥉'][rank-1]:'#'+rank}</span>
       ${teamCrest(s.team,'crest-sm')}
       <div style="flex:1;min-width:0">
-        <div style="font-size:.88rem;font-weight:${synd?700:500}">${s.player}</div>
+        <div style="font-size:.88rem;font-weight:${synd?700:500}">${s.player}${clickable?` <span style="font-size:.65rem;color:rgba(255,255,255,0.56)">› squad</span>`:''}</div>
         <div style="font-size:.7rem;color:rgba(255,255,255,0.73)">${s.team}${synd?` · <span style="color:#2ecc71">${synd.people.join(', ')}</span>`:''}</div>
       </div>
       <div style="text-align:right">
@@ -1173,9 +1175,9 @@ function renderClashes(st) {
     return `<div class="clash-card">
       <div class="clash-hype ${hype.cls}">${hype.text}</div>
       <div class="clash-header">
-        <div class="clash-team">${teamCrest(m._h,'crest')}<div class="clash-name">${m._h}</div></div>
+        <div class="clash-team" onclick="showModal('${escQ(m._h)}')" style="cursor:pointer">${teamCrest(m._h,'crest')}<div class="clash-name">${m._h}</div></div>
         <div class="clash-score-box">${scoreHtml}</div>
-        <div class="clash-team right">${teamCrest(m._a,'crest')}<div class="clash-name">${m._a}</div></div>
+        <div class="clash-team right" onclick="showModal('${escQ(m._a)}')" style="cursor:pointer">${teamCrest(m._a,'crest')}<div class="clash-name">${m._a}</div></div>
       </div>
       <div class="clash-body">
         <div class="clash-people">
