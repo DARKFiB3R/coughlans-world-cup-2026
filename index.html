@@ -811,9 +811,9 @@ function renderLeaderboard(st) {
       <div>${teamCrest(p.team)}</div>
       <div class="lb-info">
         <div class="lb-name">${p.name}</div>
-        <div class="lb-team">${p.team} ${formDots(form(p.team))}</div>
+        <div class="lb-team">${p.team} ${p.flag} ${formDots(form(p.team))}</div>
       </div>
-      <div class="pts-badge pts-${p.pts}">${p.pts} syn pt${p.pts!==1?'s':''}</div>
+      <div class="pts-badge pts-${p.pts}">Syn pts: ${p.pts}</div>
     </div>`;
   };
 
