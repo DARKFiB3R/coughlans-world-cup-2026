@@ -382,26 +382,27 @@ header {
 
 <div id="inapp-banner" style="cursor:pointer">👆 Tap here to open in your browser for best experience</div>
 <div id="next-banner" onclick="showMatchCentre()" style="cursor:pointer"></div>
-<div id="progress-bar-wrap" style="display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);padding:5px 14px 6px;position:relative;z-index:1">
-  <div style="display:flex;justify-content:space-between;font-size:.62rem;color:rgba(255,255,255,.55);margin-bottom:3px">
-    <span id="pb-label">Tournament progress</span>
-    <span id="pb-pct"></span>
-  </div>
-  <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
-    <div id="pb-fill" style="height:100%;background:linear-gradient(90deg,#2ecc71,#f39c12);border-radius:2px;transition:width .5s"></div>
+<div id="progress-bar-wrap" style="display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);padding:4px 0 0;position:relative;z-index:1">
+  <div style="height:3px;background:rgba(255,255,255,.08);overflow:hidden">
+    <div id="pb-fill" style="height:100%;background:linear-gradient(90deg,#2ecc71,#f39c12);transition:width .5s"></div>
   </div>
 </div>
 
-<div class="stats-strip" id="stats-strip">
-  <div class="ss-item"><div class="ss-num" id="ss-played">—</div><div class="ss-lbl">Played</div></div>
-  <div class="ss-item"><div class="ss-num ss-gold" id="ss-goals">—</div><div class="ss-lbl">Goals</div></div>
-  <div class="ss-item"><div class="ss-num ss-gold" id="ss-gpm">—</div><div class="ss-lbl">Goals/Match</div></div>
-  <div class="ss-item"><div class="ss-num ss-blue" id="ss-pens">—</div><div class="ss-lbl">Penalties</div></div>
-  <div class="ss-item"><div class="ss-num ss-orange" id="ss-og">—</div><div class="ss-lbl">Own Goals</div></div>
-  <div class="ss-item"><div class="ss-num ss-yellow" id="ss-yellows">—</div><div class="ss-lbl">Yellows</div></div>
-  <div class="ss-item"><div class="ss-num ss-red" id="ss-reds">—</div><div class="ss-lbl">Reds</div></div>
-  <div class="ss-item"><div class="ss-num ss-green" id="ss-in">—</div><div class="ss-lbl">Teams In</div></div>
-  <div class="ss-item"><div class="ss-num ss-red" id="ss-out">—</div><div class="ss-lbl">Teams Out</div></div>
+<div style="position:relative;z-index:1">
+  <div class="stats-strip" id="stats-strip">
+    <div class="ss-item"><div class="ss-num" id="ss-played">—</div><div class="ss-lbl">Played</div></div>
+    <div class="ss-item"><div class="ss-num ss-gold" id="ss-goals">—</div><div class="ss-lbl">Goals</div></div>
+    <div class="ss-item"><div class="ss-num ss-gold" id="ss-gpm">—</div><div class="ss-lbl">Goals/Match</div></div>
+    <div class="ss-item"><div class="ss-num ss-blue" id="ss-pens">—</div><div class="ss-lbl">Penalties</div></div>
+    <div class="ss-item"><div class="ss-num ss-orange" id="ss-og">—</div><div class="ss-lbl">Own Goals</div></div>
+    <div class="ss-item"><div class="ss-num ss-yellow" id="ss-yellows">—</div><div class="ss-lbl">Yellows</div></div>
+    <div class="ss-item"><div class="ss-num ss-red" id="ss-reds">—</div><div class="ss-lbl">Reds</div></div>
+    <div class="ss-item"><div class="ss-num ss-green" id="ss-in">—</div><div class="ss-lbl">Teams In</div></div>
+    <div class="ss-item"><div class="ss-num ss-red" id="ss-out">—</div><div class="ss-lbl">Teams Out</div></div>
+  </div>
+  <div style="position:absolute;right:0;top:0;bottom:0;width:52px;background:linear-gradient(to right,transparent,rgba(0,0,0,.8));pointer-events:none;display:flex;align-items:center;justify-content:flex-end;padding-right:10px">
+    <span style="color:rgba(255,255,255,.6);font-size:1.1rem;font-weight:300">›</span>
+  </div>
 </div>
 
 <div class="search-wrap">
@@ -1429,13 +1430,10 @@ function renderStats(st) {
   document.getElementById('live-label').innerHTML = st.liveCount>0
     ? `Auto-updating <span class="live-pill">LIVE</span>` : 'Auto-updating';
 
-  // Progress bar
   const total = st.allMatches.length;
   if (total > 0) {
     const pct = Math.round((played / total) * 100);
     document.getElementById('pb-fill').style.width = pct + '%';
-    document.getElementById('pb-pct').textContent  = pct + '%';
-    document.getElementById('pb-label').textContent = `${played}${st.liveCount?` + ${st.liveCount} live`:''} of ${total} matches played`;
     document.getElementById('progress-bar-wrap').style.display = '';
   }
 }
