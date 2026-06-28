@@ -110,7 +110,7 @@ header h1 { font-size: 1.15rem; font-weight: 900; letter-spacing: -.4px; cursor:
 .lb-rank.gold{color:#f1c40f} .lb-rank.silver{color:#bdc3c7} .lb-rank.bronze{color:#cd7f32}
 .lb-info { min-width: 0; }
 .lb-name { font-size: .92rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lb-team { font-size: .7rem; color: rgba(255,255,255,.4); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; }
+.lb-team { font-size: .7rem; color: rgba(255,255,255,.6); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; }
 .pts-badge { font-size: .72rem; font-weight: 700; padding: 4px 8px; border-radius: 10px; white-space: nowrap; min-width: 52px; text-align: center; }
 .pts-0{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
 .pts-1{background:rgba(59,143,212,.15);color:#6bb8f0;border:1px solid rgba(59,143,212,.3)}
@@ -591,9 +591,16 @@ function teamColor(team) {
   return lastTeams[team]?.color || '#1a3050';
 }
 
+const LOGO_FOLDER = 'logos';
+const LOGO_OVERRIDES = {
+  'Cape Verde': 'cabo-verde',
+  'Czechia':    'czech-republic',
+  'Bosnia':     'bosnia-and-herzegovina',
+};
+
 function teamLogoPath(team) {
-  // Local logo: logos/south-korea.png etc. Falls back to ESPN CDN, then flag emoji.
-  return `logos/${team.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}.png`;
+  const slug = LOGO_OVERRIDES[team] || team.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  return `${LOGO_FOLDER}/${slug}.png`;
 }
 
 function teamCrest(team, cls='crest') {
@@ -804,13 +811,14 @@ function renderLeaderboard(st) {
       <div>${teamCrest(p.team)}</div>
       <div class="lb-info">
         <div class="lb-name">${p.name}</div>
-        <div class="lb-team">${p.team} ${formDots(form(p.team))}</div>
+        <div class="lb-team">${p.team} ${p.flag} ${formDots(form(p.team))}</div>
       </div>
-      <div class="pts-badge pts-${p.pts}">${p.pts} syn pt${p.pts!==1?'s':''}</div>
+      <div class="pts-badge pts-${p.pts}">Syn pts: ${p.pts}</div>
     </div>`;
   };
 
-  const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,.35);margin-left:8px;font-weight:400">🟢Wins 🟡Draws 🔴Losses</span>`;
+  const dot = c => `<span class="form-dot" style="background:${c};display:inline-block;margin:0 1px 0 5px;vertical-align:middle"></span>`;
+  const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,.4);font-weight:400">${dot('#27ae60')}Wins${dot('#f39c12')}Draws${dot('#e74c3c')}Losses</span>`;
   const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
   let html='';
   if(active.length) html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people ${FORM_KEY}</div>`+active.map(makeRow).join('');
