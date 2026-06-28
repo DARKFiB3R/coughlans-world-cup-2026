@@ -591,9 +591,16 @@ function teamColor(team) {
   return lastTeams[team]?.color || '#1a3050';
 }
 
+const LOGO_FOLDER = 'logos';
+const LOGO_OVERRIDES = {
+  'Cape Verde': 'cabo-verde',
+  'Czechia':    'czech-republic',
+  'Bosnia':     'bosnia-and-herzegovina',
+};
+
 function teamLogoPath(team) {
-  // Local logo: logos/south-korea.png etc. Falls back to ESPN CDN, then flag emoji.
-  return `logos/${team.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}.png`;
+  const slug = LOGO_OVERRIDES[team] || team.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  return `${LOGO_FOLDER}/${slug}.png`;
 }
 
 function teamCrest(team, cls='crest') {
@@ -810,7 +817,8 @@ function renderLeaderboard(st) {
     </div>`;
   };
 
-  const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,.35);margin-left:8px;font-weight:400">🟢Wins 🟡Draws 🔴Losses</span>`;
+  const dot = c => `<span class="form-dot" style="background:${c};display:inline-block;margin:0 1px 0 5px;vertical-align:middle"></span>`;
+  const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,.4);font-weight:400">${dot('#27ae60')}Wins${dot('#f39c12')}Draws${dot('#e74c3c')}Losses</span>`;
   const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
   let html='';
   if(active.length) html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people ${FORM_KEY}</div>`+active.map(makeRow).join('');
