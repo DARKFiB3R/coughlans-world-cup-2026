@@ -39,7 +39,7 @@ body::after {
   pointer-events: none; z-index: 0;
 }
 #content, nav, .search-wrap, #next-banner, #inapp-banner,
-#error-msg, #progress-bar-wrap, .stats-bar { position: relative; z-index: 1; }
+#error-msg, #progress-bar-wrap, .stats-strip { position: relative; z-index: 1; }
 
 /* ── HEADER ── */
 header {
@@ -71,16 +71,16 @@ header {
 #next-banner { display: none; background: rgba(0,0,0,.4); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.07); padding: 7px 14px; font-size: .75rem; color: rgba(255,255,255,.5); }
 #next-banner strong { color: #e8edf5; }
 
-/* ── STATS BAR ── */
-.stats-bar { display: flex; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); }
-.stat { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-right: 1px solid rgba(255,255,255,.07); transition: background .15s; }
-.stat:last-child { border-right: none; }
-.stat.clickable { cursor: pointer; }
-.stat.clickable:hover { background: rgba(255,255,255,.07); }
-.stat.filter-active { background: rgba(46,204,113,.1); border-top: 2px solid #2ecc71; }
-.stat-num { font-size: 1.1rem; font-weight: 800; line-height: 1; }
-.stat-lbl { font-size: .58rem; color: rgba(255,255,255,.5); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
-.c-in{color:#2ecc71} .c-tbd{color:#f39c12} .c-out{color:#e74c3c} .c-all{color:rgba(255,255,255,.45)}
+/* ── STATS STRIP ── */
+.stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); }
+.stats-strip::-webkit-scrollbar { display: none; }
+.ss-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 9px 18px; border-right: 1px solid rgba(255,255,255,.07); }
+.ss-item:last-child { border-right: none; }
+.ss-num { font-size: 1.15rem; font-weight: 800; line-height: 1; color: rgba(255,255,255,.9); }
+.ss-lbl { font-size: .58rem; color: rgba(255,255,255,.45); margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+.ss-gold{color:#f39c12} .ss-blue{color:#3b8fd4} .ss-orange{color:#e67e22}
+.ss-yellow{color:#f1c40f} .ss-red{color:#e74c3c} .ss-green{color:#2ecc71}
+
 
 /* ── SEARCH ── */
 .search-wrap { position: relative; padding: 8px 14px; background: rgba(0,0,0,.35); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.07); }
@@ -392,19 +392,16 @@ header {
   </div>
 </div>
 
-<div class="stats-bar">
-  <div class="stat clickable" id="stat-all" onclick="showAllTeams()">
-    <span class="stat-num c-all" id="sn-all">—</span><span class="stat-lbl">Teams</span>
-  </div>
-  <div class="stat clickable" id="stat-in" onclick="toggleFilter('in')">
-    <span class="stat-num c-in" id="sn-in">—</span><span class="stat-lbl">In</span>
-  </div>
-  <div class="stat clickable" id="stat-tbd" onclick="toggleFilter('tbd')">
-    <span class="stat-num c-tbd" id="sn-tbd">—</span><span class="stat-lbl">TBD</span>
-  </div>
-  <div class="stat clickable" id="stat-out" onclick="toggleFilter('out')">
-    <span class="stat-num c-out" id="sn-out">—</span><span class="stat-lbl">Out</span>
-  </div>
+<div class="stats-strip" id="stats-strip">
+  <div class="ss-item"><div class="ss-num" id="ss-played">—</div><div class="ss-lbl">Played</div></div>
+  <div class="ss-item"><div class="ss-num ss-gold" id="ss-goals">—</div><div class="ss-lbl">Goals</div></div>
+  <div class="ss-item"><div class="ss-num ss-gold" id="ss-gpm">—</div><div class="ss-lbl">Goals/Match</div></div>
+  <div class="ss-item"><div class="ss-num ss-blue" id="ss-pens">—</div><div class="ss-lbl">Penalties</div></div>
+  <div class="ss-item"><div class="ss-num ss-orange" id="ss-og">—</div><div class="ss-lbl">Own Goals</div></div>
+  <div class="ss-item"><div class="ss-num ss-yellow" id="ss-yellows">—</div><div class="ss-lbl">Yellows</div></div>
+  <div class="ss-item"><div class="ss-num ss-red" id="ss-reds">—</div><div class="ss-lbl">Reds</div></div>
+  <div class="ss-item"><div class="ss-num ss-green" id="ss-in">—</div><div class="ss-lbl">Teams In</div></div>
+  <div class="ss-item"><div class="ss-num ss-red" id="ss-out">—</div><div class="ss-lbl">Teams Out</div></div>
 </div>
 
 <div class="search-wrap">
@@ -776,12 +773,9 @@ function toggleFilter(f) {
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   activeTab = tab;
-  // Clear filter when switching to tabs that don't support it
   if (tab==='groups'||tab==='clashes'||tab==='matchcentre'||tab==='allteams') {
     activeFilter = null;
-    ['in','tbd','out'].forEach(x => document.getElementById('stat-'+x)?.classList.remove('filter-active'));
   }
-  document.getElementById('stat-all').classList.remove('filter-active');
   document.querySelectorAll('.tab-btn').forEach((b,i) =>
     b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]===tab));
   clearSearch();
@@ -1404,22 +1398,44 @@ function renderBanner(st) {
 }
 
 function renderStats(st) {
-  const codes=SYNDICATE.map(s=>resolveStatus(s.team,st).code);
-  document.getElementById('sn-all').textContent=SYNDICATE.length;
-  document.getElementById('sn-in').textContent=codes.filter(c=>!c.startsWith('OUT_')&&c!=='TBD').length;
-  document.getElementById('sn-tbd').textContent=codes.filter(c=>c==='TBD').length;
-  document.getElementById('sn-out').textContent=codes.filter(c=>c.startsWith('OUT_')).length;
-  document.getElementById('live-label').innerHTML=st.liveCount>0?`Auto-updating <span class="live-pill">LIVE</span>`:'Auto-updating';
+  // Tournament stats from event data
+  const finished = st.allMatches.filter(m=>m.status==='FINISHED');
+  let goals=0, pens=0, ogs=0, yellows=0, reds=0;
+  for (const m of finished) {
+    for (const e of m.events||[]) {
+      if (e.type==='goal')       { goals++; if(e.penalty)pens++; if(e.ownGoal)ogs++; }
+      if (e.type==='yellowcard') yellows++;
+      if (e.type==='redcard')    reds++;
+    }
+  }
+  const played = finished.length;
+  const gpm    = played ? (goals/played).toFixed(2) : '—';
 
-  // Tournament progress bar
-  const total    = st.allMatches.length;
-  const finished = st.allMatches.filter(m=>m.status==='FINISHED').length;
-  const live     = st.liveCount;
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  set('ss-played',  played);
+  set('ss-goals',   goals);
+  set('ss-gpm',     gpm);
+  set('ss-pens',    pens);
+  set('ss-og',      ogs);
+  set('ss-yellows', yellows);
+  set('ss-reds',    reds);
+
+  // Teams in/out
+  const codes = SYNDICATE.map(s=>resolveStatus(s.team,st).code);
+  set('ss-in',  codes.filter(c=>!c.startsWith('OUT_')&&c!=='TBD').length);
+  set('ss-out', codes.filter(c=>c.startsWith('OUT_')).length);
+
+  // Live pill
+  document.getElementById('live-label').innerHTML = st.liveCount>0
+    ? `Auto-updating <span class="live-pill">LIVE</span>` : 'Auto-updating';
+
+  // Progress bar
+  const total = st.allMatches.length;
   if (total > 0) {
-    const pct = Math.round((finished / total) * 100);
+    const pct = Math.round((played / total) * 100);
     document.getElementById('pb-fill').style.width = pct + '%';
     document.getElementById('pb-pct').textContent  = pct + '%';
-    document.getElementById('pb-label').textContent = `${finished}${live?` + ${live} live`:''} of ${total} matches played`;
+    document.getElementById('pb-label').textContent = `${played}${st.liveCount?` + ${st.liveCount} live`:''} of ${total} matches played`;
     document.getElementById('progress-bar-wrap').style.display = '';
   }
 }
