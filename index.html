@@ -965,60 +965,24 @@ function renderGroups(st) {
 }
 
 // ── RENDER: CLASHES ───────────────────────────────────────────────────────────
-const CLASH_HYPE_UPCOMING = [
-  (h,a,s) => `⚡ ${s} — only one of you makes it through.`,
-  (h,a,s) => `😬 This is going to make the office very awkward.`,
-  (h,a,s) => `🎯 All to play for. ${s} — no second chances.`,
-  (h,a,s) => `🔥 Colleagues by day. Rivals today. ${s}.`,
-  (h,a,s) => `💀 One team advances. One team packs up. ${s}.`,
-  (h,a,s) => `⚔️ ${h} vs ${a}. One survives. One doesn't.`,
-  (h,a,s) => `🤝 Shake hands before kick-off. Then absolutely don't.`,
-  (h,a,s) => `😤 Settle it on the pitch. Sort it out in the office on Monday.`,
-  (h,a,s) => `🏆 The syndicate divides here. ${s} showdown.`,
-  (h,a,s) => `💸 No money, but the bragging rights are priceless.`,
-  (h,a,s) => `🎲 Fate has drawn them together. ${s}.`,
-  (h,a,s) => `📣 Office bulletin: ${s} clash incoming. Tensions rising.`,
-  (h,a,s) => `🙏 May the best team win. Just not your colleague's.`,
-  (h,a,s) => `🫠 Someone's going home. Someone else is going to brag about it forever.`,
-  (h,a,s) => `⏱️ 90 minutes to decide who's still talking to whom on Monday.`,
-  (h,a,s) => `🪑 One of these teams sits down. ${s} decides which.`,
-  (h,a,s) => `🌡️ Office atmosphere post-match: depends entirely on this result.`,
-  (h,a,s) => `👀 Everyone in the syndicate is watching this one carefully.`,
-  (h,a,s) => `🎰 Winner takes the glory. Loser buys the coffees.`,
-  (h,a,s) => `🫶 Good luck to both. (We don't mean it.)`,
-  (h,a,s) => `📍 ${s} — this is where the syndicate story gets interesting.`,
-  (h,a,s) => `🧊 Ice cold: one team's World Cup dreams end right here.`,
-  (h,a,s) => `🎭 Drama incoming. Someone in this office is about to have a bad day.`,
-  (h,a,s) => `🌍 Of all the teams in all the world, they had to play each other.`,
-  (h,a,s) => `🔔 ${s} — ding ding. Let's go.`,
-];
-const CLASH_HYPE_STAGES = {
-  LAST_32: 'R1', LAST_16: 'R2',
-  QUARTER_FINALS: 'Quarter', SEMI_FINALS: 'Semi',
-  THIRD_PLACE: '3rd Place', FINAL: 'THE FINAL',
-};
-
-function clashHype(m, hEntry, aEntry, usedIdx) {
-  const stage = CLASH_HYPE_STAGES[m.stage] || 'Knockout';
-  const hPeople = hEntry.people.join(' & ');
-  const aPeople = aEntry.people.join(' & ');
+function clashFavourite(m, hName, aName) {
   const live = m.status==='IN_PLAY'||m.status==='PAUSED';
   const done = m.status==='FINISHED';
 
-  if (live) return { cls:'live', text:`🔴 IT'S HAPPENING RIGHT NOW — the office is divided!` };
+  if (live) return { cls:'live', text:`🔴 LIVE NOW` };
   if (done) {
-    if (m.winner==='HOME_TEAM') return { cls:'done-win', text:`✅ ${hPeople} — still in it! 💀 ${aPeople} — that's it, it's over.` };
-    if (m.winner==='AWAY_TEAM') return { cls:'done-win', text:`✅ ${aPeople} — still in it! 💀 ${hPeople} — that's it, it's over.` };
-    return { cls:'done-loss', text:`😤 Couldn't be separated — extra time/penalties decided a ${stage} derby.` };
+    if (m.winner==='HOME_TEAM') return { cls:'done-win', text:`✅ ${hName} won` };
+    if (m.winner==='AWAY_TEAM') return { cls:'done-win', text:`✅ ${aName} won` };
+    return { cls:'done-loss', text:`🤝 Ended level — extra time/penalties` };
   }
 
-  // Deterministic pick with no repeats across the list
-  const seed = [...(m.espnId||m.utcDate||'0')].reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0);
-  const available = CLASH_HYPE_UPCOMING.map((_,i)=>i).filter(i=>!usedIdx.has(i));
-  const pool = available.length ? available : CLASH_HYPE_UPCOMING.map((_,i)=>i);
-  const idx = pool[Math.abs(seed) % pool.length];
-  usedIdx.add(idx);
-  return { cls:'upcoming', text: CLASH_HYPE_UPCOMING[idx](hPeople, aPeople, stage) };
+  const hPts = lastState.groupRanks[hName]?.pts ?? 0;
+  const aPts = lastState.groupRanks[aName]?.pts ?? 0;
+  if (hPts === aPts) return { cls:'upcoming', text:`⭐ Match Favourite: Even — both on ${hPts} WC pts` };
+  const fav = hPts > aPts ? hName : aName;
+  const favPts = Math.max(hPts, aPts);
+  const undPts = Math.min(hPts, aPts);
+  return { cls:'upcoming', text:`⭐ Match Favourite: ➤ ${fav} (${favPts} pts vs ${undPts})` };
 }
 
 function renderClashes(st) {
@@ -1044,10 +1008,10 @@ function renderClashes(st) {
       </div>`; return;
   }
 
-  const makeClash = (m, usedIdx) => {
+  const makeClash = m => {
     const hs=TEAM_MAP[m._h], as=TEAM_MAP[m._a];
     const live=m.status==='IN_PLAY'||m.status==='PAUSED', done=m.status==='FINISHED';
-    const hype = clashHype(m, hs, as, usedIdx);
+    const hype = clashFavourite(m, m._h, m._a);
     const stageLabel = CLASH_HYPE_STAGES[m.stage] || m.stage;
 
     const scoreHtml = done
@@ -1073,7 +1037,7 @@ function renderClashes(st) {
 
   document.getElementById('content').innerHTML=
     `<div class="sec-hdr">⚔️ Syndicate Clashes — ${clashes.length} match${clashes.length!==1?'es':''}</div>`+
-    (() => { const u=new Set(); return clashes.map(m=>makeClash(m,u)).join(''); })();
+    clashes.map(makeClash).join('');
 }
 
 // ── RENDER: ALL TEAMS ─────────────────────────────────────────────────────────
