@@ -51,14 +51,14 @@ header {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   position: sticky; top: 0; z-index: 100;
 }
-.header-logo { width: 68px; height: 68px; object-fit: contain; flex-shrink: 0; }
+.header-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
 .header-title { flex: 1; cursor: pointer; min-width: 0; }
 .header-title-top { font-size: 1.5rem; font-weight: 700; font-family: 'Karma', serif; color: #F7DB8D; line-height: 1.15; letter-spacing: 2px; display: block; white-space: nowrap; }
 .header-title-bottom { font-size: 1.05rem; font-weight: 700; font-family: 'Karma', serif; color: #F7DB8D; line-height: 1.2; letter-spacing: 2px; display: block; white-space: nowrap; }
-.header-sub { font-size: .58rem; color: rgba(255,255,255,.38); margin-top: 3px; letter-spacing: .2px; }
-.header-right { text-align: right; flex-shrink: 0; }
-#live-label { font-size: .63rem; color: rgba(255,255,255,.5); display: block; }
-#last-updated { font-size: .57rem; color: rgba(255,255,255,.28); margin-top: 2px; display: block; }
+.header-sub { font-size: .58rem; color: rgba(255,255,255,.38); margin-top: 2px; letter-spacing: .2px; }
+.header-right { text-align: right; flex-shrink: 0; align-self: flex-end; padding-bottom: 2px; }
+#live-label { display: none; }
+#last-updated { font-size: .6rem; color: rgba(255,255,255,.35); white-space: nowrap; }
 .header-sub { font-size: .58rem; color: rgba(255,255,255,.38); margin-top: 3px; letter-spacing: .2px; }
 .header-right { text-align: right; flex-shrink: 0; }
 #live-label { font-size: .63rem; color: rgba(255,255,255,.5); display: block; }
@@ -1603,8 +1603,9 @@ async function update() {
     renderBanner(lastState);
     renderCurrentTab();
 
-    document.getElementById('last-updated').textContent =
-      'updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const t = new Date();
+    const timeStr = t.toLocaleTimeString('en-GB',{hour:'numeric',minute:'2-digit',hour12:true});
+    document.getElementById('last-updated').textContent = 'Last update: ' + timeStr;
     document.getElementById('error-msg').style.display='none';
   } catch(err){
     const el=document.getElementById('error-msg');
