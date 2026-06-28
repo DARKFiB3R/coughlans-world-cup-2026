@@ -1312,7 +1312,7 @@ function renderMatchCentre(st) {
   const recent  =st.allMatches.filter(m=>m.status==='FINISHED'&&now-new Date(m.utcDate).getTime()<3*60*60*1000);
   const upcoming=st.allMatches.filter(m=>{
     const t=new Date(m.utcDate).getTime();
-    return (m.status==='SCHEDULED'||m.status==='TIMED')&&t>now&&t-now<10*60*60*1000;
+    return (m.status==='SCHEDULED'||m.status==='TIMED')&&t>now;
   }).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
 
   const makeCard=m=>{
@@ -1360,7 +1360,7 @@ function renderMatchCentre(st) {
 
   let html='';
   if(live.length)    { html+=`<div class="sec-hdr">🔴 Live Now — ${live.length} match${live.length!==1?'es':''}</div>`+live.map(makeCard).join(''); }
-  if(upcoming.length){ html+=`<div class="sec-hdr">📅 Coming Up</div>`+upcoming.slice(0,6).map(makeCard).join(''); }
+  if(upcoming.length){ html+=`<div class="sec-hdr">📅 Coming Up</div>`+upcoming.map(makeCard).join(''); }
   if(recent.length)  { html+=`<div class="sec-hdr">✅ Recent Results</div>`+recent.slice(0,8).map(makeCard).join(''); }
   if(!html) html=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No matches right now</div><div class="empty-sub">Check back when games are scheduled.</div></div>`;
   document.getElementById('content').innerHTML=html;
