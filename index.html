@@ -384,11 +384,7 @@ header {
 
 <div id="inapp-banner" style="cursor:pointer">👆 Tap here to open in your browser for best experience</div>
 <div id="next-banner" onclick="showMatchCentre()" style="cursor:pointer"></div>
-<div id="progress-bar-wrap" style="display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);padding:4px 0 0;position:relative;z-index:1">
-  <div style="height:3px;background:rgba(255,255,255,.08);overflow:hidden">
-    <div id="pb-fill" style="height:100%;background:linear-gradient(90deg,#2ecc71,#f39c12);transition:width .5s"></div>
-  </div>
-</div>
+
 
 <div class="stats-strip-wrap">
   <div class="stats-strip" id="stats-strip">
@@ -1428,13 +1424,6 @@ function renderStats(st) {
   // Live pill
   document.getElementById('live-label').innerHTML = st.liveCount>0
     ? `Auto-updating <span class="live-pill">LIVE</span>` : 'Auto-updating';
-
-  const total = st.allMatches.length;
-  if (total > 0) {
-    const pct = Math.round((played / total) * 100);
-    document.getElementById('pb-fill').style.width = pct + '%';
-    document.getElementById('progress-bar-wrap').style.display = '';
-  }
 }
 
 // ── ESPN DIRECT PARSER ────────────────────────────────────────────────────────
