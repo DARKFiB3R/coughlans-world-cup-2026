@@ -39,7 +39,7 @@ body::after {
   pointer-events: none; z-index: 0;
 }
 #content, nav, .search-wrap, #next-banner, #inapp-banner,
-#error-msg, #progress-bar-wrap, .stats-strip { position: relative; z-index: 1; }
+#error-msg, #progress-bar-wrap, .stats-strip-wrap { position: relative; z-index: 1; }
 
 /* ── HEADER ── */
 header {
@@ -72,6 +72,8 @@ header {
 #next-banner strong { color: #e8edf5; }
 
 /* ── STATS STRIP ── */
+.stats-strip-wrap { position: relative; z-index: 1; }
+.stats-strip-wrap::after { content: '›'; position: absolute; right: 0; top: 0; bottom: 0; width: 52px; background: linear-gradient(to right, transparent, rgba(0,0,0,.85)); display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: rgba(255,255,255,.7); font-size: 1.3rem; pointer-events: none; }
 .stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: rgba(0,0,0,.45); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.07); }
 .stats-strip::-webkit-scrollbar { display: none; }
 .ss-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 9px 18px; border-right: 1px solid rgba(255,255,255,.07); }
@@ -388,7 +390,7 @@ header {
   </div>
 </div>
 
-<div style="position:relative;z-index:1">
+<div class="stats-strip-wrap">
   <div class="stats-strip" id="stats-strip">
     <div class="ss-item"><div class="ss-num" id="ss-played">—</div><div class="ss-lbl">Played</div></div>
     <div class="ss-item"><div class="ss-num ss-gold" id="ss-goals">—</div><div class="ss-lbl">Goals</div></div>
@@ -399,9 +401,6 @@ header {
     <div class="ss-item"><div class="ss-num ss-red" id="ss-reds">—</div><div class="ss-lbl">Reds</div></div>
     <div class="ss-item"><div class="ss-num ss-green" id="ss-in">—</div><div class="ss-lbl">Teams In</div></div>
     <div class="ss-item"><div class="ss-num ss-red" id="ss-out">—</div><div class="ss-lbl">Teams Out</div></div>
-  </div>
-  <div style="position:absolute;right:0;top:0;bottom:0;width:52px;background:linear-gradient(to right,transparent,rgba(0,0,0,.8));pointer-events:none;display:flex;align-items:center;justify-content:flex-end;padding-right:10px">
-    <span style="color:rgba(255,255,255,.6);font-size:1.1rem;font-weight:300">›</span>
   </div>
 </div>
 
