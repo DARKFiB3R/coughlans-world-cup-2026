@@ -258,7 +258,8 @@ header {
 .overlay.open { display: flex; }
 .modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.modal-handle { width: 48px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; margin: 12px auto 4px; cursor: grab; touch-action: none; }
+.modal-handle-wrap { padding: 16px 0 12px; display: flex; justify-content: center; cursor: grab; touch-action: none; }
+.modal-handle { width: 48px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; pointer-events: none; }
 
 /* Modal team header band */
 .modal-team-band { padding: 12px 16px 10px; display: flex; align-items: center; gap: 14px; }
@@ -427,7 +428,7 @@ header {
 <!-- TEAM MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal" id="modal">
-    <div class="modal-handle"></div>
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
     <div class="modal-team-band" id="m-band">
       <img class="crest-lg" id="m-crest" src="" alt="">
       <div class="modal-team-text">
@@ -1756,7 +1757,7 @@ loadSquads();
 
 // Swipe down to close modal - only triggered from the handle
 (function() {
-  const handle  = document.querySelector('.modal-handle');
+  const handle  = document.querySelector('.modal-handle-wrap');
   const modal   = document.getElementById('modal');
   const overlay = document.getElementById('overlay');
   let startY=0, lastY=0, dragging=false;
