@@ -158,6 +158,38 @@ header h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.3px; }
 .clash-hype.upcoming { background: rgba(39,174,96,.08); color: #5dde8a; }
 .clash-hype.done-win { background: rgba(0,0,0,.2); color: #e8edf5; }
 .clash-hype.done-loss { background: rgba(0,0,0,.2); color: #7a9ab0; }
+
+/* ── LIVE MATCH CARDS ── */
+.live-card { margin: 10px 14px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.09); background: rgba(0,0,0,.3); backdrop-filter: blur(12px); }
+.live-card.is-live { border-color: rgba(192,57,43,.45); box-shadow: 0 0 24px rgba(192,57,43,.1); }
+.live-card.is-upcoming { border-color: rgba(59,143,212,.25); }
+.live-card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; font-size: .7rem; color: rgba(255,255,255,.35); border-bottom: 1px solid rgba(255,255,255,.06); }
+.live-badge-big { background: #c0392b; color: #fff; font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; animation: blink 1s infinite; }
+.finished-badge { background: rgba(255,255,255,.08); color: rgba(255,255,255,.45); font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.upcoming-badge { background: rgba(59,143,212,.18); color: #6bb8f0; font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.live-score-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; padding: 16px 14px 10px; }
+.live-team { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+.live-team:hover .live-team-name { color: #2ecc71; }
+.live-team-name { font-size: .85rem; font-weight: 700; text-align: center; transition: color .15s; }
+.live-score-box { text-align: center; }
+.live-score { font-size: 2.6rem; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+.live-score.is-live { color: #ff6b6b; }
+.live-colleagues { font-size: .64rem; color: rgba(255,255,255,.32); text-align: center; margin-top: 3px; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.live-events { padding: 4px 14px 6px; }
+.live-ev { display: flex; gap: 8px; font-size: .75rem; padding: 4px 0; color: rgba(255,255,255,.6); border-bottom: 1px solid rgba(255,255,255,.04); align-items: center; }
+.live-ev:last-child { border-bottom: none; }
+.live-ev-min { color: rgba(255,255,255,.32); min-width: 32px; font-size: .7rem; }
+.live-ev-icon { min-width: 16px; }
+.live-ev-player { flex: 1; }
+.live-ev-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.live-stats { padding: 6px 14px 12px; }
+.live-poss-lbl { display: flex; justify-content: space-between; font-size: .68rem; margin-bottom: 3px; color: rgba(255,255,255,.4); }
+.live-poss-bar { height: 5px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.live-poss-fill { height: 100%; border-radius: 3px; }
+.live-stat-r { display: flex; font-size: .72rem; color: rgba(255,255,255,.45); margin: 3px 0; }
+.lsv { min-width: 28px; font-weight: 700; color: #e8edf5; }
+.lsv.r { text-align: right; }
+.lsl { flex: 1; text-align: center; color: rgba(255,255,255,.28); }
 .clash-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background: #0d1f35; padding: 10px 14px; gap: 8px; }
 .clash-team { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .clash-team.right { align-items: flex-end; }
@@ -302,7 +334,7 @@ header h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.3px; }
 <body>
 
 <header>
-  <h1>⚽ Coughlans World Cup 2026</h1>
+  <h1 onclick="switchTab('leaderboard')" style="cursor:pointer">⚽ Coughlans World Cup 2026</h1>
   <div class="header-right">
     <div id="live-label">Auto-updating</div>
     <div id="last-updated">Loading…</div>
@@ -310,14 +342,14 @@ header h1 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.3px; }
 </header>
 
 <div id="inapp-banner" style="cursor:pointer">👆 Tap here to open in your browser for best experience</div>
-<div id="next-banner"></div>
-<div id="progress-bar-wrap" style="display:none;background:#0d1f35;border-bottom:1px solid #1a3050;padding:5px 14px 6px;position:relative;z-index:1">
-  <div style="display:flex;justify-content:space-between;font-size:.62rem;color:#4a6a80;margin-bottom:3px">
+<div id="next-banner" onclick="showMatchCentre()" style="cursor:pointer"></div>
+<div id="progress-bar-wrap" style="display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);padding:5px 14px 6px;position:relative;z-index:1">
+  <div style="display:flex;justify-content:space-between;font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:3px">
     <span id="pb-label">Tournament progress</span>
     <span id="pb-pct"></span>
   </div>
-  <div style="height:3px;background:#1a3050;border-radius:2px;overflow:hidden">
-    <div id="pb-fill" style="height:100%;background:linear-gradient(90deg,#27ae60,#f39c12);border-radius:2px;transition:width .5s"></div>
+  <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
+    <div id="pb-fill" style="height:100%;background:linear-gradient(90deg,#2ecc71,#f39c12);border-radius:2px;transition:width .5s"></div>
   </div>
 </div>
 
@@ -693,10 +725,11 @@ function switchTab(tab) {
 }
 
 function renderCurrentTab() {
-  if      (activeTab==='leaderboard') renderLeaderboard(lastState);
-  else if (activeTab==='teamstats')   renderTeamStats(lastState);
-  else if (activeTab==='clashes')     renderClashes(lastState);
-  else if (activeTab==='allteams')    renderAllTeams(lastState);
+  if      (activeTab==='leaderboard')  renderLeaderboard(lastState);
+  else if (activeTab==='teamstats')    renderTeamStats(lastState);
+  else if (activeTab==='clashes')      renderClashes(lastState);
+  else if (activeTab==='allteams')     renderAllTeams(lastState);
+  else if (activeTab==='matchcentre')  renderMatchCentre(lastState);
 }
 
 // ── RENDER: LEADERBOARD ───────────────────────────────────────────────────────
@@ -1138,21 +1171,96 @@ function showModal(team) {
 function closeModal(e) { if(e.target===document.getElementById('overlay')) closeModalForce(); }
 function closeModalForce() { document.getElementById('overlay').classList.remove('open'); }
 
+// ── MATCH CENTRE ─────────────────────────────────────────────────────────────
+function showMatchCentre() {
+  if (!lastState) return;
+  activeTab = 'matchcentre';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('stat-all').classList.remove('filter-active');
+  clearSearch();
+  renderMatchCentre(lastState);
+}
+
+function renderMatchCentre(st) {
+  const now=Date.now();
+  const live    =st.allMatches.filter(m=>m.status==='IN_PLAY'||m.status==='PAUSED');
+  const recent  =st.allMatches.filter(m=>m.status==='FINISHED'&&now-new Date(m.utcDate).getTime()<3*60*60*1000);
+  const upcoming=st.allMatches.filter(m=>{
+    const t=new Date(m.utcDate).getTime();
+    return (m.status==='SCHEDULED'||m.status==='TIMED')&&t>now&&t-now<10*60*60*1000;
+  }).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+
+  const makeCard=m=>{
+    const h=norm(m.home),a=norm(m.away);
+    const hE=TEAM_MAP[h],aE=TEAM_MAP[a];
+    const hC=lastTeams[h]?.color||'#2ecc71', aC=lastTeams[a]?.color||'#3b8fd4';
+    const isLive=m.status==='IN_PLAY'||m.status==='PAUSED';
+    const isDone=m.status==='FINISHED';
+    const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
+    const badge=isLive?`<span class="live-badge-big">🔴 LIVE</span>`:isDone?`<span class="finished-badge">FT</span>`:`<span class="upcoming-badge">${fmtTime(m.utcDate)} UTC</span>`;
+    const scoreHtml=!isDone&&!isLive
+      ?`<div style="font-size:.9rem;color:rgba(255,255,255,.22);font-weight:600">vs</div>`
+      :`<div class="live-score${isLive?' is-live':''}">${m.homeScore}<span class="live-score-sep"> – </span>${m.awayScore}</div>`;
+    const goals=(m.events||[]).filter(e=>e.type==='goal');
+    const reds=(m.events||[]).filter(e=>e.type==='redcard');
+    const evs=[...goals,...reds].sort((a,b)=>(parseInt(a.minute)||0)-(parseInt(b.minute)||0));
+    const evHtml=evs.length?`<div class="live-events">${evs.map(e=>{
+      const isH=norm(e.team)===h;
+      return `<div class="live-ev"><span class="live-ev-min">${e.minute}</span><span class="live-ev-icon">${e.type==='redcard'?'🟥':e.ownGoal?'⚽':e.penalty?'⚽':'⚽'}</span><span class="live-ev-player">${e.player}${e.ownGoal?' (og)':e.penalty?' (pen)':''}</span><span class="live-ev-dot" style="background:${isH?hC:aC}"></span></div>`;
+    }).join('')}</div>`:'';
+    const mst=m.stats||{},hst=mst[h],ast=mst[a];
+    const statsHtml=(isDone||isLive)&&hst?`<div class="live-stats">
+      <div class="live-poss-lbl"><span style="color:${hC}">${hst.possession}%</span><span>Possession</span><span style="color:${aC}">${ast?.possession||0}%</span></div>
+      <div class="live-poss-bar"><div class="live-poss-fill" style="width:${hst.possession}%;background:${hC}"></div></div>
+      <div class="live-stat-r"><span class="lsv">${hst.shots}</span><span class="lsl">Shots</span><span class="lsv r">${ast?.shots||0}</span></div>
+      <div class="live-stat-r"><span class="lsv">${hst.shotsOnTarget}</span><span class="lsl">On Target</span><span class="lsv r">${ast?.shotsOnTarget||0}</span></div>
+      ${m.attendance?`<div class="live-stat-r" style="margin-top:2px"><span class="lsl" style="text-align:left;color:rgba(255,255,255,.28)">👥 ${m.attendance.toLocaleString()}</span></div>`:''}
+    </div>`:m.attendance&&isDone?`<div class="live-stats"><div class="live-stat-r"><span class="lsl" style="text-align:left;color:rgba(255,255,255,.28)">👥 ${m.attendance.toLocaleString()}</span></div></div>`:'';
+    return `<div class="live-card${isLive?' is-live':''}">
+      <div class="live-card-hdr"><span>${stageLbl}${m.venue?' · '+m.venue:''}</span>${badge}</div>
+      <div class="live-score-row">
+        <div class="live-team" onclick="showModal('${escQ(h)}')">
+          ${teamCrest(h,'crest')}<div class="live-team-name">${h}</div>
+          ${hE?`<div class="live-colleagues">${hE.people.join(', ')}</div>`:''}
+        </div>
+        <div class="live-score-box">${scoreHtml}${isDone&&m.headline?`<div style="font-size:.58rem;color:rgba(255,255,255,.25);margin-top:6px;text-align:center;max-width:110px;line-height:1.3">${m.headline}</div>`:''}</div>
+        <div class="live-team" onclick="showModal('${escQ(a)}')">
+          ${teamCrest(a,'crest')}<div class="live-team-name">${a}</div>
+          ${aE?`<div class="live-colleagues">${aE.people.join(', ')}</div>`:''}
+        </div>
+      </div>
+      ${evHtml}${statsHtml}
+    </div>`;
+  };
+
+  let html='';
+  if(live.length)    { html+=`<div class="sec-hdr">🔴 Live Now — ${live.length} match${live.length!==1?'es':''}</div>`+live.map(makeCard).join(''); }
+  if(upcoming.length){ html+=`<div class="sec-hdr">📅 Coming Up</div>`+upcoming.slice(0,6).map(makeCard).join(''); }
+  if(recent.length)  { html+=`<div class="sec-hdr">✅ Recent Results</div>`+recent.slice(0,8).map(makeCard).join(''); }
+  if(!html) html=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No matches right now</div><div class="empty-sub">Check back when games are scheduled.</div></div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
 // ── BANNER & STATS ────────────────────────────────────────────────────────────
 function renderBanner(st) {
   const b=document.getElementById('next-banner');
-  const live=st.allMatches.filter(m=>(m.status==='IN_PLAY'||m.status==='PAUSED')&&(SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))));
-  if (live.length) {
-    const m=live[0], h=TEAM_MAP[norm(m.home)], a=TEAM_MAP[norm(m.away)];
-    b.innerHTML=`🔴 LIVE: <strong>${h?.flag||''}${norm(m.home)} ${m.homeScore}–${m.awayScore} ${norm(m.away)}${a?.flag||''}</strong>`;
+  const live=st.allMatches.filter(m=>m.status==='IN_PLAY'||m.status==='PAUSED');
+  if(live.length){
+    const syndLive=live.filter(m=>SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away)));
+    if(live.length===1){
+      const m=live[0],h=TEAM_MAP[norm(m.home)],a=TEAM_MAP[norm(m.away)];
+      b.innerHTML=`🔴 LIVE: <strong>${h?.flag||''}${norm(m.home)} ${m.homeScore}–${m.awayScore} ${norm(m.away)}${a?.flag||''}</strong> — tap for live stats`;
+    } else {
+      b.innerHTML=`🔴 <strong>${live.length} games LIVE</strong>${syndLive.length?` · ${syndLive.length} syndicate teams`:''} — tap to view`;
+    }
     b.style.display='block'; return;
   }
   const next=st.allMatches
     .filter(m=>(m.status==='SCHEDULED'||m.status==='TIMED')&&(SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))))
     .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
-  if (next) {
+  if(next){
     const h=TEAM_MAP[norm(next.home)],a=TEAM_MAP[norm(next.away)];
-    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)}`;
+    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)} · tap for schedule`;
     b.style.display='block';
   } else { b.style.display='none'; }
 }
