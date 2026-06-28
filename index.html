@@ -358,6 +358,27 @@ header {
 .mm-headline { font-size: .67rem; color:rgba(255,255,255,0.68); margin-top: 3px; font-style: italic; }
 .mm-attendance { font-size: .65rem; color:rgba(255,255,255,0.58); }
 
+/* ── FOLLOW SYSTEM ── */
+.follow-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 13px; border-radius: 20px; font-size: .75rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .15s; }
+.follow-btn.following { background: rgba(241,196,15,.15); color: #f1c40f; border: 1px solid rgba(241,196,15,.4); }
+.follow-btn.not-following { background: rgba(255,255,255,.08); color: rgba(255,255,255,.65); border: 1px solid rgba(255,255,255,.18); }
+.follow-btn:hover { filter: brightness(1.2); }
+.sec-hdr-following { background: rgba(241,196,15,.1); border-left: 3px solid #f1c40f; }
+.lb-row.followed { border-left: 3px solid #f1c40f; background: linear-gradient(90deg,rgba(241,196,15,.08) 0%,transparent 70%); }
+
+/* ── PERSON MODAL ── */
+#person-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 400; align-items: flex-end; justify-content: center; }
+#person-overlay.open { display: flex; }
+#person-modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 3px solid #f1c40f; box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
+.pm-section { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.pm-sec-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.45); margin-bottom: 7px; }
+.pm-result { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .78rem; }
+.pm-result:last-child { border-bottom: none; }
+.pm-brag { padding: 6px 0; font-size: .8rem; border-bottom: 1px solid rgba(255,255,255,.05); }
+.pm-brag:last-child { border-bottom: none; }
+.pm-rival { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: .78rem; border-bottom: 1px solid rgba(255,255,255,.05); }
+.pm-rival:last-child { border-bottom: none; }
+
 /* Empty state */
 .empty-state { text-align: center; padding: 48px 24px; }
 .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
@@ -438,6 +459,7 @@ header {
         <div class="modal-team-sub" id="m-sub"></div>
       </div>
       <button class="modal-close" onclick="closeModalForce()">✕</button>
+      <button id="m-follow-btn" class="follow-btn not-following" onclick="handleTeamFollow()" style="margin-right:4px">⭐ Follow</button>
     </div>
     </div><!-- end modal-drag-zone -->
 
@@ -482,6 +504,28 @@ header {
     <div id="m-panel-squad" style="display:none;padding-bottom:20px">
       <div class="modal-sec" id="m-squad"></div>
     </div>
+  </div>
+</div>
+
+<!-- PERSON MODAL -->
+<div id="person-overlay" onclick="closePersonModal(event)">
+  <div id="person-modal">
+    <div class="modal-drag-zone" id="pm-drag">
+      <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+      <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px">
+        <div id="pm-crest-wrap"></div>
+        <div style="flex:1;min-width:0">
+          <div id="pm-name" style="font-size:1.3rem;font-weight:800;font-family:'Karma',serif;color:#F7DB8D;letter-spacing:.5px"></div>
+          <div id="pm-team-line" style="font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;display:flex;align-items:center;gap:6px"></div>
+          <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+          <button class="modal-close" onclick="closePersonModalForce()">✕</button>
+          <button id="pm-follow-btn" class="follow-btn not-following" onclick="handlePersonFollow()">⭐ Follow</button>
+        </div>
+      </div>
+    </div>
+    <div id="pm-content"></div>
   </div>
 </div>
 
@@ -829,14 +873,16 @@ function renderLeaderboard(st) {
   };
   const form = team => lastTeams[team]?.form || '';
 
+  const followedPeople = getFollows().people;
   const makeRow = p => {
     const rc = maxPts>=2 ? rankCls(p.rank) : '';
+    const isFollowed = followedPeople.includes(p.name);
     return `
-    <div class="lb-row${isOut(p)?' eliminated':''}${rc?' rank-'+rc:''}" onclick="showModal('${escQ(p.team)}')">
+    <div class="lb-row${isOut(p)?' eliminated':''}${rc?' rank-'+rc:''}${isFollowed?' followed':''}" onclick="showPersonModal('${escQ(p.name)}','${escQ(p.team)}')">
       <div class="lb-rank ${rc}">${rankLbl(p.rank)}</div>
       <div>${teamCrest(p.team)}</div>
       <div class="lb-info">
-        <div class="lb-name">${p.name}</div>
+        <div class="lb-name">${isFollowed?'⭐ ':''}${p.name}</div>
         <div class="lb-team">${p.team} ${p.flag} ${formDots(form(p.team))}</div>
       </div>
       <div class="pts-badge pts-${p.pts}">Syndicate pts: ${p.pts}</div>
@@ -846,7 +892,9 @@ function renderLeaderboard(st) {
   const dot = c => `<span class="form-dot" style="background:${c};display:inline-block;margin:0 1px 0 5px;vertical-align:middle"></span>`;
   const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,0.68);font-weight:400">${dot('#27ae60')}Wins${dot('#f39c12')}Draws${dot('#e74c3c')}Losses</span>`;
   const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
+  const followed=people.filter(p=>followedPeople.includes(p.name));
   let html='';
+  if(followed.length) html+=`<div class="sec-hdr sec-hdr-following">⭐ Following — ${followed.length} people</div>`+followed.map(makeRow).join('');
   if(active.length) html+=`<div class="sec-hdr">🟢 Still In — ${active.length} people ${FORM_KEY}</div>`+active.map(makeRow).join('');
   if(tbd.length)    html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbd.length} people</div>`+tbd.map(makeRow).join('');
   if(out.length)    html+=`<div class="sec-hdr">❌ Eliminated — ${out.length} people</div>`+out.map(makeRow).join('');
@@ -891,7 +939,10 @@ function renderTeamStats(st) {
   };
 
   const inL=entries.filter(e=>!isOut(e)&&!isTBD(e)), tbdL=entries.filter(isTBD), outL=entries.filter(isOut);
+  const followedTeams = getFollows().teams;
+  const followedEntries = entries.filter(e=>followedTeams.includes(e.team));
   let html='';
+  if(followedEntries.length) html+=`<div class="sec-hdr sec-hdr-following">⭐ Following — ${followedEntries.length} teams</div>`+followedEntries.map(makeRow).join('');
   if(inL.length)  html+=`<div class="sec-hdr">🟢 Still In — ${inL.length}</div>`+inL.map(makeRow).join('');
   if(tbdL.length) html+=`<div class="sec-hdr">⏳ Best-Third TBD — ${tbdL.length}</div>`+tbdL.map(makeRow).join('');
   if(outL.length) html+=`<div class="sec-hdr">❌ Eliminated — ${outL.length}</div>`+outL.map(makeRow).join('');
@@ -1274,6 +1325,8 @@ function showModal(team) {
 
   // Switch to overview
   switchModalTab('overview');
+  const mfb=document.getElementById('m-follow-btn');
+  if(mfb){ const tf=isFollowingTeam(team); mfb.className=`follow-btn ${tf?'following':'not-following'}`; mfb.textContent=tf?'⭐ Following':'⭐ Follow'; }
 
   // Squad tab visibility
   document.getElementById('m-squad-tab').style.display = lastSquads[team] ? '' : 'none';
@@ -1755,6 +1808,216 @@ async function loadSquads() {
     console.log(`[wc2026] Loaded squads for ${Object.keys(lastSquads).length} teams`);
   } catch(e){ /* squads.json not available yet */ }
 }
+
+// ── FOLLOW SYSTEM ─────────────────────────────────────────────────────────────
+function getFollows() {
+  try { return JSON.parse(localStorage.getItem('wc2026_follows')||'{"people":[],"teams":[]}'); }
+  catch(e) { return {people:[],teams:[]}; }
+}
+function saveFollows(f) { try { localStorage.setItem('wc2026_follows',JSON.stringify(f)); } catch(e){} }
+function isFollowingPerson(n) { return getFollows().people.includes(n); }
+function isFollowingTeam(n)   { return getFollows().teams.includes(n); }
+function toggleFollowPerson(n) {
+  const f=getFollows(), i=f.people.indexOf(n);
+  if(i>=0) f.people.splice(i,1); else f.people.push(n);
+  saveFollows(f); return i<0;
+}
+function toggleFollowTeam(n) {
+  const f=getFollows(), i=f.teams.indexOf(n);
+  if(i>=0) f.teams.splice(i,1); else f.teams.push(n);
+  saveFollows(f); return i<0;
+}
+
+// ── PERSON MODAL ──────────────────────────────────────────────────────────────
+let currentPersonName = null;
+let currentPersonTeam = null;
+
+function showPersonModal(person, team) {
+  if (!lastState) return;
+  currentPersonName = person;
+  currentPersonTeam = team;
+  const status = resolveStatus(team, lastState);
+  const pts    = POINTS[status.code]||0;
+  const td     = lastTeams[team]||{};
+  const color  = td.color||'#1a3050';
+  const gr     = lastState.groupRanks[team];
+  const grPts  = gr?.pts??'—';
+
+  document.getElementById('pm-header').style.background = color+'33';
+  document.getElementById('person-modal').style.borderTopColor = color;
+  document.getElementById('pm-crest-wrap').innerHTML = teamCrest(team,'crest-lg');
+  document.getElementById('pm-name').textContent = person;
+  document.getElementById('pm-team-line').innerHTML = `${team}`;
+  document.getElementById('pm-pts-line').innerHTML =
+    `<span class="badge ${status.badge}">${status.label}</span>`+
+    `<span style="font-size:.7rem;color:rgba(255,255,255,.65)">Syn pts: ${pts}</span>`+
+    (grPts!=='—'?`<span style="font-size:.7rem;color:rgba(255,255,255,.5)">· WC pts: ${grPts}</span>`:'');
+
+  updatePersonFollowBtn();
+
+  // Build content
+  const ms = (lastState.matchesByTeam[team]||[]).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+  const finished = ms.filter(m=>m.status==='FINISHED');
+  const upcoming = ms.find(m=>m.status==='SCHEDULED'||m.status==='TIMED');
+
+  // Progress strip
+  const code=status.code;
+  const sr={CHAMPION:5,OUT_FINAL:5,IN_SEMI:5,OUT_SEMI:4,OUT_3RD:4,IN_QUARTER:4,OUT_QUARTER:3,IN_R16:3,OUT_R16:2,IN_R32:2,OUT_R32:1,QUALIFIED:1,GROUP:0,TBD:0,OUT_GROUP:-1}[code]??0;
+  const isElim=code.startsWith('OUT_');
+  const STAGES=[{label:'Group'},{label:'R1'},{label:'R2'},{label:'Quarter'},{label:'Semi'},{label:'🏆'}];
+  let stripHtml='<div class="progress-strip">';
+  STAGES.forEach((s,i)=>{
+    const reached=i<=sr, current=i===sr&&!isElim, elimHere=isElim&&i===sr;
+    const sc=elimHere?'eliminated':reached&&!current?'done':current?'current':'future';
+    const lc=i<sr?'done':'future';
+    if(i>0) stripHtml+=`<div class="ps-line ${lc}"></div>`;
+    stripHtml+=`<div class="ps-step ${sc}"><div class="ps-circle">${elimHere?'✕':reached?'✓':i+1}</div><div class="ps-label">${s.label}</div></div>`;
+  });
+  stripHtml+='</div>';
+
+  // Next match
+  let nextHtml='';
+  if(upcoming){
+    const opp=upcoming._h===team?upcoming._a:upcoming._h;
+    nextHtml=`<div class="pm-section">
+      <div class="pm-sec-title">Next Match</div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:.82rem">
+        ${teamCrest(opp,'crest-sm')} <strong>vs ${opp}</strong>
+        <span style="color:rgba(255,255,255,.55);font-size:.75rem">${fmtDT(upcoming.utcDate)}</span>
+      </div>
+    </div>`;
+  }
+
+  // Results
+  let resultsHtml='';
+  if(finished.length){
+    resultsHtml=`<div class="pm-section"><div class="pm-sec-title">Results</div>`;
+    for(const m of [...finished].reverse().slice(0,5)){
+      const opp=m._h===team?m._a:m._h;
+      const score=teamScore(m,team);
+      const icon=matchIcon(m,team);
+      const goals=(m.events||[]).filter(e=>e.type==='goal'&&norm(e.team)===team);
+      const goalStr=goals.map(e=>`${e.player} ${e.minute}`).join(', ');
+      const stageLbl=m.stage==='GROUP_STAGE'?`Group ${(m.group||'').replace('GROUP_','')}`:(KO_SHORT[m.stage]||m.stage);
+      resultsHtml+=`<div class="pm-result">
+        <span style="font-size:1rem;min-width:18px">${icon}</span>
+        <div style="flex:1">
+          <div>${teamCrest(opp,'crest-sm')} <strong>vs ${opp}</strong> <span style="color:rgba(255,255,255,.5);font-size:.7rem">${stageLbl}</span></div>
+          ${goalStr?`<div style="font-size:.7rem;color:rgba(255,255,255,.55);margin-top:2px">⚽ ${goalStr}</div>`:''}
+        </div>
+        <span style="font-weight:700;font-size:.85rem">${score}</span>
+      </div>`;
+    }
+    resultsHtml+='</div>';
+  }
+
+  // Bragging rights
+  const brags=[];
+  for(const m of finished){
+    const h=norm(m.home),a=norm(m.away);
+    const isHome=h===team,isAway=a===team;
+    if(!isHome&&!isAway) continue;
+    const won=(isHome&&m.winner==='HOME_TEAM')||(isAway&&m.winner==='AWAY_TEAM');
+    if(!won) continue;
+    const opp=isHome?a:h;
+    if(SYND_TEAMS.has(opp)&&opp!==team) brags.push({opp,score:teamScore(m,team),stage:m.stage});
+  }
+  let bragsHtml='';
+  if(brags.length){
+    bragsHtml=`<div class="pm-section"><div class="pm-sec-title">🏆 Bragging Rights</div>`;
+    for(const b of brags){
+      const oppPeople=TEAM_MAP[b.opp]?.people||[];
+      const stageLbl=b.stage==='GROUP_STAGE'?'Group':(KO_SHORT[b.stage]||b.stage);
+      bragsHtml+=`<div class="pm-brag">${teamCrest(b.opp,'crest-sm')} Beat <strong>${b.opp}</strong> ${b.score} <span style="color:rgba(255,255,255,.5);font-size:.7rem">(${stageLbl})</span><br><span style="font-size:.7rem;color:rgba(255,255,255,.55)">😬 ${oppPeople.join(', ')}</span></div>`;
+    }
+    bragsHtml+='</div>';
+  }
+
+  // Rivals ahead
+  const myPts=pts;
+  const rivals=SYNDICATE
+    .flatMap(s=>s.people.map(p=>({name:p,team:s.team,pts:POINTS[resolveStatus(s.team,lastState).code]||0})))
+    .filter(r=>r.pts>myPts&&r.team!==team)
+    .sort((a,b)=>b.pts-a.pts).slice(0,5);
+  let rivalsHtml='';
+  if(rivals.length){
+    rivalsHtml=`<div class="pm-section"><div class="pm-sec-title">⚔️ Rivals Ahead</div>`;
+    for(const r of rivals){
+      rivalsHtml+=`<div class="pm-rival">${teamCrest(r.team,'crest-sm')}<div style="flex:1"><div style="font-size:.82rem;font-weight:600">${r.name}</div><div style="font-size:.7rem;color:rgba(255,255,255,.55)">${r.team}</div></div><div style="font-weight:700;color:#f39c12">${r.pts} pts</div></div>`;
+    }
+    rivalsHtml+='</div>';
+  }
+
+  // View team button
+  const viewTeamHtml=`<div style="padding:14px 16px 20px">
+    <button onclick="closePersonModalForce();setTimeout(()=>showModal('${escQ(team)}'),100)" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#e8edf5;padding:10px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit">📊 View ${team} Team Page</button>
+  </div>`;
+
+  document.getElementById('pm-content').innerHTML=
+    `<div class="pm-section">${stripHtml}</div>`+
+    nextHtml+resultsHtml+bragsHtml+rivalsHtml+viewTeamHtml;
+
+  document.getElementById('person-overlay').classList.add('open');
+}
+
+function updatePersonFollowBtn() {
+  const btn=document.getElementById('pm-follow-btn');
+  const following=isFollowingPerson(currentPersonName);
+  btn.className=`follow-btn ${following?'following':'not-following'}`;
+  btn.textContent=following?'⭐ Following':'⭐ Follow';
+}
+
+function handlePersonFollow() {
+  if(!currentPersonName) return;
+  toggleFollowPerson(currentPersonName);
+  updatePersonFollowBtn();
+  if(lastState) renderCurrentTab(); // refresh leaderboard following section
+}
+
+function handleTeamFollow() {
+  if(!modalTeam) return;
+  const now = toggleFollowTeam(modalTeam);
+  const btn = document.getElementById('m-follow-btn');
+  if(btn){ btn.className=`follow-btn ${now?'following':'not-following'}`; btn.textContent=now?'⭐ Following':'⭐ Follow'; }
+  if(lastState) renderCurrentTab();
+}
+
+function closePersonModal(e) { if(e.target===document.getElementById('person-overlay')) closePersonModalForce(); }
+function closePersonModalForce() {
+  document.getElementById('person-overlay').classList.remove('open');
+  currentPersonName=null; currentPersonTeam=null;
+}
+
+// Swipe to close person modal
+(function(){
+  const drag=document.getElementById('pm-drag');
+  const modal=document.getElementById('person-modal');
+  const overlay=document.getElementById('person-overlay');
+  let startY=0,lastY=0,dragging=false;
+  drag.addEventListener('touchstart',e=>{ startY=lastY=e.touches[0].clientY; dragging=true; },{passive:true});
+  window.addEventListener('touchmove',e=>{
+    if(!dragging||!document.getElementById('person-overlay').classList.contains('open')) return;
+    lastY=e.touches[0].clientY;
+    const dy=Math.max(0,lastY-startY);
+    modal.style.transform=`translateY(${dy}px)`;
+    overlay.style.background=`rgba(0,0,0,${Math.max(0,.7-dy/400)})`;
+  },{passive:true});
+  window.addEventListener('touchend',()=>{
+    if(!dragging||!document.getElementById('person-overlay').classList.contains('open')) return;
+    dragging=false;
+    const dy=lastY-startY;
+    if(dy>100){
+      modal.style.transition='transform .25s ease';
+      modal.style.transform='translateY(100%)';
+      setTimeout(()=>{ closePersonModalForce(); modal.style.transition=modal.style.transform=''; overlay.style.background=''; },250);
+    } else {
+      modal.style.transition='transform .2s ease';
+      modal.style.transform='';
+      overlay.style.background='';
+      setTimeout(()=>{ modal.style.transition=''; },200);
+    }
+  });
+})();
 
 // Boot
 fetchMetadata().then(update);
