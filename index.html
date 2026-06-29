@@ -140,7 +140,7 @@ header {
 
 /* ── TABS ── */
 .tab-bar-wrap { position: relative; }
-.tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 98; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
+.tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 150; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--tab-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 46px; z-index: 99; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: var(--text); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
