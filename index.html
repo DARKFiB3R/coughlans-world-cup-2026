@@ -420,6 +420,16 @@ header {
 .lz-elim-out  { color: #ff6b6b; background: rgba(231,76,60,.15); }
 .lz-elim-thru { color: #2ecc71; background: rgba(46,204,113,.12); }
 .lz-synd { font-weight: 700; }
+.lz-col-win  { color: #2ecc71; }
+.lz-col-loss { color: #e74c3c; }
+.lz-col-draw { color: #f39c12; }
+.lz-fate { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-top: 3px; }
+.lz-fate-thru { color: #2ecc71; }
+.lz-fate-out  { color: #e74c3c; }
+.lz-fate-synd { font-size: .65rem; }
+body[data-theme="light"] .lz-col-win  { color: #16a34a; }
+body[data-theme="light"] .lz-col-loss { color: #dc2626; }
+body[data-theme="light"] .lz-col-draw { color: #d97706; }
 body[data-theme="light"] .lz-card.lz-finished { background: #f4f6fb; border-color: #e2e5ee; opacity: .85; }
 body[data-theme="light"] .lz-ft-badge { color: #9ca3af; }
 body[data-theme="light"] .lz-score-num.lz-ft { color: #374151; }
@@ -2062,16 +2072,16 @@ function renderBanner(st) {
     ? `Group ${(m.group||'').replace('GROUP_','')}`
     : (KO_SHORT[m.stage]||m.stage||'');
   const isSyndMatch = m => SYND_TEAMS.has(norm(m.home)) || SYND_TEAMS.has(norm(m.away));
+  const IS_KO = s => ['LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS','THIRD_PLACE','FINAL'].includes(s);
 
   const live     = st.allMatches.filter(m => m.status==='IN_PLAY'||m.status==='PAUSED');
   const recent   = st.allMatches
     .filter(m => m.status==='FINISHED' && (now - new Date(m.utcDate)) < H24)
-    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate)); // oldest first (left)
+    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
   const upcoming = st.allMatches
     .filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && new Date(m.utcDate) > now && (new Date(m.utcDate)-now) < H24)
-    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate)); // soonest first
+    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-  // Nothing at all — fall back to next actual match
   if (!live.length && !recent.length && !upcoming.length) {
     const next = st.allMatches.filter(m=>m.status==='SCHEDULED'||m.status==='TIMED')
                    .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
@@ -2082,28 +2092,44 @@ function renderBanner(st) {
     return;
   }
 
-  // ── Sort live: syndicate first (earliest kickoff), then non-syndicate ────────
+  // Syndicate live first (earliest kickoff), then others
   const livePrimary = [
     ...live.filter(isSyndMatch).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
     ...live.filter(m=>!isSyndMatch(m)).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
   ];
 
-  // ── Build a card ─────────────────────────────────────────────────────────────
   const makeCard = (m, type) => {
     const h = norm(m.home), a = norm(m.away);
     const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
     const isLive = type === 'live';
     const isDone = type === 'done';
 
+    // ── Result colouring ──────────────────────────────────────────────────────
+    let scoreMid, hFate = '', aFate = '';
+    if (isDone) {
+      const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
+      const hCls = hWon ? 'lz-col-win' : aWon ? 'lz-col-loss' : 'lz-col-draw';
+      const aCls = aWon ? 'lz-col-win' : hWon ? 'lz-col-loss' : 'lz-col-draw';
+      scoreMid = `<div class="lz-score-num"><span class="${hCls}">${m.homeScore??0}</span><span class="lz-score-sep">–</span><span class="${aCls}">${m.awayScore??0}</span></div>`;
+      if (IS_KO(m.stage)) {
+        hFate = hWon
+          ? `<div class="lz-fate lz-fate-thru${hS?' lz-fate-synd':''}">✅ Through</div>`
+          : `<div class="lz-fate lz-fate-out${hS?' lz-fate-synd':''}">❌ Out</div>`;
+        aFate = aWon
+          ? `<div class="lz-fate lz-fate-thru${aS?' lz-fate-synd':''}">✅ Through</div>`
+          : `<div class="lz-fate lz-fate-out${aS?' lz-fate-synd':''}">❌ Out</div>`;
+      }
+    } else if (isLive) {
+      scoreMid = `<div class="lz-score-num">${m.homeScore??0}<span class="lz-score-sep">–</span>${m.awayScore??0}</div>`;
+    } else {
+      scoreMid = `<div class="lz-score-vs">vs</div><div class="lz-score-sub">${fmtTime(m.utcDate)}</div>`;
+    }
+
     const metaL = isLive
       ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
       : isDone
         ? `<div class="lz-ft-badge">FT</div>`
         : `<div class="lz-next-label">📅 ${fmtTime(m.utcDate)}</div>`;
-
-    const scoreMid = isLive || isDone
-      ? `<div class="lz-score-num">${m.homeScore??0}<span class="lz-score-sep">–</span>${m.awayScore??0}</div>`
-      : `<div class="lz-score-vs">vs</div><div class="lz-score-sub">${fmtTime(m.utcDate)}</div>`;
 
     const cls = ['lz-card',
       isLive ? 'is-live' : isDone ? 'lz-finished' : 'is-upcoming',
@@ -2113,14 +2139,13 @@ function renderBanner(st) {
     return `<div class="${cls}" onclick="showMatchCentre()">
       <div class="lz-card-meta">${metaL}<div class="lz-stage-lbl">${slbl(m)}</div></div>
       <div class="lz-teams-row">
-        <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div></div>
+        <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div>${hFate}</div>
         <div class="lz-score-mid">${scoreMid}</div>
-        <div class="lz-side">${teamCrest(a,'lz-crest')}<div class="lz-name${aS?' lz-synd':''}">${starTeam(a)}${a}</div></div>
+        <div class="lz-side">${teamCrest(a,'lz-crest')}<div class="lz-name${aS?' lz-synd':''}">${starTeam(a)}${a}</div>${aFate}</div>
       </div>
     </div>`;
   };
 
-  // ── Strip order: [results oldest→newest] [live primary] [other live] [upcoming]
   const allCards = [
     ...recent.map(m => makeCard(m, 'done')),
     ...livePrimary.map(m => makeCard(m, 'live')),
@@ -2135,7 +2160,6 @@ function renderBanner(st) {
   b.innerHTML = hdr + `<div class="lz-scroll${single}" id="lz-main-scroll">${allCards.join('')}</div>`;
   b.className = 'visible';
 
-  // Auto-scroll to primary live card (first .is-live), or first upcoming if nothing live
   requestAnimationFrame(() => {
     const sc = document.getElementById('lz-main-scroll');
     if (!sc) return;
@@ -2143,7 +2167,6 @@ function renderBanner(st) {
     let idx = cards.findIndex(c => c.classList.contains('is-live'));
     if (idx < 0) idx = cards.findIndex(c => c.classList.contains('is-upcoming'));
     if (idx > 0) {
-      // Scroll so this card lands at the snap position (9vw from left)
       const snapOffset = Math.round(window.innerWidth * 0.09);
       sc.scrollLeft = cards[idx].offsetLeft - snapOffset;
     }
