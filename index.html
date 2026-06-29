@@ -119,6 +119,8 @@ body[data-theme="light"] .group-card-title { border-bottom-color:#e2e5ee; }
 body[data-theme="light"] .gtr-pos { color:#6b7280; }
 body[data-theme="light"] .gtr-num { color:#374151; }
 body[data-theme="light"] .gtr-pts { color:#111827; }
+body[data-theme="light"] .gtr-synd { color:#111827; }
+body[data-theme="light"] .gtr-name { color:#4b5563; }
 body[data-theme="light"] .group-team-row { border-bottom-color:#edf0f6; }
 body[data-theme="light"] .group-team-row:hover { background:#f1f3fa; }
 body[data-theme="light"] .group-team-row.through { background:rgba(16,185,129,.06); border-left-color:#10b981; }
@@ -339,6 +341,7 @@ header {
 .gtr-num { text-align: right; color:rgba(255,255,255,0.83); }
 .gtr-gd { text-align: right; font-weight: 600; }
 .gtr-pts { text-align: right; font-weight: 800; color: #e8edf5; }
+.gtr-synd { font-weight: 700; color: #e8edf5; }
 .live-card { margin: 10px 14px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.09); background: rgba(0,0,0,.3); backdrop-filter: blur(12px); }
 .live-card.is-live { border-color: rgba(192,57,43,.45); box-shadow: 0 0 24px rgba(192,57,43,.1); }
 .live-card.is-upcoming { border-color: rgba(59,143,212,.25); }
@@ -1341,7 +1344,7 @@ function renderGroups(st) {
       return `<div class="group-team-row ${cls}" onclick="showModal('${escQ(t.team)}')">
         <span class="gtr-pos">${t.rank}</span>
         <span>${teamCrest(t.team,'crest-sm')}</span>
-        <span class="gtr-name" style="${hasSyndicate?'color:#e8edf5;font-weight:700':'color:rgba(255,255,255,.6)'}">${starTeam(t.team)}${t.team}</span>
+        <span class="gtr-name${hasSyndicate?' gtr-synd':''}">${starTeam(t.team)}${t.team}</span>
         <span class="gtr-num">${t.gp}</span>
         <span class="gtr-num">${t.w}</span>
         <span class="gtr-num">${t.d}</span>
@@ -1361,8 +1364,7 @@ function renderGroups(st) {
   };
 
   const grid=`<div class="groups-grid">${sortedGroups.map(makeGroupCard).join('')}</div>`;
-  const key=`<div class="sec-hdr">📋 All Groups · 🟢 Qualified · 🟡 Best-third pending · Syndicate teams in <strong style="color:#fff">bold</strong></div>`;
-  document.getElementById('content').innerHTML=key+grid;
+  document.getElementById('content').innerHTML=grid;
 }
 
 // ── RENDER: BRACKET ───────────────────────────────────────────────────────────
