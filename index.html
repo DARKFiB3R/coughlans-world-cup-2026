@@ -84,12 +84,12 @@ body::after {
 /* ── HEADER ── */
 header {
   background: linear-gradient(135deg, rgba(10,40,20,.98) 0%, rgba(5,10,28,.98) 100%);
-  padding: 10px 16px 10px 6px;
+  padding: 10px 8px 10px 6px;
   border-bottom: 1px solid rgba(39,174,96,.4);
   box-shadow: 0 4px 40px rgba(0,0,0,.4), 0 0 80px rgba(39,174,96,.05);
   backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: space-between; gap: 6px;
-  position: sticky; top: 0; z-index: 100;
+  position: sticky; top: 0; z-index: 200;
 }
 .header-logo { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
 .header-title { flex: 1; cursor: pointer; min-width: 0; overflow: hidden; }
@@ -103,6 +103,8 @@ header {
 .header-right { text-align: right; flex-shrink: 0; }
 #live-label { font-size: .63rem; color:rgba(255,255,255,0.78); display: block; }
 #last-updated { font-size: .57rem; color:rgba(255,255,255,0.56); margin-top: 2px; display: block; }
+.tt-icon { font-size: 1rem; line-height: 1; transition: filter .2s, opacity .2s; display: inline-block; }
+.tt-icon.inactive { filter: grayscale(1); opacity: .28; }
 .live-pill { display: inline-block; background: #c0392b; color: #fff; font-size: .58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .5px; margin-left: 4px; animation: blink 1s infinite; vertical-align: middle; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
@@ -132,7 +134,7 @@ header {
 
 /* ── TABS ── */
 .tab-bar-wrap { position: relative; }
-.tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 100; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
+.tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 98; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--tab-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 46px; z-index: 99; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: var(--text); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
@@ -491,7 +493,9 @@ header {
     <div class="header-sub">48 teams · 120 colleagues</div>
   </div>
   <div class="header-right">
-    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" style="background:none;border:none;cursor:pointer;font-size:1.2rem;padding:2px 0 4px;opacity:.7;transition:opacity .15s;display:block;margin-bottom:4px">🌙</button>
+    <div id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" style="display:flex;gap:2px;cursor:pointer;padding:0;margin-bottom:6px;justify-content:flex-end">
+      <span class="tt-icon" id="tt-sun">☀️</span><span class="tt-icon" id="tt-moon">🌙</span>
+    </div>
     <div id="live-label">Auto-updating</div>
     <div id="last-updated">Loading…</div>
   </div>
@@ -2333,8 +2337,17 @@ loadSquads();
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function applyTheme(theme) {
   document.body.setAttribute('data-theme', theme);
-  const btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+  const sun  = document.getElementById('tt-sun');
+  const moon = document.getElementById('tt-moon');
+  if (sun && moon) {
+    if (theme === 'light') {
+      sun.classList.remove('inactive');
+      moon.classList.add('inactive');
+    } else {
+      moon.classList.remove('inactive');
+      sun.classList.add('inactive');
+    }
+  }
 }
 function toggleTheme() {
   const current = document.body.getAttribute('data-theme') || 'dark';
