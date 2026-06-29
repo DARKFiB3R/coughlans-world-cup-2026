@@ -7,7 +7,17 @@
 const CACHE = 'wc2026-assets-v1';
 
 self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    self.clients.claim().then(() =>
+      // Tell all open tabs to reload so they get fresh code immediately
+      self.clients.matchAll({ type: 'window' }).then(clients =>
+        clients.forEach(c => c.postMessage({ type: 'SW_UPDATED' }))
+      )
+    )
+  );
+});
 
 self.addEventListener('fetch', e => {
   const { request } = e;
@@ -17,7 +27,7 @@ self.addEventListener('fetch', e => {
   if (request.mode === 'navigate') {
     e.respondWith(
       fetch(request, { cache: 'no-store' })
-        .catch(() => caches.match(request)) // offline fallback
+        .catch(() => caches.match(request))
     );
     return;
   }

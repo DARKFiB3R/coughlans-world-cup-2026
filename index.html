@@ -108,7 +108,7 @@ header {
 .header-right { text-align: right; flex-shrink: 0; }
 #live-label { font-size: .63rem; color:rgba(255,255,255,0.78); display: block; }
 #last-updated { font-size: .57rem; color:rgba(255,255,255,0.56); margin-top: 2px; display: block; }
-#theme-toggle { position: absolute; top: 7px; right: 7px; display: flex; gap: 3px; cursor: pointer; z-index: 10; }
+#theme-toggle { position: absolute; top: 11px; right: 7px; display: flex; gap: 3px; cursor: pointer; z-index: 10; }
 .tt-icon { font-size: 1rem; line-height: 1; transition: filter .2s, opacity .2s; display: inline-block; }
 .tt-icon.inactive { filter: grayscale(1); opacity: .28; }
 .live-pill { display: inline-block; background: #c0392b; color: #fff; font-size: .58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .5px; margin-left: 4px; animation: blink 1s infinite; vertical-align: middle; }
@@ -2369,10 +2369,23 @@ function toggleTheme() {
   } catch(e) { applyTheme('dark'); }
 })();
 
+// ── VISIBILITY CHANGE: re-fetch when user returns to the tab ──────────────────
+// Mobile browsers pause JS timers when the tab is backgrounded.
+// This fires an immediate update the moment the tab becomes visible again.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) update();
+});
+
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+  // When the SW signals a new version is active, reload to get fresh code
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SW_UPDATED') {
+      setTimeout(() => window.location.reload(), 400);
+    }
   });
 }
 </script>
