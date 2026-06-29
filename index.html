@@ -702,7 +702,7 @@ body[data-theme="light"] .pm-team-line-text { color:#4b5563; }
 body[data-theme="light"] .pm-section { border-bottom-color:#edf0f6; }
 body[data-theme="light"] .pm-sec-title { color:#6b7280; }
 body[data-theme="light"] .modal-team-name { color:#111827; }
-body[data-theme="light"] #pm-header { background:transparent !important; }
+/* pm-header colour now set via JS, respects theme */
 </style>
 </head>
 <body>
@@ -2351,7 +2351,13 @@ function showPersonModal(person, team) {
   const gr     = lastState.groupRanks[team];
   const grPts  = gr?.pts??'—';
 
-  document.getElementById('pm-header').style.background = color+'33';
+  const _pm_dark = (document.body.getAttribute('data-theme') || 'dark') !== 'light';
+  const _pm_opacity = _pm_dark ? 'aa' : '55';
+  const _pmStickyEl = document.querySelector('#person-modal .modal-header-sticky');
+  if (_pmStickyEl) _pmStickyEl.style.setProperty('background', color + _pm_opacity, 'important');
+  const _pmDragEl = document.getElementById('pm-drag');
+  if (_pmDragEl) _pmDragEl.style.setProperty('background', color + _pm_opacity, 'important');
+  document.getElementById('pm-header').style.background = 'transparent';
   document.getElementById('person-modal').style.borderTopColor = color;
   document.getElementById('pm-crest-wrap').innerHTML = teamCrest(team,'crest-lg');
   document.getElementById('pm-name').textContent = person;
