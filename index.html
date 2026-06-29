@@ -2195,6 +2195,7 @@ async function fetchMatches() {
 
 async function update() {
   clearTimeout(refreshTimer);
+  checkPageVersion(); // piggyback on every data refresh — catches updates even without tab switching
   try{
     // Refresh scorers/metadata from data.json periodically
     if(Date.now()-metaFetchedAt>META_TTL) await fetchMetadata();
@@ -2545,6 +2546,7 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) {
     espnDirect = true; // retry ESPN after coming back from background
     update();
+    checkPageVersion(); // check for new app version on every tab focus
   }
 });
 
