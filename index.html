@@ -874,9 +874,7 @@ function switchTab(tab) {
   if (!['leaderboard','teamstats'].includes(tab)) activeFilter = null;
   document.querySelectorAll('.tab-btn').forEach((b,i) =>
     b.classList.toggle('active', ALL_TABS[i]===tab));
-  // Search only makes sense on Leaders and Teams tabs
-  document.querySelector('.search-wrap').style.display =
-    ['leaderboard','teamstats','boot'].includes(tab) ? '' : 'none';
+
   clearSearch();
   if (lastState) renderCurrentTab();
 }
