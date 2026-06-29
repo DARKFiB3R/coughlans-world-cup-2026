@@ -121,6 +121,7 @@ body[data-theme="light"] .gtr-num { color:#374151; }
 body[data-theme="light"] .gtr-pts { color:#111827; }
 body[data-theme="light"] .gtr-synd { color:#111827; }
 body[data-theme="light"] .gtr-name { color:#4b5563; }
+body[data-theme="light"] .form-key { color:#6b7280; }
 body[data-theme="light"] .group-team-row { border-bottom-color:#edf0f6; }
 body[data-theme="light"] .group-team-row:hover { background:#f1f3fa; }
 body[data-theme="light"] .group-team-row.through { background:rgba(16,185,129,.06); border-left-color:#10b981; }
@@ -189,6 +190,7 @@ body[data-theme="light"] .pm-sec-title { color: #6b7280; }
 body[data-theme="light"] .pm-result { color: #374151; border-bottom-color: #edf0f6; }
 body[data-theme="light"] .pm-brag { color: #374151; border-bottom-color: #edf0f6; }
 body[data-theme="light"] .modal-team-sub { color: #4b5563; }
+body[data-theme="light"] .m-sub-pts { color:#374151; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg);
@@ -313,6 +315,7 @@ header {
 
 /* ── FORM DOTS ── */
 .form-dots { display: inline-flex; gap: 2px; align-items: center; }
+.form-key { font-size:.58rem; color:rgba(255,255,255,.68); font-weight:400; }
 .form-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
 /* ── TEAM ROW ── */
@@ -326,7 +329,7 @@ header {
 .chev.open { transform: rotate(90deg); }
 
 /* ── EXPAND ── */
-.expand { display: none; background: rgba(0,0,0,.4); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,.05); padding: 10px 14px 12px 60px; }
+.expand { display: none; background: rgba(0,0,0,.4); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,.05); padding: 10px 14px 12px 14px; }
 .expand.open { display: block; }
 .ex-match { display: flex; gap: 8px; font-size: .73rem; padding: 3px 0; color:rgba(255,255,255,0.83); align-items: center; }
 .ex-date { color:rgba(255,255,255,0.56); min-width: 52px; }
@@ -468,9 +471,12 @@ header {
 /* ── MODAL ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 300; align-items: flex-end; justify-content: center; }
 .overlay.open { display: flex; }
-.modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
+.modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: hidden; display: flex; flex-direction: column; animation: slideUp .25s ease; }
+.modal-header-sticky { position: relative; flex-shrink: 0; z-index: 5; }
+.modal-content-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .modal-drag-zone { cursor: grab; touch-action: none; }
+.modal-header-sticky { position: relative; }
 .modal-handle-wrap { padding: 16px 0 12px; display: flex; justify-content: center; pointer-events: none; }
 .modal-handle { width: 48px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; }
 
@@ -480,7 +486,8 @@ header {
 .modal-team-text { flex: 1; min-width: 0; }
 .modal-team-name { font-size: 1.15rem; font-weight: 700; }
 .modal-team-sub { font-size: .72rem; color: #7a9ab0; margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.modal-close { background: rgba(0,0,0,.3); border: none; color: rgba(255,255,255,.7); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.m-sub-pts { font-size:.7rem; color:rgba(255,255,255,.83); }
+.modal-close { position: absolute; top: 12px; right: 12px; z-index: 10; background: rgba(0,0,0,.3); border: none; color: rgba(255,255,255,.7); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
 .modal-close:hover { background: rgba(0,0,0,.5); color: #fff; }
 
 /* Modal tabs */
@@ -626,7 +633,7 @@ header {
 /* ── PERSON MODAL ── */
 #person-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 400; align-items: flex-end; justify-content: center; }
 #person-overlay.open { display: flex; }
-#person-modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 3px solid #f1c40f; box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
+#person-modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 3px solid #f1c40f; box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: hidden; display: flex; flex-direction: column; animation: slideUp .25s ease; }
 .pm-name-text { font-size:1.3rem; font-weight:800; font-family:'Karma',serif; color:#F7DB8D; letter-spacing:.5px; }
 .pm-team-line-text { font-size:.78rem; color:rgba(255,255,255,.65); margin-top:4px; display:flex; align-items:center; gap:6px; }
 .pm-section { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
@@ -761,61 +768,63 @@ body[data-theme="light"] #pm-header { background:transparent !important; }
 <!-- TEAM MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal" id="modal">
-    <div class="modal-drag-zone">
-      <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-      <div class="modal-team-band" id="m-band">
-      <img class="crest-lg" id="m-crest" src="" alt="">
-      <div class="modal-team-text">
-        <div class="modal-team-name" id="m-name"></div>
-        <div class="modal-team-sub" id="m-sub"></div>
+    <!-- Sticky header: colour from very top, never scrolls -->
+    <div class="modal-header-sticky">
+      <div class="modal-drag-zone">
+        <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+        <div class="modal-team-band" id="m-band">
+          <img class="crest-lg" id="m-crest" src="" alt="">
+          <div class="modal-team-text">
+            <div class="modal-team-name" id="m-name"></div>
+            <div class="modal-team-sub" id="m-sub"></div>
+          </div>
+          <div class="modal-actions">
+            <button id="m-follow-btn" class="follow-btn not-following" onclick="handleTeamFollow()">⭐ Follow</button>
+          </div>
+        </div>
       </div>
-      <div class="modal-actions">
-        <button class="modal-close" onclick="closeModalForce()">✕</button>
-        <button id="m-follow-btn" class="follow-btn not-following" onclick="handleTeamFollow()">⭐ Follow</button>
-      </div>
-    </div>
-    </div><!-- end modal-drag-zone -->
-
-    <!-- Modal inner tabs -->
-    <div class="modal-tabs" id="m-tabs">
-      <button class="modal-tab active" onclick="switchModalTab('overview')">Overview</button>
-      <button class="modal-tab"        onclick="switchModalTab('matches')">Matches</button>
-      <button class="modal-tab"        onclick="switchModalTab('squad')" id="m-squad-tab">Squad</button>
-    </div>
-
-    <div id="m-panel-overview">
-      <div class="modal-sec">
-        <div class="modal-sec-title">Tournament Progress</div>
-        <div class="progress-strip" id="m-progress"></div>
-      </div>
-      <div class="divider"></div>
-      <div class="modal-sec">
-        <div class="modal-sec-title">Match Stats</div>
-        <div class="stats-row" id="m-stats"></div>
-      </div>
-      <div class="divider"></div>
-      <div class="modal-sec" id="m-scorers-sec" style="display:none">
-        <div class="modal-sec-title">Tournament Scorers</div>
-        <table class="scorers-table" id="m-scorers-table"></table>
-      </div>
-      <div class="divider" id="m-scorers-div" style="display:none"></div>
-      <div class="modal-sec" id="m-next-sec" style="display:none">
-        <div class="modal-sec-title">Next Fixture</div>
-        <div class="next-fixture" id="m-next"></div>
-      </div>
-      <div class="divider" id="m-next-div" style="display:none"></div>
-      <div class="modal-sec" style="padding-bottom:20px">
-        <div class="modal-sec-title">Colleagues</div>
-        <div class="colleagues-list" id="m-colleagues"></div>
+      <button class="modal-close" onclick="closeModalForce()">✕</button>
+      <div class="modal-tabs" id="m-tabs">
+        <button class="modal-tab active" onclick="switchModalTab('overview')">Overview</button>
+        <button class="modal-tab"        onclick="switchModalTab('matches')">Matches</button>
+        <button class="modal-tab"        onclick="switchModalTab('squad')" id="m-squad-tab">Squad</button>
       </div>
     </div>
 
-    <div id="m-panel-matches" style="display:none;padding-bottom:20px">
-      <div class="modal-sec" id="m-matches"></div>
-    </div>
-
-    <div id="m-panel-squad" style="display:none;padding-bottom:20px">
-      <div class="modal-sec" id="m-squad"></div>
+    <!-- Scrollable content area -->
+    <div class="modal-content-area">
+      <div id="m-panel-overview">
+        <div class="modal-sec">
+          <div class="modal-sec-title">Tournament Progress</div>
+          <div class="progress-strip" id="m-progress"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-sec">
+          <div class="modal-sec-title">Match Stats</div>
+          <div class="stats-row" id="m-stats"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-sec" id="m-scorers-sec" style="display:none">
+          <div class="modal-sec-title">Tournament Scorers</div>
+          <table class="scorers-table" id="m-scorers-table"></table>
+        </div>
+        <div class="divider" id="m-scorers-div" style="display:none"></div>
+        <div class="modal-sec" id="m-next-sec" style="display:none">
+          <div class="modal-sec-title">Next Fixture</div>
+          <div class="next-fixture" id="m-next"></div>
+        </div>
+        <div class="divider" id="m-next-div" style="display:none"></div>
+        <div class="modal-sec" style="padding-bottom:20px">
+          <div class="modal-sec-title">Colleagues</div>
+          <div class="colleagues-list" id="m-colleagues"></div>
+        </div>
+      </div>
+      <div id="m-panel-matches" style="display:none;padding-bottom:20px">
+        <div class="modal-sec" id="m-matches"></div>
+      </div>
+      <div id="m-panel-squad" style="display:none;padding-bottom:20px">
+        <div class="modal-sec" id="m-squad"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -823,22 +832,24 @@ body[data-theme="light"] #pm-header { background:transparent !important; }
 <!-- PERSON MODAL -->
 <div id="person-overlay" onclick="closePersonModal(event)">
   <div id="person-modal">
-    <div class="modal-drag-zone" id="pm-drag">
-      <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-      <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px">
-        <div id="pm-crest-wrap"></div>
-        <div style="flex:1;min-width:0">
-          <div id="pm-name" class="pm-name-text"></div>
-          <div id="pm-team-line" class="pm-team-line-text"></div>
-          <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-          <button class="modal-close" onclick="closePersonModalForce()">✕</button>
-          <button id="pm-follow-btn" class="follow-btn not-following" onclick="handlePersonFollow()">⭐ Follow</button>
+    <div class="modal-header-sticky">
+      <div class="modal-drag-zone" id="pm-drag">
+        <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+        <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px">
+          <div id="pm-crest-wrap"></div>
+          <div style="flex:1;min-width:0">
+            <div id="pm-name" class="pm-name-text"></div>
+            <div id="pm-team-line" class="pm-team-line-text"></div>
+            <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+            <button id="pm-follow-btn" class="follow-btn not-following" onclick="handlePersonFollow()">⭐ Follow</button>
+          </div>
         </div>
       </div>
+      <button class="modal-close" onclick="closePersonModalForce()">✕</button>
     </div>
-    <div id="pm-content"></div>
+    <div class="modal-content-area" id="pm-content"></div>
   </div>
 </div>
 
@@ -1309,7 +1320,7 @@ function renderLeaderboard(st) {
   };
 
   const dot = c => `<span class="form-dot" style="background:${c};display:inline-block;margin:0 1px 0 5px;vertical-align:middle"></span>`;
-  const FORM_KEY = `<span style="font-size:.58rem;color:rgba(255,255,255,0.68);font-weight:400">${dot('#27ae60')}Wins${dot('#f39c12')}Draws${dot('#e74c3c')}Losses</span>`;
+  const FORM_KEY = `<span class="form-key">${dot('#27ae60')}Wins${dot('#f39c12')}Draws${dot('#e74c3c')}Losses</span>`;
   const active=people.filter(p=>!isOut(p)&&!isTBD(p)), tbd=people.filter(isTBD), out=people.filter(isOut);
   const followed=people.filter(p=>followedPeople.includes(p.name));
   let html='';
@@ -1347,7 +1358,7 @@ function renderTeamStats(st) {
     return `
       <div class="team-row${isOut(e)?' eliminated':''}" onclick="toggleExpand('${tid}')">
         <div>${teamCrest(e.team)}</div>
-        <div class="team-info"><div class="team-name">${e.team}</div><div class="team-people">${e.people.join(' · ')}</div></div>
+        <div class="team-info"><div class="team-name">${e.team} <span style="opacity:.8">${e.flag||''}</span></div><div class="team-people">${e.people.join(' · ')}</div></div>
         <div style="text-align:right"><div class="badge ${e.status.badge}">${e.status.label}</div>${grPts}</div>
         <div class="chev" id="chev_${tid}">›</div>
       </div>
@@ -1750,9 +1761,9 @@ function showModal(team) {
   const color  = td.color || '#1a3050';
   const grPts  = lastState.groupRanks[team]?.pts ?? '—';
 
-  // Band styling
-  const band = document.getElementById('m-band');
-  band.style.background = color + '33';
+  // Colour the full drag zone so it reaches the very top of the popup
+  document.querySelector('#modal .modal-drag-zone').style.background = color + '33';
+  document.getElementById('m-band').style.background = 'transparent';
   document.getElementById('modal').style.borderTopColor = color;
 
   // Crest
@@ -1763,8 +1774,8 @@ function showModal(team) {
   document.getElementById('m-name').textContent = team;
   document.getElementById('m-sub').innerHTML =
     `<span class="badge ${status.badge}">${status.label}</span>` +
-    `<span style="font-size:.7rem;color:rgba(255,255,255,0.83)">Syndicate pts: ${pts}</span>` +
-    (grPts!=='—'?`<span style="font-size:.7rem;color:rgba(255,255,255,0.73)">· WC pts: ${grPts}</span>`:'') +
+    `<span class="m-sub-pts">Syndicate pts: ${pts}</span>` +
+    (grPts!=='—'?`<span class="m-sub-pts">· WC pts: ${grPts}</span>`:'') +
     (td.form ? formDots(td.form) : '');
 
   // Switch to overview
