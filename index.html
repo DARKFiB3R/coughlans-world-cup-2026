@@ -627,6 +627,8 @@ header {
 #person-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 400; align-items: flex-end; justify-content: center; }
 #person-overlay.open { display: flex; }
 #person-modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 3px solid #f1c40f; box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: auto; animation: slideUp .25s ease; }
+.pm-name-text { font-size:1.3rem; font-weight:800; font-family:'Karma',serif; color:#F7DB8D; letter-spacing:.5px; }
+.pm-team-line-text { font-size:.78rem; color:rgba(255,255,255,.65); margin-top:4px; display:flex; align-items:center; gap:6px; }
 .pm-section { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .pm-sec-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.45); margin-bottom: 7px; }
 .pm-result { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .78rem; }
@@ -688,6 +690,13 @@ body[data-theme="light"] .b-tbd { background:#ffedd5; color:#c2410c; border-colo
 body[data-theme="light"] .b-out { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 /* ── Person modal misc ── */
 body[data-theme="light"] .pm-rival { color:#374151; border-bottom-color:#edf0f6; }
+/* ── Modal header text in light mode ── */
+body[data-theme="light"] .pm-name-text { color:#1a2035; }
+body[data-theme="light"] .pm-team-line-text { color:#4b5563; }
+body[data-theme="light"] .pm-section { border-bottom-color:#edf0f6; }
+body[data-theme="light"] .pm-sec-title { color:#6b7280; }
+body[data-theme="light"] .modal-team-name { color:#111827; }
+body[data-theme="light"] #pm-header { background:transparent !important; }
 </style>
 </head>
 <body>
@@ -819,8 +828,8 @@ body[data-theme="light"] .pm-rival { color:#374151; border-bottom-color:#edf0f6;
       <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px">
         <div id="pm-crest-wrap"></div>
         <div style="flex:1;min-width:0">
-          <div id="pm-name" style="font-size:1.3rem;font-weight:800;font-family:'Karma',serif;color:#F7DB8D;letter-spacing:.5px"></div>
-          <div id="pm-team-line" style="font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;display:flex;align-items:center;gap:6px"></div>
+          <div id="pm-name" class="pm-name-text"></div>
+          <div id="pm-team-line" class="pm-team-line-text"></div>
           <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
