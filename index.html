@@ -1762,7 +1762,7 @@ function showModal(team) {
 
   // Colour the sticky header — belt-and-suspenders: set on both wrapper and drag zone
   const _isDark = (document.body.getAttribute('data-theme') || 'dark') !== 'light';
-  const _opacity = _isDark ? 'aa' : '55'; // 67% in dark, 33% in light
+  const _opacity = _isDark ? '55' : '33'; // 67% in dark, 33% in light
   const _hdrEl = document.querySelector('#modal .modal-header-sticky');
   if (_hdrEl) _hdrEl.style.setProperty('background', color + _opacity, 'important');
   const _dzEl = document.querySelector('#modal .modal-drag-zone');
@@ -2352,7 +2352,7 @@ function showPersonModal(person, team) {
   const grPts  = gr?.pts??'—';
 
   const _pm_dark = (document.body.getAttribute('data-theme') || 'dark') !== 'light';
-  const _pm_opacity = _pm_dark ? 'aa' : '55';
+  const _pm_opacity = _pm_dark ? '55' : '33';
   const _pmStickyEl = document.querySelector('#person-modal .modal-header-sticky');
   if (_pmStickyEl) _pmStickyEl.style.setProperty('background', color + _pm_opacity, 'important');
   const _pmDragEl = document.getElementById('pm-drag');
