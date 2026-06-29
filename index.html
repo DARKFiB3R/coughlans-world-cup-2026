@@ -839,10 +839,115 @@ function resolveStatus(team, st) {
 // ── SEARCH ────────────────────────────────────────────────────────────────────
 function onSearch(val) {
   document.getElementById('search-clear').style.display = val ? 'block' : 'none';
-  const q = val.toLowerCase().trim();
-  document.querySelectorAll('.lb-row,.team-row,.at-row,.boot-row').forEach(r => {
-    r.style.display = !q || r.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
+  const q = val.trim();
+  if (q) {
+    renderSearchResults(q);
+  } else {
+    renderCurrentTab();
+  }
+}
+
+function renderSearchResults(q) {
+  if (!lastState) return;
+  const ql = q.toLowerCase();
+  let html = '';
+  let total = 0;
+
+  // ── People ──────────────────────────────────────────────────────────────────
+  const peopleHits = [];
+  for (const s of SYNDICATE) {
+    for (const name of s.people) {
+      if (name.toLowerCase().includes(ql) || s.team.toLowerCase().includes(ql)) {
+        peopleHits.push({ name, team: s.team, flag: s.flag });
+      }
+    }
+  }
+  if (peopleHits.length) {
+    total += peopleHits.length;
+    html += `<div class="sec-hdr">👤 People (${peopleHits.length})</div>`;
+    for (const p of peopleHits) {
+      const status = resolveStatus(p.team, lastState);
+      const pts    = POINTS[status.code] || 0;
+      const isF    = isFollowingPerson(p.name);
+      html += `<div class="lb-row${isF?' followed':''}" onclick="showPersonModal('${escQ(p.name)}','${escQ(p.team)}')">
+        <div class="lb-rank">👤</div>
+        ${teamCrest(p.team,'crest-sm')}
+        <div class="lb-info">
+          <div class="lb-name">${isF?'⭐ ':''}${p.name}</div>
+          <div class="lb-team">${p.flag||''} ${p.team}</div>
+        </div>
+        <div class="pts-badge pts-${Math.min(pts,7)}">${status.label}</div>
+      </div>`;
+    }
+  }
+
+  // ── Teams ────────────────────────────────────────────────────────────────────
+  const teamHits = SYNDICATE.filter(s => s.team.toLowerCase().includes(ql));
+  if (teamHits.length) {
+    total += teamHits.length;
+    html += `<div class="sec-hdr">📊 Teams (${teamHits.length})</div>`;
+    for (const s of teamHits) {
+      const status = resolveStatus(s.team, lastState);
+      const isF    = isFollowingTeam(s.team);
+      html += `<div class="team-row${isF?' followed':''}" onclick="showModal('${escQ(s.team)}')">
+        ${teamCrest(s.team,'crest')}
+        <div class="team-info">
+          <div class="team-name">${isF?'⭐ ':''}${s.flag||''} ${s.team}</div>
+          <div class="team-people">${s.people.join(', ')}</div>
+        </div>
+        <span class="pts-badge pts-${Math.min(POINTS[status.code]||0,7)}">${status.label}</span>
+        <span class="chev">›</span>
+      </div>`;
+    }
+  }
+
+  // ── Players (scorers from match events) ──────────────────────────────────────
+  const scorerMap = {};
+  for (const m of lastState.allMatches.filter(m => m.status === 'FINISHED')) {
+    for (const e of m.events || []) {
+      if (e.type === 'goal' && !e.ownGoal && e.player) {
+        const k = e.player + '|' + norm(e.team);
+        if (!scorerMap[k]) scorerMap[k] = { player: e.player, team: norm(e.team), goals: 0, pens: 0 };
+        scorerMap[k].goals++;
+        if (e.penalty) scorerMap[k].pens++;
+      }
+    }
+  }
+  const playerHits = Object.values(scorerMap)
+    .filter(s => s.player.toLowerCase().includes(ql))
+    .sort((a,b) => b.goals - a.goals);
+  if (playerHits.length) {
+    total += playerHits.length;
+    html += `<div class="sec-hdr">👟 Players (${playerHits.length})</div>`;
+    for (const s of playerHits) {
+      const synd     = TEAM_MAP[s.team];
+      const isF      = isFollowingPlayer(s.player);
+      const clickable = SYND_TEAMS.has(s.team);
+      const onclick  = clickable ? `onclick="showModal('${escQ(s.team)}');setTimeout(()=>switchModalTab('squad'),80)"` : '';
+      html += `<div class="boot-row${isF?' followed':''}" data-player="${escQ(s.player)}">
+        <div class="boot-inner" ${onclick} style="${clickable?'cursor:pointer':''}">
+          <span class="boot-rank" style="color:rgba(255,255,255,.35)">⚽</span>
+          ${teamCrest(s.team,'crest-sm')}
+          <div class="boot-info">
+            <div class="boot-name${synd?' synd':''}">${starPlayer(s.player)}${s.player}</div>
+            <div class="boot-team">${starTeam(s.team)}${s.team}${synd?` · <span style="color:#2ecc71">${synd.people.join(', ')}</span>`:''}</div>
+          </div>
+          <div class="boot-goals-wrap">
+            <span class="boot-goals-num">${s.goals}</span><span class="boot-goals-lbl">goal${s.goals!==1?'s':''}</span>
+            ${s.pens?`<span class="boot-pen">(${s.pens} pen)</span>`:''}
+          </div>
+        </div>
+        <button class="boot-follow-btn ${isF?'following':'not-following'}"
+          onclick="handlePlayerFollow('${escQ(s.player)}');event.stopPropagation()"
+          title="${isF?'Unfollow':'Follow'} ${s.player}">${isF?'⭐':'☆'}</button>
+      </div>`;
+    }
+  }
+
+  if (!total) {
+    html = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results for "${q}"</div><div class="empty-sub">Try a name, team or player</div></div>`;
+  }
+  document.getElementById('content').innerHTML = html;
 }
 function clearSearch() {
   const inp = document.getElementById('search-input');
