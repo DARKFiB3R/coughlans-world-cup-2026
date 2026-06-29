@@ -422,6 +422,15 @@ header {
 body[data-theme="light"] .lz-card.lz-finished { background: #f4f6fb; border-color: #e2e5ee; opacity: .85; }
 body[data-theme="light"] .lz-ft-badge { color: #9ca3af; }
 body[data-theme="light"] .lz-score-num.lz-ft { color: #374151; }
+/* Results compact bar below live strip */
+.lz-results-bar { display: flex; overflow-x: auto; scrollbar-width: none; gap: 6px; padding: 5px 12px 8px; border-top: 1px solid rgba(255,255,255,.06); }
+.lz-results-bar::-webkit-scrollbar { display: none; }
+.lz-result-pill { flex: 0 0 auto; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 5px 10px; font-size: .68rem; white-space: nowrap; cursor: pointer; color: rgba(255,255,255,.75); }
+.lz-result-pill.synd { border-color: rgba(241,196,15,.35); color: #e8edf5; font-weight: 600; }
+.lz-result-pill .lz-elim { display: inline; font-size: .62rem; margin-left: 4px; background: none; padding: 0; border-radius: 0; }
+body[data-theme="light"] .lz-results-bar { border-top-color: #e2e5ee; }
+body[data-theme="light"] .lz-result-pill { background: #f4f6fb; border-color: #e2e5ee; color: #374151; }
+body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #111827; }
 .lz-next-strip { display: flex; align-items: center; padding: 10px 14px 11px; gap: 12px; cursor: pointer; transition: background .15s; }
 .lz-next-strip:hover { background: rgba(255,255,255,.04); }
 .lz-next-body { flex: 1; min-width: 0; }
@@ -652,6 +661,9 @@ body[data-theme="light"] .lz-score-num.lz-ft { color: #374151; }
 .pm-brag { padding: 6px 0; font-size: .8rem; border-bottom: 1px solid rgba(255,255,255,.05); }
 .pm-brag:last-child { border-bottom: none; }
 .pm-rival { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: .78rem; border-bottom: 1px solid rgba(255,255,255,.05); }
+.pm-meta-text { font-size:.7rem; color:rgba(255,255,255,.65); }
+.pm-meta-dim  { font-size:.7rem; color:rgba(255,255,255,.5); }
+.pm-goalstr   { font-size:.7rem; color:rgba(255,255,255,.55); margin-top:2px; }
 .pm-rival:last-child { border-bottom: none; }
 
 /* Empty state */
@@ -706,6 +718,9 @@ body[data-theme="light"] .b-tbd { background:#ffedd5; color:#c2410c; border-colo
 body[data-theme="light"] .b-out { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 /* ── Person modal misc ── */
 body[data-theme="light"] .pm-rival { color:#374151; border-bottom-color:#edf0f6; }
+body[data-theme="light"] .pm-meta-text { color:#374151; }
+body[data-theme="light"] .pm-meta-dim  { color:#6b7280; }
+body[data-theme="light"] .pm-goalstr   { color:#6b7280; }
 /* ── Modal header text in light mode ── */
 body[data-theme="light"] .pm-name-text { color:#1a2035; }
 body[data-theme="light"] .pm-team-line-text { color:#4b5563; }
@@ -2043,14 +2058,19 @@ function renderBanner(st) {
   const now = Date.now();
   const H24 = 24 * 60 * 60 * 1000;
   const IS_KO = s => ['LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS','THIRD_PLACE','FINAL'].includes(s);
+  const slbl  = m => m.stage==='GROUP_STAGE'
+    ? `Group ${(m.group||'').replace('GROUP_','')}`
+    : (KO_SHORT[m.stage]||m.stage||'');
 
-  const live     = st.allMatches.filter(m => m.status==='IN_PLAY' || m.status==='PAUSED');
-  const finished = st.allMatches.filter(m => m.status==='FINISHED' && (now - new Date(m.utcDate)) < H24)
-                     .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
-  const upcoming = st.allMatches.filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && new Date(m.utcDate) > now && (new Date(m.utcDate) - now) < H24)
-                     .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
+  const live     = st.allMatches.filter(m => m.status==='IN_PLAY'||m.status==='PAUSED');
+  const finished = st.allMatches
+    .filter(m => m.status==='FINISHED' && (now - new Date(m.utcDate)) < H24)
+    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
+  const upcoming = st.allMatches
+    .filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && new Date(m.utcDate) > now && (new Date(m.utcDate)-now) < H24)
+    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-  // Nothing in the 24h window — fall back to next actual match
+  // Nothing in window — fall back to next actual match
   if (!live.length && !finished.length && !upcoming.length) {
     const next = st.allMatches.filter(m=>m.status==='SCHEDULED'||m.status==='TIMED')
                    .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
@@ -2061,81 +2081,67 @@ function renderBanner(st) {
     return;
   }
 
-  const stageLbl = m => m.stage==='GROUP_STAGE'
-    ? `Group ${(m.group||'').replace('GROUP_','')}`
-    : (KO_SHORT[m.stage]||m.stage||'');
-
-  const makeCard = m => {
+  // ── Make a live/upcoming card ──────────────────────────────────────────────
+  const makeCard = (m, isLive) => {
     const h = norm(m.home), a = norm(m.away);
     const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
-    const isDone = m.status==='FINISHED';
-    const isLive = m.status==='IN_PLAY'||m.status==='PAUSED';
-
-    // Elimination note for KO results involving syndicate teams
-    let elimNote = '';
-    if (isDone && IS_KO(m.stage)) {
-      const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
-      if (hS && aWon) elimNote = `<div class="lz-elim lz-elim-out">❌ ${h} eliminated</div>`;
-      else if (aS && hWon) elimNote = `<div class="lz-elim lz-elim-out">❌ ${a} eliminated</div>`;
-      else if (hS && hWon) elimNote = `<div class="lz-elim lz-elim-thru">✅ ${h} through</div>`;
-      else if (aS && aWon) elimNote = `<div class="lz-elim lz-elim-thru">✅ ${a} through</div>`;
-    }
-
-    const metaLeft = isDone
-      ? `<div class="lz-ft-badge">FT</div>`
-      : isLive
-        ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
-        : `<div class="lz-next-label">📅 ${fmtTime(m.utcDate)}</div>`;
-
-    const scoreMid = isDone||isLive
-      ? `<div class="lz-score-num${isDone?' lz-ft':''}">${m.homeScore??0}–${m.awayScore??0}</div>`
-      : `<div class="lz-score-vs">vs</div>`;
-
-    const cls = ['lz-card',
-      isDone?'lz-finished':isLive?'is-live':'is-upcoming',
-      isSynd?'synd-match':''
-    ].filter(Boolean).join(' ');
-
+    const scoreMid = isLive
+      ? `<div class="lz-score-num">${m.homeScore??0}–${m.awayScore??0}</div>`
+      : `<div class="lz-score-vs">vs</div><div class="lz-score-sub">${fmtTime(m.utcDate)}</div>`;
+    const metaL = isLive
+      ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
+      : `<div class="lz-next-label">📅 Next</div>`;
+    const cls = ['lz-card', isLive?'is-live':'is-upcoming', isSynd?'synd-match':''].filter(Boolean).join(' ');
     return `<div class="${cls}" onclick="showMatchCentre()">
-      <div class="lz-card-meta">${metaLeft}<div class="lz-stage-lbl">${stageLbl(m)}</div></div>
+      <div class="lz-card-meta">${metaL}<div class="lz-stage-lbl">${slbl(m)}</div></div>
       <div class="lz-teams-row">
-        <div class="lz-side">
-          ${teamCrest(h,'lz-crest')}
-          <div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div>
-        </div>
+        <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div></div>
         <div class="lz-score-mid">${scoreMid}</div>
-        <div class="lz-side">
-          ${teamCrest(a,'lz-crest')}
-          <div class="lz-name${aS?' lz-synd':''}">${starTeam(a)}${a}</div>
-        </div>
-      </div>${elimNote}
+        <div class="lz-side">${teamCrest(a,'lz-crest')}<div class="lz-name${aS?' lz-synd':''}">${starTeam(a)}${a}</div></div>
+      </div>
     </div>`;
   };
 
-  // Order: finished (oldest→newest) → live (syndicate first) → upcoming
+  // ── Make a compact result pill for the bar below ───────────────────────────
+  const makePill = m => {
+    const h = norm(m.home), a = norm(m.away);
+    const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
+    let elimTag = '';
+    if (IS_KO(m.stage)) {
+      const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
+      if (hS&&aWon) elimTag = ` <span class="lz-elim lz-elim-out">❌</span>`;
+      else if (aS&&hWon) elimTag = ` <span class="lz-elim lz-elim-out">❌</span>`;
+      else if ((hS&&hWon)||(aS&&aWon)) elimTag = ` <span class="lz-elim lz-elim-thru">✅</span>`;
+    }
+    return `<div class="lz-result-pill${isSynd?' synd':''}" onclick="showMatchCentre()">
+      ${h} ${m.homeScore}–${m.awayScore} ${a}${elimTag} <span style="opacity:.6">· FT</span>
+    </div>`;
+  };
+
+  // ── Strip: live first (synd priority), then upcoming ──────────────────────
   const liveSorted = [
     ...live.filter(m=>SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))),
     ...live.filter(m=>!SYND_TEAMS.has(norm(m.home))&&!SYND_TEAMS.has(norm(m.away))),
   ];
-  const allCards = [...finished, ...liveSorted, ...upcoming];
+  const stripCards = [
+    ...liveSorted.map(m => makeCard(m, true)),
+    ...upcoming.map(m => makeCard(m, false)),
+  ];
+
+  // ── Results bar ────────────────────────────────────────────────────────────
+  const resultsBar = finished.length
+    ? `<div class="lz-results-bar">${[...finished].reverse().map(makePill).join('')}</div>`
+    : '';
 
   const hdrHtml = live.length
     ? `<div class="lz-live-header"><div class="lz-dot"></div><div class="lz-header-text">${live.length} game${live.length!==1?'s':''} live now</div></div>`
     : '';
 
-  const scrollEl = 'lz-main-scroll';
-  b.innerHTML = hdrHtml + `<div class="lz-scroll" id="${scrollEl}">${allCards.map(makeCard).join('')}</div>`;
+  const single = stripCards.length === 1 ? ' lz-single' : '';
+  b.innerHTML = hdrHtml
+    + `<div class="lz-scroll${single}" id="lz-main-scroll">${stripCards.join('')}</div>`
+    + resultsBar;
   b.className = 'visible';
-
-  // Scroll so first live card (or first upcoming) is in view
-  requestAnimationFrame(() => {
-    const sc = document.getElementById(scrollEl);
-    if (!sc) return;
-    const cards = sc.querySelectorAll('.lz-card');
-    let idx = [...cards].findIndex(c=>c.classList.contains('is-live'));
-    if (idx < 0) idx = [...cards].findIndex(c=>c.classList.contains('is-upcoming'));
-    if (idx > 0) sc.scrollLeft = cards[idx].offsetLeft - 14;
-  });
 }
 
 function renderStats(st) {
@@ -2420,8 +2426,8 @@ function showPersonModal(person, team) {
   document.getElementById('pm-team-line').innerHTML = `${team}`;
   document.getElementById('pm-pts-line').innerHTML =
     `<span class="badge ${status.badge}">${status.label}</span>`+
-    `<span style="font-size:.7rem;color:rgba(255,255,255,.65)">Syn pts: ${pts}</span>`+
-    (grPts!=='—'?`<span style="font-size:.7rem;color:rgba(255,255,255,.5)">· WC pts: ${grPts}</span>`:'');
+    `<span class="pm-meta-text">Syn pts: ${pts}</span>`+
+    (grPts!=='—'?`<span class="pm-meta-text">· WC pts: ${grPts}</span>`:'');
 
   updatePersonFollowBtn();
 
