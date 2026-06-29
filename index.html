@@ -1760,10 +1760,13 @@ function showModal(team) {
   const color  = td.color || '#1a3050';
   const grPts  = lastState.groupRanks[team]?.pts ?? '—';
 
-  // Colour the sticky header — clips to modal's rounded corners via overflow:hidden
+  // Colour the sticky header — belt-and-suspenders: set on both wrapper and drag zone
   const _isDark = (document.body.getAttribute('data-theme') || 'dark') !== 'light';
-  const _hdrOpacity = _isDark ? '66' : '30'; // stronger tint in dark, softer in light
-  document.querySelector('#modal .modal-header-sticky').style.background = color + _hdrOpacity;
+  const _opacity = _isDark ? 'aa' : '55'; // 67% in dark, 33% in light
+  const _hdrEl = document.querySelector('#modal .modal-header-sticky');
+  if (_hdrEl) _hdrEl.style.setProperty('background', color + _opacity, 'important');
+  const _dzEl = document.querySelector('#modal .modal-drag-zone');
+  if (_dzEl) _dzEl.style.setProperty('background', color + _opacity, 'important');
   document.getElementById('m-band').style.background = 'transparent';
   document.getElementById('modal').style.borderTopColor = color;
 
