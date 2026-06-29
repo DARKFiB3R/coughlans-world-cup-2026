@@ -411,7 +411,17 @@ header {
 .lz-score-num { font-size: 2.8rem; font-weight: 900; color: #fff; letter-spacing: -3px; line-height: 1; }
 .lz-score-vs { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,.65); line-height: 1; padding: 4px 0 2px; }
 .lz-score-sub { font-size: .62rem; color: rgba(255,255,255,.82); margin-top: 5px; line-height: 1.5; }
-/* Next match strip */
+.lz-card.lz-finished { opacity: .72; background: rgba(0,0,0,.55); border-color: rgba(255,255,255,.07); }
+.lz-card.lz-finished:hover { opacity: .9; }
+.lz-ft-badge { font-size: .6rem; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; }
+.lz-score-num.lz-ft { color: rgba(255,255,255,.8); font-size: 2.4rem; }
+.lz-elim { font-size: .65rem; font-weight: 600; text-align: center; margin-top: 6px; padding: 3px 6px; border-radius: 6px; }
+.lz-elim-out  { color: #ff6b6b; background: rgba(231,76,60,.15); }
+.lz-elim-thru { color: #2ecc71; background: rgba(46,204,113,.12); }
+.lz-synd { font-weight: 700; }
+body[data-theme="light"] .lz-card.lz-finished { background: #f4f6fb; border-color: #e2e5ee; opacity: .85; }
+body[data-theme="light"] .lz-ft-badge { color: #9ca3af; }
+body[data-theme="light"] .lz-score-num.lz-ft { color: #374151; }
 .lz-next-strip { display: flex; align-items: center; padding: 10px 14px 11px; gap: 12px; cursor: pointer; transition: background .15s; }
 .lz-next-strip:hover { background: rgba(255,255,255,.04); }
 .lz-next-body { flex: 1; min-width: 0; }
@@ -2029,57 +2039,103 @@ function renderMatchCentre(st) {
 
 // ── BANNER & STATS ────────────────────────────────────────────────────────────
 function renderBanner(st) {
-  const b = document.getElementById('live-zone');
-  const live = st.allMatches.filter(m => m.status === 'IN_PLAY' || m.status === 'PAUSED');
+  const b   = document.getElementById('live-zone');
+  const now = Date.now();
+  const H24 = 24 * 60 * 60 * 1000;
+  const IS_KO = s => ['LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS','THIRD_PLACE','FINAL'].includes(s);
 
-  // Helper: build a match card (live or upcoming)
-  const makeMatchCard = (m, isLive) => {
-    const h = norm(m.home), a = norm(m.away);
-    const isSynd = SYND_TEAMS.has(h) || SYND_TEAMS.has(a);
-    const stageLbl = m.stage === 'GROUP_STAGE'
-      ? `Group ${(m.group||'').replace('GROUP_','')}`
-      : (KO_SHORT[m.stage]||m.stage||'');
-    const meta = isLive
-      ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock || 'LIVE'}</div><div class="lz-stage-lbl">${stageLbl}</div>`
-      : `<div class="lz-next-label">📅 Next match</div><div class="lz-stage-lbl">${stageLbl}</div>`;
-    const scoreMid = isLive
-      ? `<div class="lz-score-num">${m.homeScore ?? 0}\u2013${m.awayScore ?? 0}</div>`
-      : `<div class="lz-score-vs">vs</div><div class="lz-score-sub">${fmtDT(m.utcDate)}</div>`;
-    const cls = ['lz-card', isLive ? 'is-live' : 'is-upcoming', isSynd ? 'synd-match' : ''].filter(Boolean).join(' ');
-    return `<div class="${cls}" onclick="showMatchCentre()">
-      <div class="lz-card-meta">${meta}</div>
-      <div class="lz-teams-row">
-        <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name">${starTeam(h)}${h}</div></div>
-        <div class="lz-score-mid">${scoreMid}</div>
-        <div class="lz-side">${teamCrest(a,'lz-crest')}<div class="lz-name">${starTeam(a)}${a}</div></div>
-      </div>
-    </div>`;
-  };
+  const live     = st.allMatches.filter(m => m.status==='IN_PLAY' || m.status==='PAUSED');
+  const finished = st.allMatches.filter(m => m.status==='FINISHED' && (now - new Date(m.utcDate)) < H24)
+                     .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
+  const upcoming = st.allMatches.filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && new Date(m.utcDate) > now && (new Date(m.utcDate) - now) < H24)
+                     .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-  if (live.length) {
-    // Syndicate matches bubble to front
-    const sorted = [
-      ...live.filter(m => SYND_TEAMS.has(norm(m.home)) || SYND_TEAMS.has(norm(m.away))),
-      ...live.filter(m => !SYND_TEAMS.has(norm(m.home)) && !SYND_TEAMS.has(norm(m.away))),
-    ];
-    const cards = sorted.map(m => makeMatchCard(m, true)).join('');
-    b.innerHTML = `<div class="lz-live-header"><div class="lz-dot"></div><div class="lz-header-text">${live.length} game${live.length!==1?'s':''} live now</div></div>
-      <div class="lz-scroll">${cards}</div>`;
-    b.className = 'visible';
+  // Nothing in the 24h window — fall back to next actual match
+  if (!live.length && !finished.length && !upcoming.length) {
+    const next = st.allMatches.filter(m=>m.status==='SCHEDULED'||m.status==='TIMED')
+                   .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
+    if (next) {
+      b.innerHTML = `<div class="lz-scroll lz-single">${makeMatchCard(next, false)}</div>`;
+      b.className = 'visible';
+    } else { b.className = ''; }
     return;
   }
 
-  // Not live — show the next actual WC match (any team)
-  const next = st.allMatches
-    .filter(m => m.status==='SCHEDULED' || m.status==='TIMED')
-    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate))[0];
+  const stageLbl = m => m.stage==='GROUP_STAGE'
+    ? `Group ${(m.group||'').replace('GROUP_','')}`
+    : (KO_SHORT[m.stage]||m.stage||'');
 
-  if (next) {
-    b.innerHTML = `<div class="lz-scroll lz-single">${makeMatchCard(next, false)}</div>`;
-    b.className = 'visible';
-  } else {
-    b.className = '';
-  }
+  const makeCard = m => {
+    const h = norm(m.home), a = norm(m.away);
+    const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
+    const isDone = m.status==='FINISHED';
+    const isLive = m.status==='IN_PLAY'||m.status==='PAUSED';
+
+    // Elimination note for KO results involving syndicate teams
+    let elimNote = '';
+    if (isDone && IS_KO(m.stage)) {
+      const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
+      if (hS && aWon) elimNote = `<div class="lz-elim lz-elim-out">❌ ${h} eliminated</div>`;
+      else if (aS && hWon) elimNote = `<div class="lz-elim lz-elim-out">❌ ${a} eliminated</div>`;
+      else if (hS && hWon) elimNote = `<div class="lz-elim lz-elim-thru">✅ ${h} through</div>`;
+      else if (aS && aWon) elimNote = `<div class="lz-elim lz-elim-thru">✅ ${a} through</div>`;
+    }
+
+    const metaLeft = isDone
+      ? `<div class="lz-ft-badge">FT</div>`
+      : isLive
+        ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
+        : `<div class="lz-next-label">📅 ${fmtTime(m.utcDate)}</div>`;
+
+    const scoreMid = isDone||isLive
+      ? `<div class="lz-score-num${isDone?' lz-ft':''}">${m.homeScore??0}–${m.awayScore??0}</div>`
+      : `<div class="lz-score-vs">vs</div>`;
+
+    const cls = ['lz-card',
+      isDone?'lz-finished':isLive?'is-live':'is-upcoming',
+      isSynd?'synd-match':''
+    ].filter(Boolean).join(' ');
+
+    return `<div class="${cls}" onclick="showMatchCentre()">
+      <div class="lz-card-meta">${metaLeft}<div class="lz-stage-lbl">${stageLbl(m)}</div></div>
+      <div class="lz-teams-row">
+        <div class="lz-side">
+          ${teamCrest(h,'lz-crest')}
+          <div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div>
+        </div>
+        <div class="lz-score-mid">${scoreMid}</div>
+        <div class="lz-side">
+          ${teamCrest(a,'lz-crest')}
+          <div class="lz-name${aS?' lz-synd':''}">${starTeam(a)}${a}</div>
+        </div>
+      </div>${elimNote}
+    </div>`;
+  };
+
+  // Order: finished (oldest→newest) → live (syndicate first) → upcoming
+  const liveSorted = [
+    ...live.filter(m=>SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))),
+    ...live.filter(m=>!SYND_TEAMS.has(norm(m.home))&&!SYND_TEAMS.has(norm(m.away))),
+  ];
+  const allCards = [...finished, ...liveSorted, ...upcoming];
+
+  const hdrHtml = live.length
+    ? `<div class="lz-live-header"><div class="lz-dot"></div><div class="lz-header-text">${live.length} game${live.length!==1?'s':''} live now</div></div>`
+    : '';
+
+  const scrollEl = 'lz-main-scroll';
+  b.innerHTML = hdrHtml + `<div class="lz-scroll" id="${scrollEl}">${allCards.map(makeCard).join('')}</div>`;
+  b.className = 'visible';
+
+  // Scroll so first live card (or first upcoming) is in view
+  requestAnimationFrame(() => {
+    const sc = document.getElementById(scrollEl);
+    if (!sc) return;
+    const cards = sc.querySelectorAll('.lz-card');
+    let idx = [...cards].findIndex(c=>c.classList.contains('is-live'));
+    if (idx < 0) idx = [...cards].findIndex(c=>c.classList.contains('is-upcoming'));
+    if (idx > 0) sc.scrollLeft = cards[idx].offsetLeft - 14;
+  });
 }
 
 function renderStats(st) {
