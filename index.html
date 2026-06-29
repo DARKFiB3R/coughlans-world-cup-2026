@@ -387,14 +387,14 @@ header {
 .lz-live-header { display: flex; align-items: center; gap: 6px; padding: 9px 16px 0; }
 .lz-dot { width: 7px; height: 7px; border-radius: 50%; background: #e74c3c; animation: blink 1s infinite; flex-shrink: 0; }
 .lz-header-text { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #ff6b6b; }
-.lz-scroll { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 8px 30px 14px; scroll-snap-type: x mandatory; scroll-padding: 0 30px; -webkit-overflow-scrolling: touch; }
-.lz-scroll.lz-single { padding: 8px 14px 14px; }
-.lz-scroll.lz-single .lz-card { flex: 0 0 calc(100% - 28px); }
+.lz-scroll { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 8px 40px 12px; scroll-snap-type: x mandatory; scroll-padding: 0 40px; -webkit-overflow-scrolling: touch; }
+.lz-scroll.lz-single { padding: 8px 14px 12px; }
+.lz-scroll.lz-single .lz-card { flex: 0 0 calc(100% - 28px); scroll-snap-align: start; }
 .lz-card.is-upcoming .lz-card-meta { justify-content: center; gap: 8px; }
 .lz-card.is-upcoming .lz-score-sub { text-align: center; }
 .lz-scroll::-webkit-scrollbar { display: none; }
 /* Match card */
-.lz-card { flex: 0 0 calc(100% - 60px); scroll-snap-align: start; border-radius: 14px; padding: 10px 14px 14px; cursor: pointer; transition: opacity .15s; border: 1px solid rgba(255,255,255,.09); background: rgba(8,18,42,.85); }
+.lz-card { flex: 0 0 calc(100% - 80px); scroll-snap-align: center; border-radius: 14px; padding: 8px 12px 10px; cursor: pointer; transition: opacity .15s; border: 1px solid rgba(255,255,255,.09); background: rgba(8,18,42,.85); }
 .lz-card.is-live { border-color: rgba(192,57,43,.5); background: rgba(18,4,4,.85); box-shadow: 0 4px 24px rgba(192,57,43,.15); }
 .lz-card.synd-match { border-color: rgba(241,196,15,.45); }
 .lz-card.is-upcoming { border-color: rgba(59,143,212,.3); }
@@ -405,10 +405,11 @@ header {
 .lz-stage-lbl { font-size: .58rem; color: rgba(255,255,255,.65); text-align: right; }
 .lz-teams-row { display: grid; grid-template-columns: 1fr 88px 1fr; align-items: center; gap: 6px; }
 .lz-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.lz-crest { width: 56px; height: 56px; object-fit: contain; }
+.lz-crest { width: 46px; height: 46px; object-fit: contain; }
 .lz-name { font-size: .78rem; font-weight: 700; text-align: center; color: rgba(255,255,255,.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
 .lz-score-mid { text-align: center; padding: 0 4px; }
-.lz-score-num { font-size: 2.8rem; font-weight: 900; color: #fff; letter-spacing: -3px; line-height: 1; }
+.lz-score-num { font-size: 2.6rem; font-weight: 900; color: #fff; letter-spacing: 0; line-height: 1; display: flex; align-items: center; gap: 2px; }
+.lz-score-sep { font-size: 2rem; opacity: .55; margin: 0 3px; font-weight: 700; }
 .lz-score-vs { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,.65); line-height: 1; padding: 4px 0 2px; }
 .lz-score-sub { font-size: .62rem; color: rgba(255,255,255,.82); margin-top: 5px; line-height: 1.5; }
 .lz-card.lz-finished { opacity: .72; background: rgba(0,0,0,.55); border-color: rgba(255,255,255,.07); }
@@ -2081,7 +2082,7 @@ function renderBanner(st) {
     const h = norm(m.home), a = norm(m.away);
     const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
     const scoreMid = isLive
-      ? `<div class="lz-score-num">${m.homeScore??0}–${m.awayScore??0}</div>`
+      ? `<div class="lz-score-num">${m.homeScore??0}<span class="lz-score-sep">–</span>${m.awayScore??0}</div>`
       : `<div class="lz-score-vs">vs</div><div class="lz-score-sub">${fmtTime(m.utcDate)}</div>`;
     const metaL = isLive
       ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
