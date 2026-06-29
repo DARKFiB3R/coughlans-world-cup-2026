@@ -38,7 +38,7 @@ body::after {
   );
   pointer-events: none; z-index: 0;
 }
-#content, nav, .search-wrap, #next-banner, #inapp-banner,
+#content, nav, .search-wrap, #live-zone, #inapp-banner,
 #error-msg, #progress-bar-wrap, .stats-strip-wrap { position: relative; z-index: 1; }
 
 /* ── HEADER ── */
@@ -68,8 +68,7 @@ header {
 
 /* ── BANNERS ── */
 #inapp-banner { display: none; background: rgba(0,0,0,.5); backdrop-filter: blur(10px); padding: 7px 14px; font-size: .72rem; color:rgba(255,255,255,0.83); border-bottom: 1px solid rgba(255,255,255,.07); text-align: center; cursor: pointer; }
-#next-banner { display: none; background: rgba(0,0,0,.4); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.07); padding: 7px 14px; font-size: .75rem; color:rgba(255,255,255,0.78); }
-#next-banner strong { color: #e8edf5; }
+/* live-zone placeholder — full rules below */
 
 /* ── STATS STRIP ── */
 .stats-strip-wrap { position: relative; z-index: 1; }
@@ -198,12 +197,34 @@ header {
 .finished-badge { background: rgba(255,255,255,.1); color: rgba(255,255,255,.6); font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
 .upcoming-badge { background: rgba(59,143,212,.2); color: #7ac4f8; font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
 
-/* ── LIVE BANNER STATES ── */
-#next-banner { display: none; background: rgba(0,0,0,.4); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,.07); padding: 7px 14px; font-size: .78rem; color: rgba(255,255,255,.6); cursor: pointer; transition: background .2s; }
-#next-banner strong { color: #e8edf5; }
-#next-banner:hover { background: rgba(255,255,255,.06); }
-#next-banner.is-live { background: rgba(150,20,20,.35); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(220,50,50,.3); padding: 10px 14px; font-size: .85rem; font-weight: 600; animation: none; box-shadow: 0 2px 20px rgba(192,57,43,.2); }
-#next-banner.is-live strong { color: #fff; }
+/* ── LIVE ZONE ── */
+#live-zone { display: none; background: rgba(0,0,0,.38); backdrop-filter: blur(10px); border-bottom: 2px solid rgba(255,255,255,.07); }
+#live-zone.visible { display: block; }
+.lz-live-header { display: flex; align-items: center; gap: 6px; padding: 7px 14px 2px; }
+.lz-dot { width: 7px; height: 7px; border-radius: 50%; background: #e74c3c; animation: blink 1s infinite; flex-shrink: 0; }
+.lz-header-text { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: #ff7070; }
+.lz-scroll { display: flex; overflow-x: auto; scrollbar-width: none; gap: 8px; padding: 5px 12px 10px; }
+.lz-scroll::-webkit-scrollbar { display: none; }
+.lz-card { flex: 0 0 auto; min-width: 185px; background: rgba(30,0,0,.55); border: 1px solid rgba(192,57,43,.4); border-radius: 10px; padding: 7px 10px 8px; cursor: pointer; transition: border-color .15s, background .15s; }
+.lz-card.synd-match { border-color: rgba(241,196,15,.5); background: rgba(30,20,0,.55); }
+.lz-card:hover { border-color: rgba(46,204,113,.5); background: rgba(0,20,8,.55); }
+.lz-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.lz-min { font-size: .58rem; font-weight: 700; color: #ff7070; display: flex; align-items: center; gap: 3px; }
+.lz-stage-lbl { font-size: .55rem; color: rgba(255,255,255,.38); }
+.lz-teams-row { display: grid; grid-template-columns: 1fr 46px 1fr; align-items: center; gap: 4px; }
+.lz-side { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.lz-flag { font-size: 1.1rem; line-height: 1; }
+.lz-name { font-size: .65rem; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; color: rgba(255,255,255,.9); }
+.lz-score-mid { text-align: center; }
+.lz-score-num { font-size: 1.55rem; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1.1; }
+/* Next match strip */
+.lz-next-strip { display: flex; align-items: center; padding: 10px 14px 11px; gap: 12px; cursor: pointer; transition: background .15s; }
+.lz-next-strip:hover { background: rgba(255,255,255,.04); }
+.lz-next-body { flex: 1; min-width: 0; }
+.lz-next-eyebrow { font-size: .57rem; text-transform: uppercase; letter-spacing: 1.1px; color: rgba(255,255,255,.38); margin-bottom: 3px; }
+.lz-next-vs { font-size: .9rem; font-weight: 700; color: #e8edf5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lz-next-time { font-size: .7rem; color: rgba(255,255,255,.5); margin-top: 2px; }
+.lz-next-arr { font-size: 1.2rem; color: rgba(255,255,255,.25); flex-shrink: 0; }
 .live-score-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; padding: 16px 14px 10px; }
 .live-team { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
 .live-team:hover .live-team-name { color: #2ecc71; }
@@ -400,7 +421,7 @@ header {
     <div class="header-title-top">Coughlans</div>
     <div class="header-title-bottom">World Cup 2026</div>
     <div class="header-sub">Jun 11 – Jul 19</div>
-    <div class="header-sub">48 teams · 120 colleagues</div>
+    <div class="header-sub">48 teams · 120 colleagues · <span id="app-version" style="color:rgba(255,255,255,.35)">v20260629</span></div>
   </div>
   <div class="header-right">
     <div id="live-label">Auto-updating</div>
@@ -409,7 +430,7 @@ header {
 </header>
 
 <div id="inapp-banner" style="cursor:pointer">👆 Tap here to open in your browser for best experience</div>
-<div id="next-banner" onclick="showMatchCentre()" style="cursor:pointer"></div>
+<div id="live-zone"></div>
 
 
 <div class="stats-strip-wrap">
@@ -436,11 +457,11 @@ header {
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
-  <button class="tab-btn"        onclick="switchTab('groups')">📋 Groups</button>
   <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
-  <button class="tab-btn"        onclick="switchTab('bracket')">🗂 Bracket</button>
+  <button class="tab-btn"        onclick="switchTab('bracket')">🗺 Knockouts</button>
   <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
   <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
+  <button class="tab-btn"        onclick="switchTab('groups')">📋 Group Stages</button>
 </nav>
 </div>
 
@@ -813,7 +834,7 @@ function toggleFilter(f) {
   if (activeTab!=='teamstats') {
     activeTab='teamstats';
     document.querySelectorAll('.tab-btn').forEach((b,i) =>
-      b.classList.toggle('active',['leaderboard','teamstats','groups','clashes'][i]==='teamstats'));
+      b.classList.toggle('active', ALL_TABS[i]==='teamstats'));
   }
   activeFilter = activeFilter===f ? null : f;
   ['in','tbd','out'].forEach(x =>
@@ -823,13 +844,16 @@ function toggleFilter(f) {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-const ALL_TABS = ['leaderboard','teamstats','groups','clashes','bracket','boot','results'];
+const ALL_TABS = ['leaderboard','teamstats','clashes','bracket','boot','results','groups'];
 
 function switchTab(tab) {
   activeTab = tab;
   if (!['leaderboard','teamstats'].includes(tab)) activeFilter = null;
   document.querySelectorAll('.tab-btn').forEach((b,i) =>
     b.classList.toggle('active', ALL_TABS[i]===tab));
+  // Search only makes sense on Leaders and Teams tabs
+  document.querySelector('.search-wrap').style.display =
+    ['leaderboard','teamstats'].includes(tab) ? '' : 'none';
   clearSearch();
   if (lastState) renderCurrentTab();
 }
@@ -1570,27 +1594,65 @@ function renderMatchCentre(st) {
 
 // ── BANNER & STATS ────────────────────────────────────────────────────────────
 function renderBanner(st) {
-  const b=document.getElementById('next-banner');
-  const live=st.allMatches.filter(m=>m.status==='IN_PLAY'||m.status==='PAUSED');
-  if(live.length){
-    const syndLive=live.filter(m=>SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away)));
-    if(live.length===1){
-      const m=live[0],h=TEAM_MAP[norm(m.home)],a=TEAM_MAP[norm(m.away)];
-      b.innerHTML=`🔴 LIVE: <strong>${h?.flag||''}${norm(m.home)} ${m.homeScore}–${m.awayScore} ${norm(m.away)}${a?.flag||''}</strong> — tap for live stats`;
-    } else {
-      b.innerHTML=`🔴 <strong>${live.length} games LIVE</strong>${syndLive.length?` · ${syndLive.length} syndicate teams`:''} — tap to view`;
-    }
-    b.className='is-live'; b.style.display='block'; return;
+  const b = document.getElementById('live-zone');
+  const live = st.allMatches.filter(m => m.status === 'IN_PLAY' || m.status === 'PAUSED');
+
+  if (live.length) {
+    const cards = live.map(m => {
+      const h = norm(m.home), a = norm(m.away);
+      const hT = TEAM_MAP[h], aT = TEAM_MAP[a];
+      const isSynd = SYND_TEAMS.has(h) || SYND_TEAMS.has(a);
+      const stageLbl = m.stage === 'GROUP_STAGE'
+        ? `Group ${(m.group||'').replace('GROUP_','')}`
+        : (KO_SHORT[m.stage]||m.stage||'');
+      const clockStr = m.clock ? m.clock : 'LIVE';
+      const hFlag = hT?.flag || '';
+      const aFlag = aT?.flag || '';
+      return `<div class="lz-card${isSynd?' synd-match':''}" onclick="showMatchCentre()">
+        <div class="lz-card-meta">
+          <div class="lz-min"><div class="lz-dot"></div>${clockStr}</div>
+          <div class="lz-stage-lbl">${stageLbl}</div>
+        </div>
+        <div class="lz-teams-row">
+          <div class="lz-side">
+            ${hFlag ? `<div class="lz-flag">${hFlag}</div>` : teamCrest(h,'crest-sm')}
+            <div class="lz-name">${starTeam(h)}${h}</div>
+          </div>
+          <div class="lz-score-mid"><div class="lz-score-num">${m.homeScore ?? '–'}–${m.awayScore ?? '–'}</div></div>
+          <div class="lz-side">
+            ${aFlag ? `<div class="lz-flag">${aFlag}</div>` : teamCrest(a,'crest-sm')}
+            <div class="lz-name">${starTeam(a)}${a}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    b.innerHTML = `<div class="lz-live-header"><div class="lz-dot"></div><div class="lz-header-text">${live.length} game${live.length!==1?'s':''} live now</div></div>
+      <div class="lz-scroll">${cards}</div>`;
+    b.className = 'visible';
+    return;
   }
-  b.className=''; 
-  const next=st.allMatches
-    .filter(m=>(m.status==='SCHEDULED'||m.status==='TIMED')&&(SYND_TEAMS.has(norm(m.home))||SYND_TEAMS.has(norm(m.away))))
-    .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
-  if(next){
-    const h=TEAM_MAP[norm(next.home)],a=TEAM_MAP[norm(next.away)];
-    b.innerHTML=`📅 Next: <strong>${h?.flag||''} ${norm(next.home)} vs ${norm(next.away)} ${a?.flag||''}</strong> — ${fmtDT(next.utcDate)}<br><span style="font-size:.8rem;letter-spacing:.5px">&#x27A4; Tap for schedule</span>`;
-    b.style.display='block';
-  } else { b.style.display='none'; }
+
+  // Not live — show next syndicate match
+  const next = st.allMatches
+    .filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && (SYND_TEAMS.has(norm(m.home)) || SYND_TEAMS.has(norm(m.away))))
+    .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate))[0];
+
+  if (next) {
+    const h = norm(next.home), a = norm(next.away);
+    const hT = TEAM_MAP[h], aT = TEAM_MAP[a];
+    b.innerHTML = `<div class="lz-next-strip" onclick="showMatchCentre()">
+      <div class="lz-next-body">
+        <div class="lz-next-eyebrow">📅 Next syndicate match</div>
+        <div class="lz-next-vs">${hT?.flag||''}${h} vs ${aT?.flag||''}${a}</div>
+        <div class="lz-next-time">${fmtDT(next.utcDate)}</div>
+      </div>
+      <div class="lz-next-arr">›</div>
+    </div>`;
+    b.className = 'visible';
+  } else {
+    b.className = '';
+  }
 }
 
 function renderStats(st) {
@@ -1709,6 +1771,7 @@ function parseESPN(data) {
 
     matches.push({
       utcDate:ev.date,status,stage,group,home,away,homeScore,awayScore,winner,
+      clock:st.shortDetail||'',
       venue:comp.venue?.fullName||'',attendance:comp.attendance,
       events,stats,headline,espnId:ev.id||'',
     });
