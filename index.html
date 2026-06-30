@@ -488,6 +488,7 @@ body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #1
 .clash-score-box { text-align: center; }
 .clash-score { font-size: 1.3rem; font-weight: 800; line-height: 1; }
 .clash-score.live { color: #e74c3c; }
+.clash-vs-text { font-size: .9rem; color: #7a9ab0; }
 .clash-date { font-size: .65rem; color: #7a9ab0; margin-top: 2px; white-space: nowrap; }
 .clash-body { padding: 8px 14px; background: #081422; }
 .clash-people { display: flex; }
@@ -736,6 +737,21 @@ body[data-theme="light"] .b-tbd { background:#ffedd5; color:#c2410c; border-colo
 body[data-theme="light"] .b-out { background:#fee2e2; color:#dc2626; border-color:#fca5a5; }
 /* ── Person modal misc ── */
 body[data-theme="light"] .pm-rival { color:#374151; border-bottom-color:#edf0f6; }
+/* ── CLASHES — light mode ── */
+body[data-theme="light"] .clash-card { border-color:#e2e5ee; }
+body[data-theme="light"] .clash-header { background:#eef1f7; }
+body[data-theme="light"] .clash-name { color:#111827; }
+body[data-theme="light"] .clash-score { color:#111827; }
+body[data-theme="light"] .clash-score.live { color:#dc2626; }
+body[data-theme="light"] .clash-vs-text { color:#9ca3af; }
+body[data-theme="light"] .clash-date { color:#6b7280; }
+body[data-theme="light"] .clash-body { background:#ffffff; }
+body[data-theme="light"] .clash-col { color:#4b5563; }
+body[data-theme="light"] .clash-stage { color:#9ca3af; }
+body[data-theme="light"] .clash-hype.live { background:rgba(220,38,38,.08); color:#dc2626; }
+body[data-theme="light"] .clash-hype.upcoming { background:rgba(22,163,74,.08); color:#16a34a; }
+body[data-theme="light"] .clash-hype.done-win { background:#f4f6fb; color:#111827; }
+body[data-theme="light"] .clash-hype.done-loss { background:#f4f6fb; color:#6b7280; }
 body[data-theme="light"] .pm-meta-text { color:#374151; }
 body[data-theme="light"] .pm-meta-dim  { color:#6b7280; }
 body[data-theme="light"] .pm-goalstr   { color:#6b7280; }
@@ -1720,7 +1736,7 @@ function renderClashes(st) {
     const scoreHtml = done
       ?`<div class="clash-score">${m.homeScore}–${m.awayScore}</div><div class="clash-date">${fmtDate(m.utcDate)}</div>`
       :live?`<div class="clash-score live">${m.homeScore}–${m.awayScore}</div><div class="clash-date">🔴 LIVE</div>`
-      :`<div class="clash-score" style="font-size:.9rem;color:#7a9ab0">vs</div><div class="clash-date">${fmtDT(m.utcDate)}</div>`;
+      :`<div class="clash-score clash-vs-text">vs</div><div class="clash-date">${fmtDT(m.utcDate)}</div>`;
 
     return `<div class="clash-card">
       <div class="clash-hype ${hype.cls}">${hype.text}</div>
