@@ -218,7 +218,7 @@ body::after {
   pointer-events: none; z-index: 0;
 }
 #content, nav, .search-wrap, #live-zone, #inapp-banner,
-#error-msg, #progress-bar-wrap, .stats-strip-wrap { position: relative; z-index: 1; display: flex; align-items: stretch; }
+#error-msg, #progress-bar-wrap, .stats-strip-wrap { position: relative; z-index: 1; }
 
 /* ── HEADER ── */
 header {
@@ -254,7 +254,7 @@ header {
 
 /* ── STATS STRIP ── */
 .stats-strip-wrap { position: relative; z-index: 1; }
-.stats-label { flex-shrink: 0; display: flex; align-items: center; padding: 0 10px 0 12px; font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dimmer); white-space: nowrap; background: var(--surface-a); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); backdrop-filter: blur(12px); z-index: 3; }
+.stats-label { position: sticky; left: 0; z-index: 3; flex-shrink: 0; display: flex; align-items: center; padding: 0 12px 0 12px; font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dimmer); white-space: nowrap; background: var(--surface-a); border-right: 2px solid var(--border); backdrop-filter: blur(12px); }
 .stats-strip-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--surface-a); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
 .stats-strip::-webkit-scrollbar { display: none; }
@@ -767,8 +767,8 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
 
 
 <div class="stats-strip-wrap">
-  <div class="stats-label">Comp Stats</div>
   <div class="stats-strip" id="stats-strip">
+    <div class="stats-label">Comp Stats</div>
     <div class="ss-item"><div class="ss-num" id="ss-played">—</div><div class="ss-lbl">Played</div></div>
     <div class="ss-item"><div class="ss-num ss-green" id="ss-goals">—</div><div class="ss-lbl">Goals</div></div>
     <div class="ss-item"><div class="ss-num ss-gold" id="ss-gpm">—</div><div class="ss-lbl">Goals/Match</div></div>
