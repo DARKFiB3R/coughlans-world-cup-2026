@@ -695,7 +695,8 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .pm-brag { padding: 6px 0; font-size: .8rem; border-bottom: 1px solid rgba(255,255,255,.05); }
 .pm-brag:last-child { border-bottom: none; }
 .pm-rival { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: .78rem; border-bottom: 1px solid rgba(255,255,255,.05); }
-.pm-meta-text { font-size:.7rem; color:rgba(255,255,255,.65); }
+.pm-pill { display: inline-block; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); padding: 2px 9px; border-radius: 999px; font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.85); white-space: nowrap; }
+body[data-theme="light"] .pm-pill { background: rgba(0,0,0,.05); border-color: rgba(0,0,0,.12); color: #374151; }
 .pm-meta-dim  { font-size:.7rem; color:rgba(255,255,255,.5); }
 .pm-goalstr   { font-size:.7rem; color:rgba(255,255,255,.55); margin-top:2px; }
 .pm-rival:last-child { border-bottom: none; }
@@ -767,7 +768,6 @@ body[data-theme="light"] .clash-hype.live { background:rgba(220,38,38,.08); colo
 body[data-theme="light"] .clash-hype.upcoming { background:rgba(22,163,74,.08); color:#16a34a; }
 body[data-theme="light"] .clash-hype.done-win { background:#f4f6fb; color:#111827; }
 body[data-theme="light"] .clash-hype.done-loss { background:#f4f6fb; color:#6b7280; }
-body[data-theme="light"] .pm-meta-text { color:#374151; }
 body[data-theme="light"] .pm-meta-dim  { color:#6b7280; }
 body[data-theme="light"] .pm-goalstr   { color:#6b7280; }
 /* ── Modal header text in light mode ── */
@@ -917,7 +917,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
           <div style="flex:1;min-width:0">
             <div id="pm-name" class="pm-name-text"></div>
             <div id="pm-team-line" class="pm-team-line-text"></div>
-            <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"></div>
+            <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none"></div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
             <button id="pm-follow-btn" class="follow-btn not-following" onclick="handlePersonFollow()">⭐ Follow</button>
@@ -2518,8 +2518,8 @@ function showPersonModal(person, team) {
   document.getElementById('pm-team-line').innerHTML = `${team}`;
   document.getElementById('pm-pts-line').innerHTML =
     `<span class="badge ${status.badge}">${status.label}</span>`+
-    `<span class="pm-meta-text">Syn pts: ${pts}</span>`+
-    (grPts!=='—'?`<span class="pm-meta-text">· WC pts: ${grPts}</span>`:'');
+    `<span class="pm-pill">Syn pts: ${pts}</span>`+
+    (grPts!=='—'?`<span class="pm-pill">WC pts: ${grPts}</span>`:'');
 
   updatePersonFollowBtn();
 
