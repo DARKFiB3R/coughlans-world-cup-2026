@@ -648,7 +648,75 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .boot-follow-btn { background: none; border: none; cursor: pointer; font-size: 1.15rem; padding: 4px 0 4px 6px; color: var(--boot-faint); flex-shrink: 0; transition: color .15s; line-height: 1; }
 .boot-follow-btn.following { color: #f1c40f; }
 .boot-follow-btn:hover { color: #f1c40f; }
-/* ── RESULTS ROWS ── */
+/* ── THE FINAL PAGE ── */
+.final-hero { background: linear-gradient(160deg, rgba(10,30,15,.97) 0%, rgba(5,8,28,.97) 100%); padding: 28px 16px 22px; text-align: center; position: relative; overflow: hidden; }
+.final-hero-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #f1c40f; margin-bottom: 16px; }
+.final-matchup { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.final-side { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
+.final-flag-huge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 5rem; opacity: .14; z-index: 0; pointer-events: none; }
+.final-crest { width: 64px; height: 64px; object-fit: contain; position: relative; z-index: 1; }
+.final-team-name { font-size: 1rem; font-weight: 800; color: #fff; position: relative; z-index: 1; }
+.final-vs-mid { padding: 0 6px; }
+.final-vs-text { font-size: 1.6rem; font-weight: 900; color: rgba(255,255,255,.4); }
+.final-countdown { font-size: .82rem; font-weight: 700; color: #f1c40f; margin-top: 6px; white-space: nowrap; }
+.final-live-score { font-size: 2.6rem; font-weight: 900; color: #fff; }
+.final-score-sep { opacity: .5; margin: 0 4px; }
+.final-live-clock { font-size: .72rem; font-weight: 700; color: #ff6b6b; margin-top: 2px; }
+.final-hero-date { font-size: .72rem; color: rgba(255,255,255,.5); margin-top: 18px; }
+/* Champion state */
+.final-hero-champion { background: linear-gradient(160deg, rgba(40,30,5,.97) 0%, rgba(10,8,28,.97) 100%); padding: 36px 16px 28px; }
+.final-champ-crest { width: 90px; height: 90px; object-fit: contain; margin: 14px auto; display: block; filter: drop-shadow(0 0 24px var(--wc, #f1c40f)); }
+.final-champ-name { font-size: 1.5rem; font-weight: 900; font-family: 'Karma', serif; color: #f1c40f; letter-spacing: .5px; }
+.final-champ-score { font-size: 2.2rem; font-weight: 900; color: #fff; margin-top: 8px; }
+.final-champ-sub { font-size: .78rem; color: rgba(255,255,255,.6); margin-top: 8px; }
+.final-confetti { position: absolute; inset: 0; pointer-events: none; background-image:
+  radial-gradient(circle, #f1c40f 2px, transparent 2.5px),
+  radial-gradient(circle, #2ecc71 2px, transparent 2.5px),
+  radial-gradient(circle, #e74c3c 2px, transparent 2.5px),
+  radial-gradient(circle, #3b8fd4 2px, transparent 2.5px);
+  background-size: 60px 60px, 80px 80px, 70px 70px, 90px 90px;
+  background-position: 0 0, 20px 30px, 40px 10px, 60px 50px;
+  animation: finalConfettiFall 6s linear infinite; opacity: .5; }
+@keyframes finalConfettiFall { from { background-position: 0 0, 20px 30px, 40px 10px, 60px 50px; } to { background-position: 0 600px, 20px 630px, 40px 610px, 60px 650px; } }
+/* Sections */
+.final-section { padding: 16px 16px 4px; border-bottom: 1px solid var(--border); }
+.final-sec-title { font-size: .78rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+/* Road to final */
+.final-road-team { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--text); margin-bottom: 8px; }
+.final-road-row { display: flex; align-items: center; overflow-x: auto; gap: 6px; padding-bottom: 12px; scrollbar-width: none; }
+.final-road-row::-webkit-scrollbar { display: none; }
+.final-road-step { flex: 0 0 auto; background: var(--surface-c); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 64px; }
+.final-road-lbl { font-size: .58rem; color: var(--text-dimmer); text-transform: uppercase; }
+.final-road-opp { font-size: .62rem; color: var(--text-dim); white-space: nowrap; margin-top: 2px; }
+.final-road-score { font-size: .85rem; font-weight: 800; margin-top: 3px; }
+.rd-win  { color: #2ecc71; } .rd-loss { color: #e74c3c; } .rd-draw { color: #f39c12; }
+.final-road-arrow { flex: 0 0 auto; color: var(--text-dimmest); font-size: .9rem; }
+/* Stakes */
+.final-stakes-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 10px; }
+.final-stakes-side { text-align: center; padding: 10px; border-radius: 10px; background: var(--surface-c); border-top: 3px solid var(--sc, #2ecc71); }
+.final-stakes-team { font-size: .78rem; font-weight: 700; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.final-stakes-count { font-size: 1.8rem; font-weight: 900; color: var(--sc, #2ecc71); margin-top: 4px; }
+.final-stakes-people { font-size: .66rem; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
+.final-stakes-vs { font-size: .7rem; color: var(--text-dimmer); align-self: center; padding-top: 24px; }
+/* Stats grid */
+.final-stats-grid { display: grid; grid-template-columns: 1fr 110px 1fr; row-gap: 10px; align-items: center; }
+.final-stats-col { font-size: .76rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.final-stats-val { font-size: .92rem; font-weight: 800; color: var(--text); text-align: center; }
+.final-stats-lbl { font-size: .62rem; color: var(--text-dimmer); text-align: center; text-transform: uppercase; letter-spacing: .3px; }
+/* Golden boot */
+.final-boot-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-soft); }
+.final-boot-rank { font-size: .7rem; font-weight: 700; color: var(--text-dimmer); width: 20px; }
+.final-boot-name { flex: 1; font-size: .8rem; color: var(--text); }
+.final-boot-goals { font-size: .85rem; font-weight: 800; color: #f39c12; }
+.final-boot-infinal { background: linear-gradient(90deg, rgba(241,196,15,.1) 0%, transparent 80%); }
+.final-boot-tag { font-size: .56rem; font-weight: 800; color: #f1c40f; background: rgba(241,196,15,.12); padding: 2px 6px; border-radius: 5px; letter-spacing: .3px; }
+/* Prediction */
+.final-predict-row { display: flex; gap: 10px; }
+.final-predict-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--surface-c); border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: .8rem; font-weight: 700; color: var(--text); cursor: pointer; font-family: inherit; }
+.final-predict-btn.picked { border-color: #2ecc71; background: rgba(46,204,113,.1); color: #2ecc71; }
+.final-predict-note { font-size: .68rem; color: var(--text-dimmer); margin-top: 10px; text-align: center; }
+
+
 .result-row { display:flex; align-items:center; gap:8px; padding:9px 14px; border-bottom:1px solid var(--border-soft); }
 .result-side { flex:1; min-width:0; display:flex; align-items:center; gap:6px; cursor:pointer; }
 .result-side.home { justify-content:flex-end; }
@@ -1365,6 +1433,7 @@ function renderCurrentTab() {
   else if (activeTab==='results')      renderResults(lastState);
   else if (activeTab==='allteams')     renderAllTeams(lastState);
   else if (activeTab==='matchcentre')  renderMatchCentre(lastState);
+  else if (activeTab==='final')        renderFinalPage(lastState);
 }
 
 // ── RENDER: LEADERBOARD ───────────────────────────────────────────────────────
@@ -1609,6 +1678,190 @@ function renderBracket(st) {
 }
 
 // ── RENDER: GOLDEN BOOT ───────────────────────────────────────────────────────
+// ── RENDER: THE FINAL (hidden — access via #final hash, no UI link) ───────────
+function renderFinalPage(st) {
+  const final = st.allMatches.find(m => m.stage === 'FINAL');
+
+  if (!final) {
+    document.getElementById('content').innerHTML = `<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">The Final isn't set yet</div><div class="empty-sub">Come back once the two finalists are confirmed.</div></div>`;
+    return;
+  }
+
+  const h = norm(final.home), a = norm(final.away);
+  const hT = TEAM_MAP[h], aT = TEAM_MAP[a];
+  const hC = lastTeams[h]?.color || '#2ecc71', aC = lastTeams[a]?.color || '#3b8fd4';
+  const isDone = final.status === 'FINISHED';
+  const isLive = final.status === 'IN_PLAY' || final.status === 'PAUSED';
+  const winner = isDone ? (final.winner === 'HOME_TEAM' ? h : final.winner === 'AWAY_TEAM' ? a : null) : null;
+
+  // ── Hero ──────────────────────────────────────────────────────────────────
+  let heroHtml;
+  if (isDone && winner) {
+    const wT = TEAM_MAP[winner], wC = lastTeams[winner]?.color || '#f1c40f';
+    heroHtml = `<div class="final-hero final-hero-champion" style="--wc:${wC}">
+      <div class="final-confetti"></div>
+      <div class="final-hero-eyebrow">🏆 World Champions</div>
+      ${teamCrest(winner,'final-champ-crest')}
+      <div class="final-champ-name">${wT?.flag||''} ${winner}</div>
+      <div class="final-champ-score">${final.homeScore}–${final.awayScore}</div>
+      <div class="final-champ-sub">defeated ${winner===h?a:h} in the Final</div>
+    </div>`;
+  } else {
+    heroHtml = `<div class="final-hero">
+      <div class="final-hero-eyebrow">${isLive?'🔴 LIVE — THE FINAL':'THE FINAL'}</div>
+      <div class="final-matchup">
+        <div class="final-side">
+          <div class="final-flag-huge">${hT?.flag||''}</div>
+          ${teamCrest(h,'final-crest')}
+          <div class="final-team-name">${h}</div>
+        </div>
+        <div class="final-vs-mid">
+          ${isLive?`<div class="final-live-score">${final.homeScore??0}<span class="final-score-sep">–</span>${final.awayScore??0}</div><div class="final-live-clock">${final.clock||'LIVE'}</div>`
+            :`<div class="final-vs-text">VS</div><div class="final-countdown" id="final-countdown" data-target="${final.utcDate}">…</div>`}
+        </div>
+        <div class="final-side">
+          <div class="final-flag-huge">${aT?.flag||''}</div>
+          ${teamCrest(a,'final-crest')}
+          <div class="final-team-name">${a}</div>
+        </div>
+      </div>
+      <div class="final-hero-date">${fmtCardDate(final.utcDate)} · ${fmtTime(final.utcDate)}</div>
+    </div>`;
+  }
+
+  // ── Road to the Final ────────────────────────────────────────────────────
+  const ROAD_STAGES = ['GROUP_STAGE','LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS'];
+  const roadFor = team => {
+    const ms = (st.matchesByTeam[team]||[]).filter(m => m.status==='FINISHED' && ROAD_STAGES.includes(m.stage));
+    return ms.map(m => {
+      const opp = m._h===team ? m._a : m._h;
+      const sc = teamScore(m, team);
+      const r = matchResult(m, team);
+      const lbl = m.stage==='GROUP_STAGE' ? 'Grp' : KO_SHORT[m.stage];
+      return `<div class="final-road-step">
+        <div class="final-road-lbl">${lbl}</div>
+        <div class="final-road-opp">vs ${opp}</div>
+        <div class="final-road-score ${r==='W'?'rd-win':r==='L'?'rd-loss':'rd-draw'}">${sc}</div>
+      </div>`;
+    }).join('<div class="final-road-arrow">›</div>');
+  };
+  const roadHtml = `<div class="final-section">
+    <div class="final-sec-title">🛣 Road to the Final</div>
+    <div class="final-road-team">${teamCrest(h,'crest-sm')} <strong>${h}</strong></div>
+    <div class="final-road-row">${roadFor(h)}</div>
+    <div class="final-road-team" style="margin-top:14px">${teamCrest(a,'crest-sm')} <strong>${a}</strong></div>
+    <div class="final-road-row">${roadFor(a)}</div>
+  </div>`;
+
+  // ── Syndicate stakes ──────────────────────────────────────────────────────
+  const hPeople = SYNDICATE.find(s=>s.team===h)?.people || [];
+  const aPeople = SYNDICATE.find(s=>s.team===a)?.people || [];
+  const stakesHtml = `<div class="final-section">
+    <div class="final-sec-title">🎉 Syndicate Stakes</div>
+    <div class="final-stakes-row">
+      <div class="final-stakes-side" style="--sc:${hC}">
+        <div class="final-stakes-team">${teamCrest(h,'crest-sm')} ${h}</div>
+        <div class="final-stakes-count">${hPeople.length}</div>
+        <div class="final-stakes-people">${hPeople.join(', ')||'No one backing this team'}</div>
+      </div>
+      <div class="final-stakes-vs">vs</div>
+      <div class="final-stakes-side" style="--sc:${aC}">
+        <div class="final-stakes-team">${teamCrest(a,'crest-sm')} ${a}</div>
+        <div class="final-stakes-count">${aPeople.length}</div>
+        <div class="final-stakes-people">${aPeople.join(', ')||'No one backing this team'}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // ── Combined stats ────────────────────────────────────────────────────────
+  const statsFor = team => {
+    const ms = (st.matchesByTeam[team]||[]).filter(m=>m.status==='FINISHED');
+    let gf=0, ga=0, cs=0;
+    for (const m of ms) {
+      const f = m._h===team?m.homeScore:m.awayScore, ag = m._h===team?m.awayScore:m.homeScore;
+      gf+=f; ga+=ag; if (ag===0) cs++;
+    }
+    return { played: ms.length, gf, ga, cs };
+  };
+  const hStats = statsFor(h), aStats = statsFor(a);
+  const statsHtml = `<div class="final-section">
+    <div class="final-sec-title">📊 Tournament Form</div>
+    <div class="final-stats-grid">
+      <div class="final-stats-col">${teamCrest(h,'crest-sm')} ${h}</div>
+      <div class="final-stats-lbl"></div>
+      <div class="final-stats-col">${teamCrest(a,'crest-sm')} ${a}</div>
+      <div class="final-stats-val">${hStats.played}</div><div class="final-stats-lbl">Played</div><div class="final-stats-val">${aStats.played}</div>
+      <div class="final-stats-val">${hStats.gf}</div><div class="final-stats-lbl">Scored</div><div class="final-stats-val">${aStats.gf}</div>
+      <div class="final-stats-val">${hStats.ga}</div><div class="final-stats-lbl">Conceded</div><div class="final-stats-val">${aStats.ga}</div>
+      <div class="final-stats-val">${hStats.cs}</div><div class="final-stats-lbl">Clean Sheets</div><div class="final-stats-val">${aStats.cs}</div>
+    </div>
+  </div>`;
+
+  // ── Golden Boot decider ──────────────────────────────────────────────────
+  const scorerMap = {};
+  for (const m of st.allMatches.filter(m=>m.status==='FINISHED')) {
+    for (const e of m.events||[]) {
+      if (e.type==='goal' && !e.ownGoal && e.player) {
+        const key = e.player+'|'+e.team;
+        if (!scorerMap[key]) scorerMap[key]={player:e.player, team:norm(e.team), goals:0};
+        scorerMap[key].goals++;
+      }
+    }
+  }
+  const topScorers = Object.values(scorerMap).sort((x,y)=>y.goals-x.goals).slice(0,5);
+  const bootHtml = topScorers.length ? `<div class="final-section">
+    <div class="final-sec-title">👟 Golden Boot Race</div>
+    ${topScorers.map((s,i)=>{
+      const inFinal = s.team===h || s.team===a;
+      return `<div class="final-boot-row${inFinal?' final-boot-infinal':''}">
+        <span class="final-boot-rank">#${i+1}</span>
+        ${teamCrest(s.team,'crest-sm')}
+        <span class="final-boot-name">${s.player}</span>
+        <span class="final-boot-goals">${s.goals}</span>
+        ${inFinal?'<span class="final-boot-tag">IN THE FINAL</span>':''}
+      </div>`;
+    }).join('')}
+  </div>` : '';
+
+  // ── Prediction (local pick only — stored per-browser, not crowd-sourced) ──
+  const predKey = `wc2026_final_pick_${final.utcDate}`;
+  const savedPick = (()=>{ try { return localStorage.getItem(predKey); } catch(e){ return null; } })();
+  const predictHtml = !isDone ? `<div class="final-section">
+    <div class="final-sec-title">🔮 Your Prediction</div>
+    <div class="final-predict-row">
+      <button class="final-predict-btn${savedPick===h?' picked':''}" onclick="finalMakePick('${escQ(h)}','${final.utcDate}')">${teamCrest(h,'crest-sm')} ${h}</button>
+      <button class="final-predict-btn${savedPick===a?' picked':''}" onclick="finalMakePick('${escQ(a)}','${final.utcDate}')">${teamCrest(a,'crest-sm')} ${a}</button>
+    </div>
+    ${savedPick?`<div class="final-predict-note">You picked <strong>${savedPick}</strong> — only visible on this device.</div>`:''}
+  </div>` : '';
+
+  document.getElementById('content').innerHTML = heroHtml + roadHtml + stakesHtml + statsHtml + bootHtml + predictHtml + `<div style="height:20px"></div>`;
+
+  if (!isDone && !isLive) startFinalCountdown(final.utcDate);
+}
+
+function finalMakePick(team, matchDate) {
+  try { localStorage.setItem(`wc2026_final_pick_${matchDate}`, team); } catch(e){}
+  if (lastState) renderFinalPage(lastState);
+}
+
+let finalCountdownTimer = null;
+function startFinalCountdown(utcDate) {
+  clearInterval(finalCountdownTimer);
+  const target = new Date(utcDate).getTime();
+  const tick = () => {
+    const el = document.getElementById('final-countdown');
+    if (!el) { clearInterval(finalCountdownTimer); return; }
+    const diff = target - Date.now();
+    if (diff <= 0) { el.textContent = 'Kicking off…'; clearInterval(finalCountdownTimer); return; }
+    const d = Math.floor(diff/86400000), hh = Math.floor(diff%86400000/3600000),
+          mm = Math.floor(diff%3600000/60000), ss = Math.floor(diff%60000/1000);
+    el.textContent = d>0 ? `${d}d ${hh}h ${mm}m` : `${hh}h ${mm}m ${ss}s`;
+  };
+  tick();
+  finalCountdownTimer = setInterval(tick, 1000);
+}
+
 function renderGoldenBoot(st) {
   // Compute from ESPN event data
   const scorerMap = {};
@@ -2698,7 +2951,7 @@ function closePersonModalForce() {
 })();
 
 // Boot
-fetchMetadata().then(update);
+fetchMetadata().then(update).then(checkFinalHash);
 loadSquads();
 
 // Swipe down to close modal - only triggered from the handle
@@ -2918,6 +3171,14 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
   }, true);
 })();
+
+// ── HIDDEN FINAL PAGE ACCESS (#final hash — no UI link anywhere) ──────────────
+function checkFinalHash() {
+  if (window.location.hash === '#final' && lastState) {
+    switchTab('final');
+  }
+}
+window.addEventListener('hashchange', checkFinalHash);
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
