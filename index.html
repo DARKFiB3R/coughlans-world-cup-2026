@@ -413,7 +413,7 @@ body[data-theme="light"] .lz-date-row { color: #6b7280; }
 .lz-score-mid { text-align: center; padding: 2px 4px 0; }
 .lz-score-num { font-size: 2.8rem; font-weight: 900; color: #fff; letter-spacing: 0; line-height: 1; display: flex; align-items: center; justify-content: center; gap: 0; }
 .lz-score-sep { font-size: 2rem; opacity: .5; margin: 0 4px; font-weight: 700; }
-.lz-score-vs { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,.65); line-height: 1; padding: 4px 0 2px; }
+.lz-score-vs { font-size: 2rem; font-weight: 800; color: rgba(255,255,255,.7); line-height: 1; padding: 2px 0 1px; }
 .lz-score-sub { font-size: .62rem; color: rgba(255,255,255,.82); margin-top: 5px; line-height: 1.5; }
 .lz-card.lz-finished { opacity: .72; background: rgba(0,0,0,.55); border-color: rgba(255,255,255,.07); }
 .lz-card.lz-finished:hover { opacity: .9; }
@@ -2134,16 +2134,14 @@ function renderBanner(st) {
       ? `<div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div>`
       : isDone
         ? `<div class="lz-ft-badge">FT</div>`
-        : `<div class="lz-next-label">${fmtCardDate(m.utcDate)}</div>`;
+        : `<div class="lz-next-label">Next match</div>`;
 
     const cls = ['lz-card',
       isLive ? 'is-live' : isDone ? 'lz-finished' : 'is-upcoming',
       isSynd ? 'synd-match' : ''
     ].filter(Boolean).join(' ');
 
-    const dateRow = (isLive || isDone)
-      ? `<div class="lz-date-row">${fmtCardDate(m.utcDate)} · ${fmtTime(m.utcDate)}</div>`
-      : '';
+    const dateRow = `<div class="lz-date-row">${fmtCardDate(m.utcDate)}${isLive||isDone?` · ${fmtTime(m.utcDate)}`:''}</div>`;
 
     return `<div class="${cls}" onclick="showMatchCentre()">
       ${dateRow}
