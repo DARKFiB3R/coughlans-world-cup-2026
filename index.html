@@ -815,8 +815,8 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
   <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
   <button class="tab-btn"        onclick="switchTab('matchcentre')">📡 Matches</button>
-  <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
   <button class="tab-btn"        onclick="switchTab('bracket')">🗺 Knockouts</button>
+  <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
   <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
   <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
   <button class="tab-btn"        onclick="switchTab('groups')">📋 Group Stages</button>
@@ -1314,7 +1314,7 @@ function toggleFilter(f) {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-const ALL_TABS = ['leaderboard','clashes','matchcentre','teamstats','bracket','boot','results','groups'];
+const ALL_TABS = ['leaderboard','clashes','matchcentre','bracket','teamstats','boot','results','groups'];
 
 function switchTab(tab) {
   activeTab = tab;
@@ -2769,36 +2769,72 @@ async function checkPageVersion() {
 setTimeout(checkPageVersion, 8000);            // initial check after 8s
 setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
 
-// ── DESKTOP CLICK-AND-DRAG SCROLL ──────────────────────────────────────────────
+// ── DESKTOP CLICK-AND-DRAG SCROLL (mouse only — never touch) ──────────────────
 // Desktop has no touch/trackpad swipe, so let users click-drag any horizontally
 // scrollable strip (stats bar, tab bar, live zone, results bar) with the mouse.
+// Uses Pointer Events so it can explicitly ignore touch/pen input — mobile taps
+// and native swipe scrolling are completely untouched.
 (function() {
   const HSCROLL_SELECTORS = '.stats-strip, .tab-bar, .lz-scroll, .lz-results-bar';
   let dragEl = null, startX = 0, startScroll = 0, moved = false;
+  let lastX = 0, lastT = 0, velocity = 0;
+  let momentumId = null;
 
-  document.addEventListener('mousedown', function(e) {
+  function stopMomentum() {
+    if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; }
+  }
+
+  function runMomentum(el) {
+    stopMomentum();
+    const friction = 0.95;
+    function step() {
+      velocity *= friction;
+      if (Math.abs(velocity) < 0.5) { velocity = 0; momentumId = null; return; }
+      el.scrollLeft -= velocity;
+      momentumId = requestAnimationFrame(step);
+    }
+    momentumId = requestAnimationFrame(step);
+  }
+
+  document.addEventListener('pointerdown', function(e) {
+    if (e.pointerType !== 'mouse') return; // touch/pen use native scrolling untouched
     const el = e.target.closest(HSCROLL_SELECTORS);
     if (!el || el.scrollWidth <= el.clientWidth + 2) return;
+    stopMomentum();
     dragEl = el;
-    startX = e.pageX;
+    startX = lastX = e.clientX;
+    lastT = performance.now();
     startScroll = el.scrollLeft;
+    velocity = 0;
     moved = false;
     el.classList.add('lz-dragging');
   });
 
-  document.addEventListener('mousemove', function(e) {
-    if (!dragEl) return;
-    const dx = e.pageX - startX;
+  document.addEventListener('pointermove', function(e) {
+    if (!dragEl || e.pointerType !== 'mouse') return;
+    const dx = e.clientX - startX;
     if (Math.abs(dx) > 4) moved = true;
     dragEl.scrollLeft = startScroll - dx;
+
+    const now = performance.now();
+    const dt = now - lastT;
+    if (dt > 0) velocity = (e.clientX - lastX) / dt * 16.6; // px per frame (~60fps)
+    lastX = e.clientX;
+    lastT = now;
   });
 
-  function endDrag() {
-    if (dragEl) dragEl.classList.remove('lz-dragging');
+  function endDrag(e) {
+    if (e && e.pointerType && e.pointerType !== 'mouse') return;
+    if (dragEl) {
+      const el = dragEl;
+      el.classList.remove('lz-dragging');
+      if (Math.abs(velocity) > 1) runMomentum(el);
+    }
     dragEl = null;
   }
-  document.addEventListener('mouseup', endDrag);
-  document.addEventListener('mouseleave', endDrag);
+  document.addEventListener('pointerup', endDrag);
+  document.addEventListener('pointercancel', endDrag);
+  document.addEventListener('pointerleave', endDrag);
 
   // Suppress the click that would normally fire on a card/button right after a drag
   document.addEventListener('click', function(e) {
