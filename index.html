@@ -660,22 +660,22 @@ body.final-chrome-hidden #update-bar,
 body.final-chrome-hidden #inapp-banner { display: none !important; }
 
 
-.final-hero { background: linear-gradient(160deg, rgba(8,15,10,.82) 0%, rgba(5,8,28,.88) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 32px 16px 26px; text-align: center; position: relative; overflow: hidden; }
-.final-hero-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #f1c40f; margin-bottom: 16px; }
+.final-hero { background: linear-gradient(160deg, rgba(8,15,10,.6) 0%, rgba(5,8,28,.68) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 32px 16px 26px; text-align: center; position: relative; overflow: hidden; }
+.final-hero-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #f1c40f; margin-bottom: 16px; text-shadow: 0 2px 6px rgba(0,0,0,.6); }
 .final-matchup { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
 .final-side { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
 .final-flag-huge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 9.5rem; opacity: .22; z-index: 0; pointer-events: none; filter: drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
 .final-crest { width: 100px; height: 100px; object-fit: contain; position: relative; z-index: 1; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
-.final-team-name { font-size: 1rem; font-weight: 800; color: #fff; position: relative; z-index: 1; }
+.final-team-name { font-size: 1rem; font-weight: 800; color: #fff; position: relative; z-index: 1; text-shadow: 0 2px 8px rgba(0,0,0,.7); }
 .final-vs-mid { padding: 0 6px; }
-.final-vs-text { font-size: 1.6rem; font-weight: 900; color: rgba(255,255,255,.4); }
+.final-vs-text { font-size: 1.6rem; font-weight: 900; color: rgba(255,255,255,.75); text-shadow: 0 2px 8px rgba(0,0,0,.7); }
 .final-countdown { font-size: .82rem; font-weight: 700; color: #f1c40f; margin-top: 6px; white-space: nowrap; }
 .final-live-score { font-size: 2.6rem; font-weight: 900; color: #fff; }
 .final-score-sep { opacity: .5; margin: 0 4px; }
 .final-live-clock { font-size: .72rem; font-weight: 700; color: #ff6b6b; margin-top: 2px; }
-.final-hero-date { font-size: .72rem; color: rgba(255,255,255,.5); margin-top: 18px; }
+.final-hero-date { font-size: .72rem; color: rgba(255,255,255,.75); margin-top: 18px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
 /* Champion state */
-.final-hero-champion { background: linear-gradient(160deg, rgba(35,22,4,.78) 0%, rgba(10,8,28,.85) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 40px 16px 30px; }
+.final-hero-champion { background: linear-gradient(160deg, rgba(35,22,4,.6) 0%, rgba(10,8,28,.65) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 40px 16px 30px; }
 .final-champ-crest { width: 110px; height: 110px; object-fit: contain; margin: 14px auto; display: block; filter: drop-shadow(0 0 24px var(--wc, #f1c40f)); }
 .final-champ-name { font-size: 1.5rem; font-weight: 900; font-family: 'Karma', serif; color: #f1c40f; letter-spacing: .5px; }
 .final-champ-score { font-size: 2.2rem; font-weight: 900; color: #fff; margin-top: 8px; }
@@ -1713,13 +1713,17 @@ function toggleFinalChrome() {
 function renderFinalPage(st) {
   let final = st.allMatches.find(m => m.stage === 'FINAL');
 
-  // TEST MODE — visit #final-test to preview the page before real finalists
-  // are confirmed. Remove this block once the actual Final is in the data.
-  if (!final && window.location.hash === '#final-test') {
+  // TEST MODE — visit #final-test to preview the page with England vs Brazil,
+  // overriding any real TBD placeholder fixture (e.g. "Semi-Final 1 Winner").
+  // Remove this block once the actual finalists are confirmed.
+  if (window.location.hash === '#final-test') {
     final = {
+      ...(final || {}),
       home: 'England', away: 'Brazil', _h: 'England', _a: 'Brazil',
-      homeScore: 0, awayScore: 0, status: 'SCHEDULED', stage: 'FINAL', winner: null,
-      utcDate: new Date(Date.now() + 3*86400000).toISOString(), events: []
+      homeScore: final?.homeScore ?? 0, awayScore: final?.awayScore ?? 0,
+      status: final?.status || 'SCHEDULED', stage: 'FINAL', winner: final?.winner ?? null,
+      utcDate: final?.utcDate || new Date(Date.now() + 3*86400000).toISOString(),
+      events: final?.events || []
     };
   }
 
