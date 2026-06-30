@@ -648,13 +648,24 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .boot-follow-btn { background: none; border: none; cursor: pointer; font-size: 1.15rem; padding: 4px 0 4px 6px; color: var(--boot-faint); flex-shrink: 0; transition: color .15s; line-height: 1; }
 .boot-follow-btn.following { color: #f1c40f; }
 .boot-follow-btn:hover { color: #f1c40f; }
-/* ── THE FINAL PAGE ── */
-.final-hero { background: linear-gradient(160deg, rgba(10,30,15,.97) 0%, rgba(5,8,28,.97) 100%); padding: 28px 16px 22px; text-align: center; position: relative; overflow: hidden; }
+/* ── FINAL PAGE: collapsible chrome ── */
+#final-pulltab { display: none; position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%); width: 44px; height: 16px; background: var(--tab-bg); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; text-align: center; line-height: 14px; cursor: pointer; z-index: 201; box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+body.on-final-page #final-pulltab { display: block; }
+#final-pulltab-chevron { font-size: .75rem; color: var(--text-dimmer); display: inline-block; }
+body.final-chrome-hidden .stats-strip-wrap,
+body.final-chrome-hidden .search-wrap,
+body.final-chrome-hidden .tab-bar-wrap,
+body.final-chrome-hidden #live-zone,
+body.final-chrome-hidden #update-bar,
+body.final-chrome-hidden #inapp-banner { display: none !important; }
+
+
+.final-hero { background: linear-gradient(160deg, rgba(8,15,10,.82) 0%, rgba(5,8,28,.88) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 32px 16px 26px; text-align: center; position: relative; overflow: hidden; }
 .final-hero-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #f1c40f; margin-bottom: 16px; }
 .final-matchup { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
 .final-side { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
-.final-flag-huge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 5rem; opacity: .14; z-index: 0; pointer-events: none; }
-.final-crest { width: 64px; height: 64px; object-fit: contain; position: relative; z-index: 1; }
+.final-flag-huge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 9.5rem; opacity: .22; z-index: 0; pointer-events: none; filter: drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
+.final-crest { width: 100px; height: 100px; object-fit: contain; position: relative; z-index: 1; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
 .final-team-name { font-size: 1rem; font-weight: 800; color: #fff; position: relative; z-index: 1; }
 .final-vs-mid { padding: 0 6px; }
 .final-vs-text { font-size: 1.6rem; font-weight: 900; color: rgba(255,255,255,.4); }
@@ -664,8 +675,8 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .final-live-clock { font-size: .72rem; font-weight: 700; color: #ff6b6b; margin-top: 2px; }
 .final-hero-date { font-size: .72rem; color: rgba(255,255,255,.5); margin-top: 18px; }
 /* Champion state */
-.final-hero-champion { background: linear-gradient(160deg, rgba(40,30,5,.97) 0%, rgba(10,8,28,.97) 100%); padding: 36px 16px 28px; }
-.final-champ-crest { width: 90px; height: 90px; object-fit: contain; margin: 14px auto; display: block; filter: drop-shadow(0 0 24px var(--wc, #f1c40f)); }
+.final-hero-champion { background: linear-gradient(160deg, rgba(35,22,4,.78) 0%, rgba(10,8,28,.85) 100%), url('final-bg.jpg') center/cover no-repeat; padding: 40px 16px 30px; }
+.final-champ-crest { width: 110px; height: 110px; object-fit: contain; margin: 14px auto; display: block; filter: drop-shadow(0 0 24px var(--wc, #f1c40f)); }
 .final-champ-name { font-size: 1.5rem; font-weight: 900; font-family: 'Karma', serif; color: #f1c40f; letter-spacing: .5px; }
 .final-champ-score { font-size: 2.2rem; font-weight: 900; color: #fff; margin-top: 8px; }
 .final-champ-sub { font-size: .78rem; color: rgba(255,255,255,.6); margin-top: 8px; }
@@ -867,6 +878,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
     <div id="live-label"></div>
     <div id="last-updated">Loading…</div>
   </div>
+  <div id="final-pulltab" onclick="toggleFinalChrome()"><span id="final-pulltab-chevron">▲</span></div>
 </header>
 
 <div id="update-bar" onclick="window.location.reload()">🔄 New version available — <strong>tap to update</strong></div>
@@ -1419,6 +1431,15 @@ function switchTab(tab) {
     if (isActive) b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   });
 
+  if (tab === 'final') {
+    document.body.classList.add('on-final-page');
+    setFinalChromeHidden(true);
+    window.scrollTo({ top: 0 });
+  } else {
+    document.body.classList.remove('on-final-page');
+    setFinalChromeHidden(false);
+  }
+
   clearSearch();
   if (lastState) renderCurrentTab();
 }
@@ -1679,8 +1700,28 @@ function renderBracket(st) {
 
 // ── RENDER: GOLDEN BOOT ───────────────────────────────────────────────────────
 // ── RENDER: THE FINAL (hidden — access via #final hash, no UI link) ───────────
+// ── FINAL PAGE: collapsible chrome (hides stats/search/tabs behind header) ────
+function setFinalChromeHidden(hidden) {
+  document.body.classList.toggle('final-chrome-hidden', hidden);
+  const chev = document.getElementById('final-pulltab-chevron');
+  if (chev) chev.textContent = hidden ? '▼' : '▲';
+}
+function toggleFinalChrome() {
+  setFinalChromeHidden(!document.body.classList.contains('final-chrome-hidden'));
+}
+
 function renderFinalPage(st) {
-  const final = st.allMatches.find(m => m.stage === 'FINAL');
+  let final = st.allMatches.find(m => m.stage === 'FINAL');
+
+  // TEST MODE — visit #final-test to preview the page before real finalists
+  // are confirmed. Remove this block once the actual Final is in the data.
+  if (!final && window.location.hash === '#final-test') {
+    final = {
+      home: 'England', away: 'Brazil', _h: 'England', _a: 'Brazil',
+      homeScore: 0, awayScore: 0, status: 'SCHEDULED', stage: 'FINAL', winner: null,
+      utcDate: new Date(Date.now() + 3*86400000).toISOString(), events: []
+    };
+  }
 
   if (!final) {
     document.getElementById('content').innerHTML = `<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">The Final isn't set yet</div><div class="empty-sub">Come back once the two finalists are confirmed.</div></div>`;
@@ -3174,7 +3215,7 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
 
 // ── HIDDEN FINAL PAGE ACCESS (#final hash — no UI link anywhere) ──────────────
 function checkFinalHash() {
-  if (window.location.hash === '#final' && lastState) {
+  if ((window.location.hash === '#final' || window.location.hash === '#final-test') && lastState) {
     switchTab('final');
   }
 }
