@@ -259,7 +259,9 @@ header {
 body[data-theme="light"] .stats-label { background: #e9ecf4; }
 .stats-label::after { content: ':'; margin-left: 1px; }
 .stats-strip-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
-.stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--surface-a); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+.stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--surface-a); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); cursor: grab; }
+.stats-strip.lz-dragging, .tab-bar.lz-dragging, .lz-scroll.lz-dragging, .lz-results-bar.lz-dragging { cursor: grabbing !important; scroll-snap-type: none !important; }
+.lz-dragging * { pointer-events: none; }
 .stats-strip::-webkit-scrollbar { display: none; }
 .ss-item { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 5px 13px; }
 .ss-num { font-size: 1.05rem; font-weight: 800; line-height: 1; color: var(--text); }
@@ -278,7 +280,7 @@ body[data-theme="light"] .stats-label { background: #e9ecf4; }
 /* ── TABS ── */
 .tab-bar-wrap { position: relative; }
 .tab-bar-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 50px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 150; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
-.tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--tab-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 46px; z-index: 99; }
+.tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--tab-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 46px; z-index: 99; cursor: grab; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: var(--text); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
 .tab-btn.active { color: #2ecc71; border-bottom-color: #2ecc71; }
@@ -390,7 +392,7 @@ body[data-theme="light"] .stats-label { background: #e9ecf4; }
 .lz-live-header { display: flex; align-items: center; gap: 6px; padding: 9px 16px 0; }
 .lz-dot { width: 7px; height: 7px; border-radius: 50%; background: #e74c3c; animation: blink 1s infinite; flex-shrink: 0; }
 .lz-header-text { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #ff6b6b; }
-.lz-scroll { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 8px 9vw 12px; scroll-snap-type: x mandatory; scroll-padding-left: 9vw; -webkit-overflow-scrolling: touch; }
+.lz-scroll { display: flex; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 8px 9vw 12px; scroll-snap-type: x mandatory; scroll-padding-left: 9vw; -webkit-overflow-scrolling: touch; cursor: grab; }
 .lz-scroll.lz-single { padding: 8px 14px 12px; }
 .lz-scroll.lz-single .lz-card { flex: 0 0 calc(100% - 28px); }
 .lz-scroll::-webkit-scrollbar { display: none; }
@@ -447,7 +449,7 @@ body[data-theme="light"] .lz-card.lz-finished { background: #f4f6fb; border-colo
 body[data-theme="light"] .lz-ft-badge { color: #9ca3af; }
 body[data-theme="light"] .lz-score-num.lz-ft { color: #374151; }
 /* Results compact bar below live strip */
-.lz-results-bar { display: flex; overflow-x: auto; scrollbar-width: none; gap: 6px; padding: 5px 12px 8px; border-top: 1px solid rgba(255,255,255,.06); }
+.lz-results-bar { display: flex; overflow-x: auto; scrollbar-width: none; gap: 6px; padding: 5px 12px 8px; border-top: 1px solid rgba(255,255,255,.06); cursor: grab; }
 .lz-results-bar::-webkit-scrollbar { display: none; }
 .lz-result-pill { flex: 0 0 auto; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 5px 10px; font-size: .68rem; white-space: nowrap; cursor: pointer; color: rgba(255,255,255,.75); }
 .lz-result-pill.synd { border-color: rgba(241,196,15,.35); color: #e8edf5; font-weight: 600; }
@@ -811,9 +813,9 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
 <div class="tab-bar-wrap">
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
+  <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
   <button class="tab-btn"        onclick="switchTab('matchcentre')">📡 Matches</button>
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
-  <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
   <button class="tab-btn"        onclick="switchTab('bracket')">🗺 Knockouts</button>
   <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
   <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
@@ -1312,13 +1314,16 @@ function toggleFilter(f) {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-const ALL_TABS = ['leaderboard','matchcentre','teamstats','clashes','bracket','boot','results','groups'];
+const ALL_TABS = ['leaderboard','clashes','matchcentre','teamstats','bracket','boot','results','groups'];
 
 function switchTab(tab) {
   activeTab = tab;
   if (!['leaderboard','teamstats'].includes(tab)) activeFilter = null;
-  document.querySelectorAll('.tab-btn').forEach((b,i) =>
-    b.classList.toggle('active', ALL_TABS[i]===tab));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const isActive = ALL_TABS[i]===tab;
+    b.classList.toggle('active', isActive);
+    if (isActive) b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  });
 
   clearSearch();
   if (lastState) renderCurrentTab();
@@ -2764,19 +2769,41 @@ async function checkPageVersion() {
 setTimeout(checkPageVersion, 8000);            // initial check after 8s
 setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
 
-// ── DESKTOP HORIZONTAL SCROLL ──────────────────────────────────────────────────
-// Mouse wheels scroll vertically only. Convert vertical wheel input to
-// horizontal scroll on any horizontally-scrollable strip so desktop/non-touch
-// users can navigate the stats bar, tab bar, live zone, and results bar.
+// ── DESKTOP CLICK-AND-DRAG SCROLL ──────────────────────────────────────────────
+// Desktop has no touch/trackpad swipe, so let users click-drag any horizontally
+// scrollable strip (stats bar, tab bar, live zone, results bar) with the mouse.
 (function() {
   const HSCROLL_SELECTORS = '.stats-strip, .tab-bar, .lz-scroll, .lz-results-bar';
-  document.addEventListener('wheel', function(e) {
+  let dragEl = null, startX = 0, startScroll = 0, moved = false;
+
+  document.addEventListener('mousedown', function(e) {
     const el = e.target.closest(HSCROLL_SELECTORS);
-    if (!el) return;
-    if (el.scrollWidth <= el.clientWidth + 2) return; // nothing to scroll
-    e.preventDefault();
-    el.scrollLeft += (e.deltaY || e.deltaX) * 1.5;
-  }, { passive: false, capture: true });
+    if (!el || el.scrollWidth <= el.clientWidth + 2) return;
+    dragEl = el;
+    startX = e.pageX;
+    startScroll = el.scrollLeft;
+    moved = false;
+    el.classList.add('lz-dragging');
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragEl) return;
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 4) moved = true;
+    dragEl.scrollLeft = startScroll - dx;
+  });
+
+  function endDrag() {
+    if (dragEl) dragEl.classList.remove('lz-dragging');
+    dragEl = null;
+  }
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('mouseleave', endDrag);
+
+  // Suppress the click that would normally fire on a card/button right after a drag
+  document.addEventListener('click', function(e) {
+    if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+  }, true);
 })();
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
