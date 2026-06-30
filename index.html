@@ -404,6 +404,7 @@ body[data-theme="light"] .lz-date-row { color: #6b7280; }
 .lz-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; min-height: 16px; }
 .lz-min { font-size: .6rem; font-weight: 700; color: #ff6b6b; display: flex; align-items: flex-start; gap: 4px; }
 .lz-next-label { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: rgba(255,255,255,.75); }
+.lz-meta-centered { justify-content: center; }
 .lz-stage-lbl { font-size: .58rem; color: rgba(255,255,255,.65); text-align: right; }
 .lz-teams-row { display: grid; grid-template-columns: 1fr 96px 1fr; align-items: flex-start; gap: 4px; }
 .lz-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
@@ -2130,7 +2131,7 @@ function renderBanner(st) {
     } else if (isLive) {
       scoreMid = `<div class="lz-score-num">${m.homeScore??0}<span class="lz-score-sep">–</span>${m.awayScore??0}</div>`;
     } else {
-      scoreMid = `<div class="lz-score-vs">vs</div><div class="lz-score-time">${fmtTime(m.utcDate)}</div><div class="lz-score-date">${fmtCardDate(m.utcDate)}</div>`;
+      scoreMid = `<div class="lz-score-vs">vs</div><div class="lz-score-date">${fmtCardDate(m.utcDate)}</div><div class="lz-score-time">${fmtTime(m.utcDate)}</div>`;
     }
 
     const cls = ['lz-card',
@@ -2143,7 +2144,7 @@ function renderBanner(st) {
       ? `<div class="lz-card-meta"><div class="lz-min"><div class="lz-dot"></div>${m.clock||'LIVE'}</div><div class="lz-stage-lbl">${slbl(m)}</div></div>`
       : isDone
         ? `<div class="lz-date-row">${fmtCardDate(m.utcDate)} · ${fmtTime(m.utcDate)}</div>`
-        : `<div class="lz-card-meta"><div class="lz-next-label">📅 Next match</div><div class="lz-stage-lbl">${slbl(m)}</div></div>`;
+        : `<div class="lz-card-meta lz-meta-centered"><div class="lz-next-label">Next match · ${slbl(m)}</div></div>`;
 
     return `<div class="${cls}" onclick="showMatchCentre()">
       ${topRow}
