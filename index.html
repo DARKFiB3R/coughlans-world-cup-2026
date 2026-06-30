@@ -508,6 +508,7 @@ body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #1
 
 /* ── BADGES ── */
 .badge { font-size: .65rem; font-weight: 700; padding: 3px 7px; border-radius: 10px; white-space: nowrap; min-width: 72px; text-align: center; letter-spacing: .2px; }
+#pm-pts-line .badge { min-width: 0; flex-shrink: 0; }
 .b-champion{background:#856404;color:#ffc107;border:1px solid #ffc107}
 .b-in{background:#0d2a1a;color:#27ae60;border:1px solid #27ae60}
 .b-group{background:#0d2035;color:#3b8fd4;border:1px solid #2a6fa8}
@@ -697,6 +698,8 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .pm-rival { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: .78rem; border-bottom: 1px solid rgba(255,255,255,.05); }
 .pm-pill { display: inline-block; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); padding: 2px 9px; border-radius: 999px; font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.85); white-space: nowrap; }
 body[data-theme="light"] .pm-pill { background: rgba(0,0,0,.05); border-color: rgba(0,0,0,.12); color: #374151; }
+.pm-view-team-btn { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#e8edf5; padding:10px; border-radius:10px; font-size:.85rem; font-weight:700; cursor:pointer; font-family:inherit; }
+body[data-theme="light"] .pm-view-team-btn { background:#f4f6fb; border-color:#d0d5e0; color:#111827; }
 .pm-meta-dim  { font-size:.7rem; color:rgba(255,255,255,.5); }
 .pm-goalstr   { font-size:.7rem; color:rgba(255,255,255,.55); margin-top:2px; }
 .pm-rival:last-child { border-bottom: none; }
@@ -917,7 +920,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
           <div style="flex:1;min-width:0">
             <div id="pm-name" class="pm-name-text"></div>
             <div id="pm-team-line" class="pm-team-line-text"></div>
-            <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap"></div>
+            <div id="pm-pts-line" style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap"></div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
             <button id="pm-follow-btn" class="follow-btn not-following" onclick="handlePersonFollow()">⭐ Follow</button>
@@ -1085,11 +1088,18 @@ function formDots(form) {
     }).join('') + '</span>';
 }
 
-function matchIcon(m, team) {
-  if (m.status !== 'FINISHED') return m.status==='IN_PLAY'||m.status==='PAUSED' ? '🔴' : '📅';
+function matchResult(m, team) {
+  if (m.status !== 'FINISHED') return null;
   const won  = (m._h===team&&m.winner==='HOME_TEAM') || (m._a===team&&m.winner==='AWAY_TEAM');
   const lost = (m._h===team&&m.winner==='AWAY_TEAM') || (m._a===team&&m.winner==='HOME_TEAM');
-  return won ? '✅' : lost ? '❌' : '🟰';
+  return won ? 'W' : lost ? 'L' : 'D';
+}
+function matchIcon(m, team) {
+  if (m.status !== 'FINISHED') return m.status==='IN_PLAY'||m.status==='PAUSED' ? '🔴' : '📅';
+  const r = matchResult(m, team);
+  return r==='W' ? '<span style="color:#2ecc71">✓</span>'
+       : r==='L' ? '<span style="color:#e74c3c">✕</span>'
+       : '<span style="color:#f39c12">−</span>';
 }
 function teamScore(m, team) {
   if (m.status !== 'FINISHED') return '';
@@ -1174,14 +1184,14 @@ function resolveStatus(team, st) {
     const inM ={LAST_32:'IN_R32',LAST_16:'IN_R16',QUARTER_FINALS:'IN_QUARTER',SEMI_FINALS:'IN_SEMI'};
     const outM={LAST_32:'OUT_R32',LAST_16:'OUT_R16',QUARTER_FINALS:'OUT_QUARTER',SEMI_FINALS:'OUT_SEMI'};
     if (ko.eliminated) return {code:outM[s]||'OUT_GROUP',label:`❌ Out – ${KO_LONG[s]||s}`,badge:'b-out'};
-    if (ko.won)        return {code:inM[s]||'QUALIFIED', label:`✅ ${KO_SHORT[s]}`,          badge:'b-in'};
+    if (ko.won)        return {code:inM[s]||'QUALIFIED', label:`✓ ${KO_SHORT[s]}`,          badge:'b-in'};
   }
   if (gr) {
     if (gr.groupDone) {
-      if (gr.rank<=2)   return {code:'QUALIFIED',label:'✅ Qualified',    badge:'b-in'};
+      if (gr.rank<=2)   return {code:'QUALIFIED',label:'✓ Qualified',    badge:'b-in'};
       if (gr.rank===3)  {
         if (allGroupsDone) {
-          if (bestThird.has(team)) return {code:'QUALIFIED',label:'✅ Best 3rd',   badge:'b-in'};
+          if (bestThird.has(team)) return {code:'QUALIFIED',label:'✓ Best 3rd',   badge:'b-in'};
           else                     return {code:'OUT_GROUP', label:'❌ Out – Group',badge:'b-out'};
         }
         return {code:'TBD',label:'⏳ Best 3rd?',badge:'b-tbd'};
@@ -1568,8 +1578,8 @@ function renderBracket(st) {
     let hFate = '', aFate = '';
     if (done) {
       const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
-      if (hWon)      { hFate = `<div class="bracket-fate bracket-fate-thru">✅ Through</div>`; aFate = `<div class="bracket-fate bracket-fate-out">❌ Out</div>`; }
-      else if (aWon) { aFate = `<div class="bracket-fate bracket-fate-thru">✅ Through</div>`; hFate = `<div class="bracket-fate bracket-fate-out">❌ Out</div>`; }
+      if (hWon)      { hFate = `<div class="bracket-fate bracket-fate-thru">✓ Through</div>`; aFate = `<div class="bracket-fate bracket-fate-out">✕ Out</div>`; }
+      else if (aWon) { aFate = `<div class="bracket-fate bracket-fate-thru">✓ Through</div>`; hFate = `<div class="bracket-fate bracket-fate-out">✕ Out</div>`; }
     }
 
     return `<div class="bracket-row">
@@ -1718,8 +1728,8 @@ function clashFavourite(m, hName, aName) {
 
   if (live) return { cls:'live', text:`🔴 LIVE NOW` };
   if (done) {
-    if (m.winner==='HOME_TEAM') return { cls:'done-win', text:`✅ ${hName} won` };
-    if (m.winner==='AWAY_TEAM') return { cls:'done-win', text:`✅ ${aName} won` };
+    if (m.winner==='HOME_TEAM') return { cls:'done-win', text:`✓ ${hName} won` };
+    if (m.winner==='AWAY_TEAM') return { cls:'done-win', text:`✓ ${aName} won` };
     return { cls:'done-loss', text:`🤝 Ended level — extra time/penalties` };
   }
 
@@ -1907,7 +1917,7 @@ function showModal(team) {
   let gf=0,ga=0,w=0,d=0,l=0;
   for (const m of ms) {
     if(m._h===team){gf+=m.homeScore;ga+=m.awayScore;}else{gf+=m.awayScore;ga+=m.homeScore;}
-    const ic=matchIcon(m,team); if(ic==='✅')w++;else if(ic==='❌')l++;else d++;
+    const r=matchResult(m,team); if(r==='W')w++;else if(r==='L')l++;else d++;
   }
   const gd=gf-ga;
   document.getElementById('m-stats').innerHTML=`
@@ -2155,10 +2165,10 @@ function renderBanner(st) {
       scoreMid = `<div class="lz-score-num"><span class="${hCls}">${m.homeScore??0}</span><span class="lz-score-sep">–</span><span class="${aCls}">${m.awayScore??0}</span></div>`;
       if (IS_KO(m.stage)) {
         hFate = hWon
-          ? `<div class="lz-fate lz-fate-thru${hS?' lz-fate-synd':''}">✅ Through</div>`
+          ? `<div class="lz-fate lz-fate-thru${hS?' lz-fate-synd':''}">✓ Through</div>`
           : `<div class="lz-fate lz-fate-out${hS?' lz-fate-synd':''}">❌ Out</div>`;
         aFate = aWon
-          ? `<div class="lz-fate lz-fate-thru${aS?' lz-fate-synd':''}">✅ Through</div>`
+          ? `<div class="lz-fate lz-fate-thru${aS?' lz-fate-synd':''}">✓ Through</div>`
           : `<div class="lz-fate lz-fate-out${aS?' lz-fate-synd':''}">❌ Out</div>`;
       }
     } else if (isLive) {
@@ -2618,7 +2628,7 @@ function showPersonModal(person, team) {
 
   // View team button
   const viewTeamHtml=`<div style="padding:14px 16px 20px">
-    <button onclick="closePersonModalForce();setTimeout(()=>showModal('${escQ(team)}'),100)" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#e8edf5;padding:10px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit">📊 View ${team} Team Page</button>
+    <button class="pm-view-team-btn" onclick="closePersonModalForce();setTimeout(()=>showModal('${escQ(team)}'),100)">📊 View ${team} Team Page</button>
   </div>`;
 
   document.getElementById('pm-content').innerHTML=
@@ -2852,6 +2862,7 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     const el = e.target.closest(HSCROLL_SELECTORS);
     if (!el || el.scrollWidth <= el.clientWidth + 2) return;
     stopMomentum();
+    if (dragRafId !== null) { cancelAnimationFrame(dragRafId); dragRafId = null; }
     dragEl = el;
     startX = lastX = e.clientX;
     lastT = performance.now();
@@ -2859,19 +2870,31 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     velocity = 0;
     moved = false;
     el.classList.add('lz-dragging');
+    // Pointer capture keeps move/up events flowing to this element even if
+    // the cursor moves fast enough to briefly leave its bounds — fixes jank.
+    try { el.setPointerCapture(e.pointerId); } catch(err) {}
   });
+
+  let dragRafId = null, pendingDx = 0;
 
   document.addEventListener('pointermove', function(e) {
     if (!dragEl || e.pointerType !== 'mouse') return;
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 4) moved = true;
-    dragEl.scrollLeft = startScroll - dx;
+    pendingDx = dx;
 
     const now = performance.now();
     const dt = now - lastT;
     if (dt > 0) velocity = (e.clientX - lastX) / dt * 16.6; // px per frame (~60fps)
     lastX = e.clientX;
     lastT = now;
+
+    if (dragRafId === null) {
+      dragRafId = requestAnimationFrame(() => {
+        if (dragEl) dragEl.scrollLeft = startScroll - pendingDx;
+        dragRafId = null;
+      });
+    }
   });
 
   function endDrag(e) {
