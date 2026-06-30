@@ -282,7 +282,7 @@ body[data-theme="light"] .stats-label { background: #e9ecf4; }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn { flex: 0 0 auto; background: none; border: none; cursor: pointer; padding: 10px 14px; font-size: .76rem; color: var(--text); font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
 .tab-btn.active { color: #2ecc71; border-bottom-color: #2ecc71; }
-.tab-btn:hover:not(.active) { color: rgba(255,255,255,.8); }
+.tab-btn:hover:not(.active) { color: var(--text); opacity: .75; }
 
 /* ── SECTION HEADER ── */
 .sec-hdr { padding: 7px 14px; font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text); background: var(--surface-b); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); margin-top: 6px; }
@@ -428,6 +428,11 @@ body[data-theme="light"] .lz-score-date { color: #6b7280; }
 .lz-elim-out  { color: #ff6b6b; background: rgba(231,76,60,.15); }
 .lz-elim-thru { color: #2ecc71; background: rgba(46,204,113,.12); }
 .lz-synd { font-weight: 700; }
+.bracket-fate { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-top: 4px; }
+.bracket-fate-thru { color: #2ecc71; }
+.bracket-fate-out  { color: #e74c3c; }
+body[data-theme="light"] .bracket-fate-thru { color: #16a34a; }
+body[data-theme="light"] .bracket-fate-out  { color: #dc2626; }
 .lz-col-win  { color: #2ecc71; }
 .lz-col-loss { color: #e74c3c; }
 .lz-col-draw { color: #f39c12; }
@@ -1536,15 +1541,25 @@ function renderBracket(st) {
       ? `<div class="bracket-mid-score">${m.homeScore}–${m.awayScore}</div>`
       : `<div class="bracket-mid-date">${fmtDate(m.utcDate)}<br>${fmtTime(m.utcDate)}</div>`;
     const statusBadge = live ? `<span class="live-badge-big">🔴 LIVE</span>` : done ? `<span class="finished-badge">FT</span>` : '';
+
+    let hFate = '', aFate = '';
+    if (done) {
+      const hWon = m.winner==='HOME_TEAM', aWon = m.winner==='AWAY_TEAM';
+      if (hWon)      { hFate = `<div class="bracket-fate bracket-fate-thru">✅ Through</div>`; aFate = `<div class="bracket-fate bracket-fate-out">❌ Out</div>`; }
+      else if (aWon) { aFate = `<div class="bracket-fate bracket-fate-thru">✅ Through</div>`; hFate = `<div class="bracket-fate bracket-fate-out">❌ Out</div>`; }
+    }
+
     return `<div class="bracket-row">
       <div class="bracket-home" onclick="showModal('${escQ(m._h)}')">
         <div class="bracket-team">${teamCrest(m._h,'crest-sm')}<span class="bracket-nm ${hSynd?'synd':'non-synd'}">${starTeam(m._h)}${m._h}</span></div>
         ${hS?`<div class="bracket-people">${hS.people.join(', ')}</div>`:''}
+        ${hFate}
       </div>
       <div class="bracket-mid">${scoreOrVs}${statusBadge?`<div style="margin-top:3px">${statusBadge}</div>`:''}</div>
       <div class="bracket-away" onclick="showModal('${escQ(m._a)}')">
         <div class="bracket-team"><span class="bracket-nm ${aSynd?'synd':'non-synd'}">${starTeam(m._a)}${m._a}</span>${teamCrest(m._a,'crest-sm')}</div>
         ${aS?`<div class="bracket-people">${aS.people.join(', ')}</div>`:''}
+        ${aFate}
       </div>
     </div>`;
   };
@@ -2750,6 +2765,24 @@ async function checkPageVersion() {
 }
 setTimeout(checkPageVersion, 8000);            // initial check after 8s
 setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
+
+// ── DESKTOP HORIZONTAL SCROLL ──────────────────────────────────────────────────
+// Mouse wheels scroll vertically only. Convert vertical wheel input to
+// horizontal scroll on any horizontally-scrollable strip so desktop/non-touch
+// users can navigate the stats bar, tab bar, live zone, and results bar.
+(function() {
+  const HSCROLL_SELECTORS = '.stats-strip, .tab-bar, .lz-scroll, .lz-results-bar';
+  document.addEventListener('wheel', e => {
+    const el = e.target.closest(HSCROLL_SELECTORS);
+    if (!el) return;
+    // Only hijack if there's actually horizontal overflow to scroll through,
+    // and the wheel motion is primarily vertical (normal mouse wheel).
+    if (el.scrollWidth <= el.clientWidth) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // already horizontal (trackpad) — let it be
+    e.preventDefault();
+    el.scrollLeft += e.deltaY;
+  }, { passive: false });
+})();
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
