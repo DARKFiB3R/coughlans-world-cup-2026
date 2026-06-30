@@ -519,6 +519,13 @@ body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #1
 .overlay.open { display: flex; }
 .modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow: hidden; display: flex; flex-direction: column; animation: slideUp .25s ease; }
 .modal-header-sticky { position: relative; flex-shrink: 0; z-index: 5; overflow: hidden; }
+.modal-flag-bg {
+  position: absolute; top: 50%; left: 4px; transform: translateY(-50%);
+  font-size: 11rem; line-height: 1; opacity: .16; pointer-events: none; z-index: 0;
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 40%, transparent 88%);
+  mask-image: linear-gradient(to right, black 0%, black 40%, transparent 88%);
+}
+body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 .modal-content-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .modal-drag-zone { cursor: grab; touch-action: none; }
@@ -526,7 +533,7 @@ body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #1
 .modal-handle { width: 48px; height: 5px; background: rgba(255,255,255,.3); border-radius: 3px; }
 
 /* Modal team header band */
-.modal-team-band { padding: 12px 16px 10px; display: flex; align-items: flex-start; gap: 14px; }
+.modal-team-band { padding: 12px 16px 10px; display: flex; align-items: flex-start; gap: 14px; position: relative; z-index: 1; }
 .modal-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
 .modal-team-text { flex: 1; min-width: 0; }
 .modal-team-name { font-size: 1.15rem; font-weight: 700; }
@@ -536,7 +543,7 @@ body[data-theme="light"] .lz-result-pill.synd { border-color: #fcd34d; color: #1
 .modal-close:hover { background: rgba(0,0,0,.5); color: #fff; }
 
 /* Modal tabs */
-.modal-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,.1); }
+.modal-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,.1); position: relative; z-index: 1; }
 .modal-tab { flex: 1; background: none; border: none; padding: 8px 4px; font-size: .75rem; color:rgba(255,255,255,0.78); cursor: pointer; font-family: inherit; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .modal-tab.active { color: #fff; border-bottom-color: #fff; }
 
@@ -838,6 +845,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
   <div class="modal" id="modal">
     <!-- Sticky header: colour from very top, never scrolls -->
     <div class="modal-header-sticky">
+      <div class="modal-flag-bg" id="m-flag-bg"></div>
       <div class="modal-drag-zone">
         <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
         <div class="modal-team-band" id="m-band">
@@ -901,9 +909,10 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
 <div id="person-overlay" onclick="closePersonModal(event)">
   <div id="person-modal">
     <div class="modal-header-sticky">
+      <div class="modal-flag-bg" id="pm-flag-bg"></div>
       <div class="modal-drag-zone" id="pm-drag">
         <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-        <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px">
+        <div id="pm-header" style="padding:12px 16px 12px;display:flex;align-items:flex-start;gap:12px;position:relative;z-index:1">
           <div id="pm-crest-wrap"></div>
           <div style="flex:1;min-width:0">
             <div id="pm-name" class="pm-name-text"></div>
@@ -1854,6 +1863,10 @@ function showModal(team) {
   document.getElementById('m-band').style.background = 'transparent';
   document.getElementById('modal').style.borderTopColor = color;
 
+  // Flag background
+  const _mFlagEl = document.getElementById('m-flag-bg');
+  if (_mFlagEl) _mFlagEl.textContent = s.flag || '';
+
   // Crest
   const crestEl = document.getElementById('m-crest');
   if (td.logo) { crestEl.src=td.logo; crestEl.style.display=''; }
@@ -2496,6 +2509,10 @@ function showPersonModal(person, team) {
   if (_pmDragEl) _pmDragEl.style.setProperty('background', color + _pm_opacity, 'important');
   document.getElementById('pm-header').style.background = 'transparent';
   document.getElementById('person-modal').style.borderTopColor = color;
+
+  // Flag background
+  const _pmFlagEl = document.getElementById('pm-flag-bg');
+  if (_pmFlagEl) _pmFlagEl.textContent = TEAM_MAP[team]?.flag || '';
   document.getElementById('pm-crest-wrap').innerHTML = teamCrest(team,'crest-lg');
   document.getElementById('pm-name').textContent = person;
   document.getElementById('pm-team-line').innerHTML = `${team}`;
