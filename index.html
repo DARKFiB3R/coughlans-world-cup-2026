@@ -324,7 +324,14 @@ body[data-theme="light"] .stats-label { background: #e9ecf4; }
 .form-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
 /* ── TEAM ROW ── */
-.team-row { display: grid; grid-template-columns: 36px 1fr auto 18px; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); cursor: pointer; transition: background .15s; }
+.team-row { display: grid; grid-template-columns: 36px 1fr auto 18px; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); cursor: pointer; transition: background .15s; position: relative; overflow: hidden; }
+.team-row-flag-bg {
+  position: absolute; top: 50%; right: -6px; transform: translateY(-50%);
+  font-size: 3.4rem; line-height: 1; opacity: .16; pointer-events: none; z-index: 0;
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 35%, transparent 85%);
+  mask-image: linear-gradient(to right, black 0%, black 35%, transparent 85%);
+}
+body[data-theme="light"] .team-row-flag-bg { opacity: .22; }
 .team-row:hover { background: var(--hover); }
 .team-row.eliminated { opacity: .32; }
 .team-info { min-width: 0; }
@@ -1422,10 +1429,11 @@ function renderTeamStats(st) {
     const grPts = gr ? `<span style="font-size:.68rem;color:#7a9ab0;margin-left:5px">${gr.pts}pts</span>` : '';
     return `
       <div class="team-row${isOut(e)?' eliminated':''}" onclick="toggleExpand('${tid}')">
-        <div>${teamCrest(e.team)}</div>
-        <div class="team-info"><div class="team-name">${e.team} <span style="opacity:.8">${e.flag||''}</span></div><div class="team-people">${e.people.join(' · ')}</div></div>
-        <div style="text-align:right"><div class="badge ${e.status.badge}">${e.status.label}</div>${grPts}</div>
-        <div class="chev" id="chev_${tid}">›</div>
+        <div class="team-row-flag-bg">${e.flag||''}</div>
+        <div style="position:relative;z-index:1">${teamCrest(e.team)}</div>
+        <div class="team-info" style="position:relative;z-index:1"><div class="team-name">${e.team}</div><div class="team-people">${e.people.join(' · ')}</div></div>
+        <div style="text-align:right;position:relative;z-index:1"><div class="badge ${e.status.badge}">${e.status.label}</div>${grPts}</div>
+        <div class="chev" id="chev_${tid}" style="position:relative;z-index:1">›</div>
       </div>
       <div class="expand" id="${tid}">
         ${recent||'<div class="ex-match" style="color:var(--text-dimmer)">No results yet</div>'}
@@ -2789,7 +2797,12 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     const friction = 0.95;
     function step() {
       velocity *= friction;
-      if (Math.abs(velocity) < 0.5) { velocity = 0; momentumId = null; return; }
+      if (Math.abs(velocity) < 0.5) {
+        velocity = 0;
+        momentumId = null;
+        el.classList.remove('lz-dragging'); // re-enable scroll-snap now momentum has settled
+        return;
+      }
       el.scrollLeft -= velocity;
       momentumId = requestAnimationFrame(step);
     }
@@ -2827,8 +2840,11 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     if (e && e.pointerType && e.pointerType !== 'mouse') return;
     if (dragEl) {
       const el = dragEl;
-      el.classList.remove('lz-dragging');
-      if (Math.abs(velocity) > 1) runMomentum(el);
+      if (Math.abs(velocity) > 1) {
+        runMomentum(el); // keeps .lz-dragging (snap disabled) until it settles
+      } else {
+        el.classList.remove('lz-dragging');
+      }
     }
     dragEl = null;
   }
