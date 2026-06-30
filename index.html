@@ -760,7 +760,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
     <div id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
       <span class="tt-icon" id="tt-sun">☀️</span><span class="tt-icon" id="tt-moon">🌙</span>
     </div>
-    <div id="live-label">Auto-updating</div>
+    <div id="live-label"></div>
     <div id="last-updated">Loading…</div>
   </div>
 </header>
@@ -2211,7 +2211,7 @@ function renderStats(st) {
 
   // Live pill
   document.getElementById('live-label').innerHTML = st.liveCount>0
-    ? `Auto-updating <span class="live-pill">LIVE</span>` : 'Auto-updating';
+    ? `<span class="live-pill">LIVE UPDATES</span>` : '';
 }
 
 // ── ESPN DIRECT PARSER ────────────────────────────────────────────────────────
