@@ -400,6 +400,8 @@ header {
 .lz-card.synd-match { border-color: rgba(241,196,15,.45); }
 .lz-card.is-upcoming { border-color: rgba(59,143,212,.3); }
 .lz-card:active { opacity: .8; }
+.lz-date-row { font-size: .58rem; color: rgba(255,255,255,.4); text-align: center; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+body[data-theme="light"] .lz-date-row { color: #9ca3af; }
 .lz-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 16px; }
 .lz-min { font-size: .6rem; font-weight: 700; color: #ff6b6b; display: flex; align-items: flex-start; gap: 4px; }
 .lz-next-label { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: rgba(255,255,255,.75); }
@@ -2139,7 +2141,12 @@ function renderBanner(st) {
       isSynd ? 'synd-match' : ''
     ].filter(Boolean).join(' ');
 
+    const dateRow = (isLive || isDone)
+      ? `<div class="lz-date-row">${fmtCardDate(m.utcDate)} · ${fmtTime(m.utcDate)}</div>`
+      : '';
+
     return `<div class="${cls}" onclick="showMatchCentre()">
+      ${dateRow}
       <div class="lz-card-meta">${metaL}<div class="lz-stage-lbl">${slbl(m)}</div></div>
       <div class="lz-teams-row">
         <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div>${hFate}</div>
