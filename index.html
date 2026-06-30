@@ -240,13 +240,13 @@ header {
 #last-updated { font-size: .6rem; color:rgba(255,255,255,0.63); white-space: nowrap; }
 .header-sub { font-size: .58rem; color:rgba(255,255,255,0.66); margin-top: 3px; letter-spacing: .2px; }
 .header-right { text-align: right; flex-shrink: 0; }
-#live-label { font-size: .63rem; color:rgba(255,255,255,0.78); display: block; }
+#live-label { font-size: .68rem; font-weight: 700; color: #ff6b6b; display: block; letter-spacing: .3px; }
 #last-updated { font-size: .57rem; color:rgba(255,255,255,0.56); margin-top: 2px; display: block; }
 #theme-toggle { position: absolute; top: 11px; right: 7px; display: flex; gap: 3px; cursor: pointer; z-index: 10; }
 .tt-icon { font-size: 1rem; line-height: 1; transition: filter .2s, opacity .2s; display: inline-block; }
 .tt-icon.inactive { filter: grayscale(1); opacity: .28; }
-.live-pill { display: inline-block; background: #c0392b; color: #fff; font-size: .58rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .5px; margin-left: 4px; animation: blink 1s infinite; vertical-align: middle; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+.live-updates-text { animation: blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 
 /* ── BANNERS ── */
 #inapp-banner { display: none; background: rgba(0,0,0,.5); backdrop-filter: blur(10px); padding: 7px 14px; font-size: .72rem; color:rgba(255,255,255,0.83); border-bottom: 1px solid rgba(255,255,255,.07); text-align: center; cursor: pointer; }
@@ -254,7 +254,8 @@ header {
 
 /* ── STATS STRIP ── */
 .stats-strip-wrap { position: relative; z-index: 1; }
-.stats-label { position: sticky; left: 0; z-index: 3; flex-shrink: 0; display: flex; align-items: center; padding: 0 10px; font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dimmer); white-space: nowrap; background: var(--surface-a); backdrop-filter: blur(12px); }
+.stats-label { position: sticky; left: 0; z-index: 3; flex-shrink: 0; display: flex; align-items: center; padding: 0 10px; font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dimmer); white-space: nowrap; background: var(--bg); }
+body[data-theme="light"] .stats-label { background: #e9ecf4; }
 .stats-label::after { content: ':'; margin-left: 1px; }
 .stats-strip-wrap::after { content: '❯❯'; position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, var(--fade)); pointer-events: none; z-index: 2; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: var(--text-dim); font-size: .75rem; letter-spacing: -2px; animation: scrollpulse 1.5s ease-in-out infinite; }
 .stats-strip { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--surface-a); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
@@ -759,7 +760,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
     <div id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
       <span class="tt-icon" id="tt-sun">☀️</span><span class="tt-icon" id="tt-moon">🌙</span>
     </div>
-    <div id="live-label">Auto-updating</div>
+    <div id="live-label"><span class="live-updates-text">🔴 LIVE UPDATES</span></div>
     <div id="last-updated">Loading…</div>
   </div>
 </header>
@@ -2208,9 +2209,8 @@ function renderStats(st) {
   set('ss-in',  codes.filter(c=>!c.startsWith('OUT_')&&c!=='TBD').length);
   set('ss-out', codes.filter(c=>c.startsWith('OUT_')).length);
 
-  // Live pill
-  document.getElementById('live-label').innerHTML = st.liveCount>0
-    ? `Auto-updating <span class="live-pill">LIVE</span>` : 'Auto-updating';
+  // Live label
+  document.getElementById('live-label').innerHTML = `<span class="live-updates-text">🔴 LIVE UPDATES</span>`;
 }
 
 // ── ESPN DIRECT PARSER ────────────────────────────────────────────────────────
