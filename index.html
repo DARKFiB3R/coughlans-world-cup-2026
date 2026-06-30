@@ -686,8 +686,8 @@ body[data-theme="light"] .modal-flag-bg { opacity: .22; }
 #person-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 400; align-items: flex-end; justify-content: center; }
 #person-overlay.open { display: flex; }
 #person-modal { background: rgba(8,12,22,.96); backdrop-filter: blur(24px); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border-top: 3px solid #f1c40f; box-shadow: 0 -20px 60px rgba(0,0,0,.5); max-height: 86vh; overflow-y: hidden; display: flex; flex-direction: column; animation: slideUp .25s ease; }
-.pm-name-text { font-size:1.3rem; font-weight:800; font-family:'Karma',serif; color:#F7DB8D; letter-spacing:.5px; }
-.pm-team-line-text { font-size:.78rem; color:rgba(255,255,255,.65); margin-top:4px; display:flex; align-items:center; gap:6px; }
+.pm-name-text { font-size:1.3rem; font-weight:800; font-family:'Karma',serif; color:#F7DB8D; letter-spacing:.5px; line-height:1.1; }
+.pm-team-line-text { font-size:.78rem; color:rgba(255,255,255,.65); margin-top:1px; display:flex; align-items:center; gap:6px; }
 .pm-section { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .pm-sec-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.45); margin-bottom: 7px; }
 .pm-result { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .78rem; }
@@ -828,8 +828,8 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
   <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
-  <button class="tab-btn"        onclick="switchTab('matchcentre')">📡 Matches</button>
-  <button class="tab-btn"        onclick="switchTab('bracket')">🗺 Knockouts</button>
+  <button class="tab-btn"        onclick="switchTab('matchcentre')">⚽ Matches</button>
+  <button class="tab-btn"        onclick="switchTab('bracket')">🥊 Knockouts</button>
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
   <button class="tab-btn"        onclick="switchTab('boot')">👟 Golden Boot</button>
   <button class="tab-btn"        onclick="switchTab('results')">✅ Results</button>
@@ -1552,7 +1552,7 @@ function renderBracket(st) {
   }
 
   if (!Object.keys(stageMatches).length) {
-    document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">🗂</div><div class="empty-title">Bracket not yet set</div><div class="empty-sub">Knockout fixtures will appear here once the group stage is complete.</div></div>`;
+    document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">🥊</div><div class="empty-title">Bracket not yet set</div><div class="empty-sub">Knockout fixtures will appear here once the group stage is complete.</div></div>`;
     return;
   }
 
@@ -2117,7 +2117,7 @@ function renderMatchCentre(st) {
   if(live.length)    { html+=`<div class="sec-hdr">🔴 Live Now — ${live.length} match${live.length!==1?'es':''}</div>`+live.map(makeCard).join(''); }
   if(upcoming.length){ html+=`<div class="sec-hdr">📅 Coming Up</div>`+upcoming.map(makeCard).join(''); }
   if(recent.length)  { html+=`<div class="sec-hdr">✅ Recent Results</div>`+recent.slice(0,8).map(makeCard).join(''); }
-  if(!html) html=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No matches right now</div><div class="empty-sub">Check back when games are scheduled.</div></div>`;
+  if(!html) html=`<div class="empty-state"><div class="empty-icon">⚽</div><div class="empty-title">No matches right now</div><div class="empty-sub">Check back when games are scheduled.</div></div>`;
   document.getElementById('content').innerHTML=html;
 }
 
@@ -2809,15 +2809,36 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
     if (momentumId) { cancelAnimationFrame(momentumId); momentumId = null; }
   }
 
+  function settleToNearestCard(el) {
+    // For .lz-scroll, manually glide to the nearest card instead of letting
+    // native CSS scroll-snap jump there instantly — feels much smoother.
+    if (el.classList.contains('lz-scroll')) {
+      const cards = el.querySelectorAll('.lz-card');
+      const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0;
+      let nearest = null, nearestDist = Infinity;
+      cards.forEach(card => {
+        const target = card.offsetLeft - padLeft;
+        const dist = Math.abs(target - el.scrollLeft);
+        if (dist < nearestDist) { nearestDist = dist; nearest = target; }
+      });
+      if (nearest !== null) {
+        el.scrollTo({ left: nearest, behavior: 'smooth' });
+        setTimeout(() => el.classList.remove('lz-dragging'), 450);
+        return;
+      }
+    }
+    el.classList.remove('lz-dragging');
+  }
+
   function runMomentum(el) {
     stopMomentum();
-    const friction = 0.95;
+    const friction = 0.965;
     function step() {
       velocity *= friction;
-      if (Math.abs(velocity) < 0.5) {
+      if (Math.abs(velocity) < 0.15) {
         velocity = 0;
         momentumId = null;
-        el.classList.remove('lz-dragging'); // re-enable scroll-snap now momentum has settled
+        settleToNearestCard(el); // glide smoothly into place rather than snapping instantly
         return;
       }
       el.scrollLeft -= velocity;
@@ -2860,7 +2881,7 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
       if (Math.abs(velocity) > 1) {
         runMomentum(el); // keeps .lz-dragging (snap disabled) until it settles
       } else {
-        el.classList.remove('lz-dragging');
+        settleToNearestCard(el);
       }
     }
     dragEl = null;
