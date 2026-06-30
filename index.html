@@ -873,8 +873,6 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
     <div id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
       <span class="tt-icon" id="tt-sun">☀️</span><span class="tt-icon" id="tt-moon">🌙</span>
     </div>
-    <div id="live-label"></div>
-    <div id="last-updated">Loading…</div>
   </div>
   <div id="final-pulltab" onclick="toggleFinalChrome()"><span id="final-pulltab-chevron">▲</span></div>
 </header>
@@ -2567,7 +2565,8 @@ function renderStats(st) {
   set('ss-out', codes.filter(c=>c.startsWith('OUT_')).length);
 
   // Live pill
-  document.getElementById('live-label').innerHTML = st.liveCount>0
+  const liveLabelEl = document.getElementById('live-label');
+  if (liveLabelEl) liveLabelEl.innerHTML = st.liveCount>0
     ? `<span class="live-pill">LIVE UPDATES</span>` : '';
 }
 
@@ -2731,12 +2730,12 @@ async function update() {
 
     const t = new Date();
     const timeStr = t.toLocaleTimeString('en-GB',{hour:'numeric',minute:'2-digit',hour12:true});
-    document.getElementById('last-updated').textContent = 'Last update: ' + timeStr;
     document.getElementById('error-msg').style.display='none';
+    fitHeaderTitle();
   } catch(err){
     const el=document.getElementById('error-msg');
     el.style.display='block'; el.textContent='⚠️ '+err.message;
-    document.getElementById('last-updated').textContent='Update failed';
+    fitHeaderTitle();
     console.error('[wc2026]',err);
   }
   // Adaptive: faster when live
@@ -3045,18 +3044,19 @@ function fitHeaderTitle() {
   const el = document.querySelector('.header-title-bottom');
   if (!el) return;
   const container = el.parentElement;
+  const STRETCH = 1.1;
   el.style.transform = 'scaleX(1)';
-  el.style.fontSize = '1.05rem';
   const maxWidth = container.clientWidth;
+  const target = maxWidth / STRETCH; // unscaled width budget, so final stretched width fills maxWidth
   let fontSize = 1.05;
   el.style.fontSize = fontSize + 'rem';
   let guard = 0;
-  while (el.scrollWidth > maxWidth && fontSize > 0.55 && guard < 30) {
+  while (el.scrollWidth > target && fontSize > 0.55 && guard < 40) {
     fontSize -= 0.02;
     el.style.fontSize = fontSize + 'rem';
     guard++;
   }
-  el.style.transform = 'scaleX(1.1)';
+  el.style.transform = 'scaleX(' + STRETCH + ')';
 }
 window.addEventListener('load', fitHeaderTitle);
 window.addEventListener('resize', fitHeaderTitle);
