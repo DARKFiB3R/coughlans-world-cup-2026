@@ -811,6 +811,7 @@ body[data-theme="light"] .modal-team-name { color:#111827; }
 <div class="tab-bar-wrap">
 <nav class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Leaders</button>
+  <button class="tab-btn"        onclick="switchTab('matchcentre')">📡 Matches</button>
   <button class="tab-btn"        onclick="switchTab('teamstats')">📊 Teams</button>
   <button class="tab-btn"        onclick="switchTab('clashes')">⚔️ Clashes</button>
   <button class="tab-btn"        onclick="switchTab('bracket')">🗺 Knockouts</button>
@@ -1311,7 +1312,7 @@ function toggleFilter(f) {
 }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-const ALL_TABS = ['leaderboard','teamstats','clashes','bracket','boot','results','groups'];
+const ALL_TABS = ['leaderboard','matchcentre','teamstats','clashes','bracket','boot','results','groups'];
 
 function switchTab(tab) {
   activeTab = tab;
@@ -2031,10 +2032,7 @@ function closeModalForce() { document.getElementById('overlay').classList.remove
 // ── MATCH CENTRE ─────────────────────────────────────────────────────────────
 function showMatchCentre() {
   if (!lastState) return;
-  activeTab = 'matchcentre';
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  clearSearch();
-  renderMatchCentre(lastState);
+  switchTab('matchcentre');
 }
 
 function renderMatchCentre(st) {
@@ -2116,22 +2114,6 @@ function renderBanner(st) {
     .filter(m => (m.status==='SCHEDULED'||m.status==='TIMED') && new Date(m.utcDate) > now && (new Date(m.utcDate)-now) < H24)
     .sort((a,b) => new Date(a.utcDate) - new Date(b.utcDate));
 
-  if (!live.length && !recent.length && !upcoming.length) {
-    const next = st.allMatches.filter(m=>m.status==='SCHEDULED'||m.status==='TIMED')
-                   .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
-    if (next) {
-      b.innerHTML = `<div class="lz-scroll lz-single">${makeMatchCard(next, false)}</div>`;
-      b.className = 'visible';
-    } else { b.className = ''; }
-    return;
-  }
-
-  // Syndicate live first (earliest kickoff), then others
-  const livePrimary = [
-    ...live.filter(isSyndMatch).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
-    ...live.filter(m=>!isSyndMatch(m)).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
-  ];
-
   const makeCard = (m, type) => {
     const h = norm(m.home), a = norm(m.away);
     const hS = SYND_TEAMS.has(h), aS = SYND_TEAMS.has(a), isSynd = hS||aS;
@@ -2171,7 +2153,7 @@ function renderBanner(st) {
         ? `<div class="lz-date-row">${fmtCardDate(m.utcDate)} · ${fmtTime(m.utcDate)}</div>`
         : `<div class="lz-card-meta lz-meta-centered"><div class="lz-next-label">Next match · ${slbl(m)}</div></div>`;
 
-    return `<div class="${cls}" onclick="showMatchCentre()">
+    return `<div class="${cls}" onclick="${isDone?"switchTab('results')":"showMatchCentre()"}">
       ${topRow}
       <div class="lz-teams-row">
         <div class="lz-side">${teamCrest(h,'lz-crest')}<div class="lz-name${hS?' lz-synd':''}">${starTeam(h)}${h}</div>${hFate}</div>
@@ -2180,6 +2162,22 @@ function renderBanner(st) {
       </div>
     </div>`;
   };
+
+  if (!live.length && !recent.length && !upcoming.length) {
+    const next = st.allMatches.filter(m=>m.status==='SCHEDULED'||m.status==='TIMED')
+                   .sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate))[0];
+    if (next) {
+      b.innerHTML = `<div class="lz-scroll lz-single">${makeCard(next, 'upcoming')}</div>`;
+      b.className = 'visible';
+    } else { b.className = ''; }
+    return;
+  }
+
+  // Syndicate live first (earliest kickoff), then others
+  const livePrimary = [
+    ...live.filter(isSyndMatch).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
+    ...live.filter(m=>!isSyndMatch(m)).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)),
+  ];
 
   const allCards = [
     ...recent.map(m => makeCard(m, 'done')),
@@ -2772,16 +2770,13 @@ setInterval(checkPageVersion, 3 * 60 * 1000); // then every 3 minutes
 // users can navigate the stats bar, tab bar, live zone, and results bar.
 (function() {
   const HSCROLL_SELECTORS = '.stats-strip, .tab-bar, .lz-scroll, .lz-results-bar';
-  document.addEventListener('wheel', e => {
+  document.addEventListener('wheel', function(e) {
     const el = e.target.closest(HSCROLL_SELECTORS);
     if (!el) return;
-    // Only hijack if there's actually horizontal overflow to scroll through,
-    // and the wheel motion is primarily vertical (normal mouse wheel).
-    if (el.scrollWidth <= el.clientWidth) return;
-    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // already horizontal (trackpad) — let it be
+    if (el.scrollWidth <= el.clientWidth + 2) return; // nothing to scroll
     e.preventDefault();
-    el.scrollLeft += e.deltaY;
-  }, { passive: false });
+    el.scrollLeft += (e.deltaY || e.deltaX) * 1.5;
+  }, { passive: false, capture: true });
 })();
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
